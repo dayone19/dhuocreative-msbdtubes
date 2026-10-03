@@ -2,48 +2,75 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
+
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
+    protected $table = 'users';
+    protected $primaryKey = 'id_user';
     protected $fillable = [
-        'name',
+        'nama',
         'email',
+        'no_telp',
         'password',
+        'role',
+        'tahun_masuk',
+        'status',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
-        'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function siswaKursus() {
+        return $this->hasMany(SiswaKursus::class, 'id_user', 'id_siswa');
+    }
+
+    public function tentorKursus() {
+        return $this->hasMany(TentorKursus::class, 'id_user', 'id_tentor');
+    }
+
+    public function siswaKelas() {
+        return $this->hasMany(SiswaKelas::class, 'id_user', 'id_siswa');
+    }
+
+    public function pengumpulanTugas() {
+        return $this->hasaMany(PengumpulanTugas::class, 'id_user', 'id_siswa');
+    }
+
+    public function jadwal() {
+        return $this->hasMany(Jadwal::class, 'id_user', 'id_tentor');
+    }
+
+    public function absensiSiswa() {
+        return $this->hasMany(AbsensiSiswa::class, 'id_user', 'id_siswa');
+    }
+
+    public function tugas() {
+        return $this->HasMany(Tugas::class, 'id_user', 'id_tentor');
+    }
+
+    public function nilai() {
+        return $this->hasMany(Nilai::class, 'id_user', 'id_tentor');
+    }
+
+    public function siswaSertifikat() {
+        return $this->hasMany(Sertifikat::class, 'id_user', 'id_siswa');
+    }
+
+    public function tentorSertifikat() {
+        return $this->hasMany(Sertifikat::class, 'id_user', 'id_tentor');
+    }
+
+    public function pengumuman() {
+        return $this->hasMany(Pengumuman::class, 'id_user', 'id_user');
     }
 }
