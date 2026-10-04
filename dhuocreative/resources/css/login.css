@@ -1,0 +1,272 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f3f7f8;
+}
+
+.login-page {
+    width: 100%;
+    min-height: 100vh;
+    display:flex;
+    flex-direction: column;
+}
+
+.main-section {
+    position: relative;
+    width: 100%;
+    height: 800px;
+    background: #286c65;
+    overflow: hidden;
+    border-bottom-left-radius: 30px;
+    border-bottom-right-radius: 30px;
+    box-shadow: 0 12px 25px rgba(30, 70, 67, 0.25);
+
+}
+
+.main-section::after {
+    content: "";
+    position: absolute;
+    width: 110%;
+    height: 700px;
+    left: -5%;
+    bottom: -175px;
+    background: #8aaea9;
+    border-radius: 65% 65% 0 0;
+    z-index: 1;
+    box-shadow:0 -12px 25px rgba(3, 61, 50, 0.452);
+}
+
+.brand {
+    position: absolute;
+    left: 50px;
+    top: 180px;
+    width: 500px;
+    height: 180px;
+    z-index: 3;
+}
+
+.brand-svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.brand-title-svg {
+    fill: white;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 60px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    text-anchor: middle;
+}
+
+.brand-subtitle-svg {
+    fill: #111;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.3px;
+    text-anchor: middle;
+}
+
+.login-card {
+    position: absolute;
+    top: 150px;
+    right: 100px;
+    width: 300px;
+    padding: 18px 12px 20px;
+    background: white;
+    border-radius: 16px;
+    z-index: 5;
+    box-shadow:0 12px 25px rgba(6, 59, 47, 0.571);
+}
+
+.role-buttons {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 21px;
+}
+
+.role-btn {
+    flex: 1;
+    height: 44px;
+    border: none;
+    border-radius: 12px;
+    background: #fbb53f;
+    color: #275e59;
+    font-size: 14px;
+    font-weight: 650;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.role-btn:hover {
+    background: #f7a92a;
+}
+
+.role-btn.active {
+    background: #456e6a;
+    color: white;
+}
+
+.form-group {
+    margin-bottom: 8px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #bd4d32;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.form-group input {
+    width: 100%;
+    height: 30px;
+    padding: 0 10px;
+    border: none;
+    outline: none;
+    border-radius: 8px;
+    background: #eef3f5;
+    color: #333;
+    font-size: 14px;
+}
+
+.form-group input:focus {
+    outline: 1px solid #8aaea9;
+}
+
+.password-input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.password-input-wrapper input {
+    padding-right: 40px;
+}
+
+.toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    width: 24px;
+    height: 24px;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    color: #687477;
+    cursor: pointer;
+}
+
+.toggle-password:hover {
+    color: #286c65;
+}
+
+.password-group {
+    position: relative;
+    margin-bottom: 39px;
+}
+
+.forgot-password {
+    position: absolute;
+    right: 0;
+    bottom: -20px;
+    color: #bd5c43;
+    font-size: 13px;
+    text-decoration: none;
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
+}
+
+.login-button {
+    width: 100%;
+    height: 30px;
+    border: none;
+    border-radius: 20px;
+    background: #f27640;
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.login-button:hover {
+    background: #e96630;
+}
+
+.footer {
+    height: 77px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 135px;
+    background: #f3f7f8;
+    color: #111;
+    font-size: 11px;
+}
+
+.social-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+}
+
+
+.forgot-card {
+    position: absolute;
+    top: 150px;
+    right: 500px;
+    width: 290px;
+    padding: 25px 18px 22px;
+    background: white;
+    border-radius: 16px;
+    z-index: 5;
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.18);
+}
+
+.forgot-card h2 {
+    margin-bottom: 16px;
+    color: #286c65;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.forgot-card .form-group {
+    margin-bottom: 20px;
+}
+
+.forgot-card input {
+    height: 35px;
+}
+
+.back-login {
+    display: block;
+    margin-top: 16px;
+    text-align: center;
+    color: #bd5c43;
+    font-size: 12px;
+    text-decoration: none;
+}
+
+.back-login:hover {
+    text-decoration: underline;
+}
