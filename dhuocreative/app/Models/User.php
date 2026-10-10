@@ -9,6 +9,7 @@ class User extends Authenticatable
 {
     protected $table = 'users';
     protected $primaryKey = 'id_user';
+    const UPDATED_AT = 'update_at';
     protected $fillable = [
         'nama',
         'email',

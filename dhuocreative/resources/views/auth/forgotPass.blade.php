@@ -15,19 +15,22 @@
             <div class="forgot-card">
 
                 <h2>Lupa Password?</h2>
+                <div id="form-message" class="error-message" style="display: none;"></div>
 
-                <form id="forgotForm">
+                <form id="forgotForm" method="POST"
+                      action="{{route('password.email')}}">
+                      @csrf
                     <!-- STEP 1 -->
                     <div id="step1">
                         <div class="form-group">
-                            <label for="no_registrasi">
-                                No Registrasi
+                            <label for="email">
+                                Email
                             </label>
                             <input
-                                type="text"
-                                id="no_registrasi"
-                                name="no_registrasi"
-                                placeholder="Masukkan Nomor Registrasi"
+                                type="email"
+                                id="email"
+                                name="email"
+                                placeholder="Masukkan Email Kamu"
                                 required>
                         </div>
 
@@ -122,112 +125,195 @@
         const step2 = document.getElementById('step2');
         const step3 = document.getElementById('step3');
 
-        let verificationCode = '';
+        const formMessage = document.getElementById('form-message');
+        function showMessage(message) {
+            formMessage.textContent = message;
+            formMessage.style.display = 'block';
+        }
 
-        sendReset.addEventListener('click', function () {
+        sendReset.addEventListener('click', async function () {
+            const email = document.getElementById('email').value.trim();
+            const nama = document.getElementById('nama').value.trim();
 
-            const noRegistrasi =
-                document.getElementById('no_registrasi').value.trim();
+            formMessage.style.display = 'none';
 
-            const nama =
-                document.getElementById('nama').value.trim();
-
-            if (noRegistrasi === '') {
-
-                alert('Silakan masukkan nomor registrasi.');
-                document.getElementById('no_registrasi').focus();
+            if (email === '' || nama === '') {
+                showMessage('Silahkan masukkan email dan nama.');
                 return;
             }
 
-            if (nama === '') {
+            try {
+                const response = await fetch("{{route('password.email')}}", {
+                    method: "POST",
+                    headers: {
+                        'Content-Type' : 'application/json',
+                        'Accept' : 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body:JSON.stringify({ email, nama })
+                });
 
-                alert('Silakan masukkan nama.');
-                document.getElementById('nama').focus();
-                return;
+                const data = await response.json();
+                console.log('Status:', response.status);
+                console.log('Data:', data);
+
+                if (!response.ok) {
+                    const message = data.errors? Object.values(data.errors).flat()[0]
+                    : (data.message || 'Gagal mengirim kode OTP.');
+
+                    showMessage(message);
+                    return;
+                }
+
+                showMessage('Kode OTP berhasil dikirim ke email kamu.');
+                step1.style.display = 'none';
+                step2.style.display = 'block';
+
+            } catch (error) {
+                showMessage('Terjadi kesalahan koneksi. Silahkan coba lagi.');
+                console.error(error);
             }
-
-            verificationCode =
-                Math.floor(100000 + Math.random() * 900000).toString();
-
-            alert(
-                'Kode verifikasi berhasil dikirim!\n\n' +
-                'Kode kamu: ' + verificationCode
-            );
-
-            step1.style.display = 'none';
-            step2.style.display = 'block';
 
         });
 
 
-        verifyCode.addEventListener('click', function () {
+        verifyCode.addEventListener('click', async function () {
+            const email = document.getElementById('email').value.trim();
+            const inputCode = document.getElementById('verification_code').value.trim();
 
-            const inputCode =
-                document.getElementById('verification_code').value.trim();
+            formMessage.style.display = 'none';
 
             if (inputCode === '') {
-
-                alert('Silakan masukkan kode verifikasi.');
+                showMessage('Silakan masukkan kode verifikasi.');
                 document.getElementById('verification_code').focus();
                 return;
             }
 
-            if (inputCode !== verificationCode) {
-
-                alert('Kode verifikasi salah.');
+            if (!/^\d{6}$/.test(inputCode)) {
+                showMessage('Kode verifikasi harus terdiri dari 6 angka.');
                 document.getElementById('verification_code').focus();
                 return;
-
             }
 
-            alert('Kode verifikasi berhasil!');
+            try {
+                const response = await fetch("{{ route('password.verify') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        verification_code: inputCode
+                    })
+                });
 
-            step2.style.display = 'none';
-            step3.style.display = 'block';
+                const data = await response.json();
 
+                if (!response.ok) {
+                    const message = data.errors
+                        ? Object.values(data.errors).flat()[0]
+                        : (data.message || 'Verifikasi OTP gagal.');
+
+                    showMessage(message);
+                    document.getElementById('verification_code').focus();
+                    return;
+                }
+
+                showMessage('Kode OTP berhasil diverifikasi!');
+                step2.style.display = 'none';
+                step3.style.display = 'block';
+
+            } catch (error) {
+                showMessage('Terjadi kesalahan koneksi. Silakan coba lagi.');
+                console.error(error);
+            }
         });
 
 
-        resetPassword.addEventListener('click', function () {
+        resetPassword.addEventListener('click', async function () {
+            const newPassword = document.getElementById('new_password').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
+            const email = document.getElementById('email').value.trim();
 
-            const newPassword =
-                document.getElementById('new_password').value;
-
-            const confirmPassword =
-                document.getElementById('confirm_password').value;
-
+            formMessage.style.display = 'none';
+            
             if (newPassword === '') {
-
-                alert('Silakan masukkan password baru.');
+                showMessage('Silakan masukkan password baru.');
                 document.getElementById('new_password').focus();
                 return;
             }
 
-            if (newPassword.length < 6) {
+            if (newPassword.length < 7) {
+                showMessage('Password minimal 7 karakter.');
+                document.getElementById('new_password').focus();
+                return;
+            }
 
-                alert('Password minimal 6 karakter.');
+            if (!/[A-Z]/.test(newPassword)) {
+                showMessage('Password harus memiliki minimal 1 huruf besar.');
+                document.getElementById('new_password').focus();
+                return;
+            }
+
+            if (!/[0-9]/.test(newPassword)) {
+                showMessage('Password harus memiliki minimal 1 angka.');
+                document.getElementById('new_password').focus();
+                return;
+            }
+
+            if (!/^[a-zA-Z0-9]+$/.test(newPassword)) {
+                showMessage('Password hanya boleh berisi huruf dan angka, tanpa simbol atau spasi.');
                 document.getElementById('new_password').focus();
                 return;
             }
 
             if (confirmPassword === '') {
-
-                alert('Silakan konfirmasi password.');
+                showMessage('Silakan konfirmasi password.');
                 document.getElementById('confirm_password').focus();
                 return;
             }
 
             if (newPassword !== confirmPassword) {
-
-                alert('Konfirmasi password tidak sama.');
+                showMessage('Konfirmasi password tidak sama.');
                 document.getElementById('confirm_password').focus();
                 return;
             }
 
-            alert('Password berhasil diubah!');
+            try {
+                const response = await fetch("{{ route('password.reset') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        new_password: newPassword,
+                        confirm_password: confirmPassword
+                    })
+                });
 
-            window.location.href = "{{ route('login') }}";
+                const data = await response.json();
 
+                if (!response.ok) {
+                    const message = data.errors
+                        ? Object.values(data.errors).flat()[0]
+                        : (data.message || 'Gagal mengubah password.');
+
+                    showMessage(message);
+                    return;
+                }
+
+                alert(data.message);
+                window.location.href = "{{ route('login') }}";
+
+            } catch (error) {
+                showMessage('Terjadi kesalahan koneksi. Silakan coba lagi.');
+                console.error(error);
+            }
         });
 
     </script>

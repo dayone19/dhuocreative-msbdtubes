@@ -68,8 +68,14 @@
                     </button>
                 </div>
 
-                <form action="{{ route('login') }}" method="POST">
+                <form action="{{ route('login.process') }}" method="POST">
                     @csrf
+                    
+                @if ($errors->any())
+                    <div class="error-message">
+                        {{ $errors->first() }}
+                    </div>
+                @endif
 
                     <input type="hidden"
                            name="role"
@@ -77,7 +83,7 @@
                            value="siswa">
                     <div class="form-group">
                         <label for="email">
-                            Id
+                            Email
                         </label>
                         <input type="text"
                                id="email"
@@ -166,10 +172,7 @@
     
 <script>
 
-    // =========================
     // ROLE BUTTON
-    // =========================
-
     const roleButtons = document.querySelectorAll('.role-btn');
     const selectedRole = document.getElementById('selectedRole');
 
@@ -189,11 +192,7 @@
 
     });
 
-
-    // =========================
     // SHOW / HIDE PASSWORD
-    // =========================
-
     const password = document.getElementById('password');
     const togglePassword = document.getElementById('togglePassword');
 
