@@ -15,30 +15,30 @@
 
     <nav class="sidebar-menu">
 
-        <a href="{{ route('dashboard') }}" class="sidebar-item active">
+        <a href="{{ route('dashboard') }}" class="sidebar-item {{ request()->routeIs('tentor.dashboard') ? 'active' : '' }}">
             <span>Dashboard</span>
         </a>
 
-        <a href="#" class="sidebar-item">
+        <a href="#" class="sidebar-item {{ request()->routeIs('tentor.jadwal') ? 'active' : '' }}">
             <span>
                 Jadwal &<br>
                 Presensi
             </span>
         </a>
 
-        <a href="#" class="sidebar-item">
+        <a href="{{ route('materi') }}" class="sidebar-item {{ request()->routeIs('tentor.materi') ? 'active' : '' }}">
             <span>Materi</span>
         </a>
 
-        <a href="#" class="sidebar-item">
+        <a href="{{ route('tugas') }}" class="sidebar-item {{ request()->routeIs('tentor.tugas') ? 'active' : '' }}">
             <span>Tugas & Nilai</span>
         </a>
 
-        <a href="#" class="sidebar-item">
+        <a href="#" class="sidebar-item {{ request()->routeIs('tentor.sertifikat') ? 'active' : '' }}">
             <span>Sertifikat</span>
         </a>
 
-        <!-- di tambah yoan sementara untuk logout -->
+        <!-- Logout -->
         <form action="{{ route('logout') }}" method="POST">
             @csrf
             <button type="submit" class="sidebar-item">

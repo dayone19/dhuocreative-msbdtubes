@@ -1,3 +1,5 @@
+/* css dashboard */
+
 * {
     margin: 0;
     padding: 0;
@@ -127,9 +129,7 @@ body {
     color: #37434b;
 }
 
-.schedule-row:last-child {
-    margin-bottom: 0;
-}
+.schedule-row:last-child {margin-bottom: 0;}
 
 .schedule-name {
     color: #f27640;
@@ -171,29 +171,557 @@ body {
     border-radius: 20px;
 }
 
-
 @media (max-width: 1000px) {
-    .main-content {
-        margin-left: 190px;
-        padding: 35px;
-    }
-    .summary {
-        gap: 25px;
-    }
+    .main-content {margin-left: 190px; padding: 35px;}
+
+    .summary {gap: 25px;}
 }
 @media (max-width: 768px) {
-    .main-content {
-        margin-left: 250px;
-        padding: 25px;
+    .main-content {margin-left: 250px; padding: 25px;}
+    .summary {grid-template-columns: 1fr; max-width: 400px;}
+
+    .schedule-section {overflow-x: auto;}
+
+    .schedule-row {min-width: 700px;}
+}
+
+
+
+/* css materi */
+
+.tmt-page {
+    width: 100%;
+    min-width: 0;
+    color: #111;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.tmt-page *,.tmt-modal * {box-sizing: border-box;}
+
+.tmt-page [hidden],
+.tmt-modal-overlay[hidden] {
+    display: none !important;
+}
+
+.tmt-title {
+    margin: 0 0 17px;
+    font-size: 29px;
+    line-height: 1.2;
+    font-weight: 700;
+    color: #080808;
+}
+
+.tmt-toolbar {
+    display: grid;
+    grid-template-columns: minmax(150px, 1fr) 185px 131px 152px;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 38px;
+}
+
+.tmt-search {
+    height: 48px;
+    display: flex;
+    align-items: center;
+    padding: 0 17px 0 22px;
+    background: #f5e9cf;
+    border-radius: 28px;
+}
+
+.tmt-search input {
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #333;
+    font-family: inherit;
+    font-size: 16px;
+}
+
+.tmt-search input::placeholder {color: #b18e4d;opacity: 1;}
+
+.tmt-select {
+    width: 100%;
+    height: 48px;
+    padding: 0 45px 0 15px;
+    border: none;
+    border-radius: 28px;
+    outline: none;
+    background-color: #b29458;
+    color: #fff;
+    font-family: inherit;
+    font-size: 16px;
+    cursor: pointer;
+    
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23ffffff' class='bi bi-chevron-down' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 18px center;
+    background-size: 16px;
+}
+
+.tmt-select option {
+    background: white; 
+    color: #987840;
+}
+.tmt-upload-btn {
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 0 12px;
+    border: none;
+    border-radius: 28px;
+    background: #b29458;
+    color: #fff;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.tmt-upload-btn:hover,
+.tmt-view-btn:hover,
+.tmt-submit-btn:hover {
+    background: #987840;
+}
+
+.tmt-plus {font-weight: 900;}
+
+.tmt-table-container {
+    width: 100%;
+    min-height: 425px;
+    overflow-x: auto;
+    border-radius: 18px;
+    background: #f5e9cf;
+}
+
+.tmt-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+}
+
+.tmt-table thead {background: #b4a052; color: #fff;}
+
+.tmt-table th {
+    height: 65px;
+    padding: 10px 18px;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 21px;
+}
+
+.tmt-table th:nth-child(1) {width: 33%; border-radius: 22px 0 0 22px;}
+
+.tmt-table th:nth-child(2) {width: 20%;}
+
+.tmt-table th:nth-child(3) {width: 19%;}
+
+.tmt-table th:nth-child(4) {width: 28%; border-radius: 0 22px 22px 0;}
+
+.tmt-table td {
+    height: 65px;
+    padding: 10px 18px;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 16px;
+    color: #111;
+}
+
+.tmt-table td:first-child {padding-left: 30px; text-align: left;}
+
+.tmt-table tbody tr:hover {background: #f0e1bf;}
+
+.tmt-view-btn {
+    width: 106px;
+    height: 49px;
+    border: none;
+    border-radius: 22px;
+    background: #b29458;
+    color: #fff;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.tmt-empty {
+    padding: 25px;
+    text-align: center;
+    color: #8a7a5d;
+    font-size: 14px;
+}
+
+
+/* css upload lihat materi */
+
+.tmt-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(20, 38, 35, 0.48);
+}
+
+.tmt-modal {
+    width: 100%;
+    max-width: 460px;
+    padding: 28px;
+    border-radius: 22px;
+    background: #fff;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
+}
+
+.tmt-modal-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 24px;
+}
+
+.tmt-modal-header h2 {
+    margin: 0;
+    font-size: 23px;
+    color: #263d3a;
+}
+
+.tmt-close {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    border: none;
+    border-radius: 50%;
+    background: #f5e9cf;
+    color: #765d32;
+    font-size: 25px;
+    cursor: pointer;
+}
+
+.tmt-modal form label {
+    display: block;
+    margin: 16px 0 8px;
+    color: #333;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.tmt-modal form input,
+.tmt-modal form select {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 1px solid #e4dac5;
+    border-radius: 10px;
+    outline-color: #b29458;
+    background: #fffdf8;
+    color: #333;
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.tmt-file-note,
+.tmt-detail-note {
+    margin-top: 8px;
+    color: #888;
+    font-size: 12px;
+}
+
+.tmt-submit-btn {
+    width: 100%;
+    min-height: 46px;
+    margin-top: 22px;
+    border: none;
+    border-radius: 24px;
+    background: #b29458;
+    color: #fff;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.tmt-detail-label {color: #888; font-size: 13px;}
+
+.tmt-detail-modal h3 {
+    margin: 8px 0 15px;
+    font-size: 20px;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 1200px) {
+    .tmt-toolbar {grid-template-columns: minmax(130px, 1fr) 140px 120px; gap: 12px;}
+
+    .tmt-upload-btn {grid-column: 3;}
+}
+
+@media (max-width: 900px) {
+    .tmt-toolbar {grid-template-columns: minmax(130px, 1fr) 1fr;}
+
+    .tmt-search {grid-column: 1 / -1;}
+
+    .tmt-upload-btn {grid-column: auto;}
+
+    .tmt-table {min-width: 620px;}
+}
+
+@media (max-width: 600px) {
+    .tmt-title {font-size: 25px;}
+
+    .tmt-toolbar {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 24px;
     }
-    .summary {
-        grid-template-columns: 1fr;
-        max-width: 400px;
+
+    .tmt-search {grid-column: 1 / -1;}
+
+    .tmt-select {font-size: 14px;}
+
+    .tmt-upload-btn {
+        grid-column: 1 / -1;
+        justify-self: start;
+        min-width: 150px;
     }
-    .schedule-section {
-        overflow-x: auto;
+
+    .tmt-table th {font-size: 15px;}
+
+    .tmt-table td {font-size: 14px;}
+
+    .tmt-view-btn {width: 85px;height: 42px;}
+
+    .tmt-modal {padding: 22px;}
+}
+
+
+/* css upload tugas */
+
+.tmt-upload-modal {
+    width: 100%;
+    max-width: 740px;
+    min-height: 488px;
+    padding: 27px 32px 35px;
+    border-radius: 25px;
+    background: #fffaf0;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.13);
+    color: #b29458;
+}
+
+.tmt-upload-header {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    margin-bottom: 36px;
+}
+
+.tmt-upload-header h2 {
+    margin: 0;
+    color: #b29458;
+    font-size: 25px;
+    font-weight: 700;
+    line-height: 25px;
+}
+
+.tmt-back-btn {
+    width: 60px;
+    height: 60px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: #ffb83f;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.tmt-back-btn svg {transform: rotate(0deg);}
+
+.tmt-back-btn:hover {background: #f3a92d;}
+
+.tmt-upload-form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 50px;
+    align-items: start;
+}
+
+.tmt-upload-left,.tmt-upload-right {min-width: 0;}
+
+.tmt-upload-modal .tmt-form-group {margin-bottom: 21px;}
+
+.tmt-upload-modal .tmt-form-group label,
+.tmt-upload-modal .tmt-file-label {
+    display: block;
+    margin: 0 0 9px 8px;
+    color: #b29458;
+    font-size: 17px;
+    font-weight: 550;
+}
+
+.tmt-upload-modal .tmt-form-group input,
+.tmt-upload-modal .tmt-form-group select,
+.tmt-upload-modal .tmt-form-group textarea {
+    display: block;
+    width: 100%;
+    border: none;
+    outline: none;
+    border-radius: 21px;
+    background: #b4a052;
+    color: white;
+    font-family: inherit;
+    font-size: 15px;
+}
+
+.tmt-upload-modal .tmt-form-group input {height: 43px;padding: 0 17px;}
+
+.tmt-upload-modal .tmt-form-group input::placeholder,
+.tmt-upload-modal .tmt-form-group textarea::placeholder {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+
+.tmt-upload-modal .tmt-form-group select {
+    height: 43px;
+    padding: 0 38px 0 16px;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='none' stroke='white' stroke-width='3' viewBox='0 0 16 16'%3E%3Cpath d='m2 5 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 13px center;
+    background-size: 18px;
+}
+
+.tmt-upload-modal .tmt-form-group select option {background: white; color: #987840;}
+
+.tmt-upload-modal .tmt-form-group textarea {
+    height: 87px;
+    min-height: 87px;
+    padding: 13px 16px;
+    resize: vertical;
+}
+
+.tmt-upload-modal .tmt-file-label {margin: 4px 0 11px 8px;}
+
+.tmt-dropzone {
+    position: relative;
+    width: 100%;
+    height: 213px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    overflow: hidden;
+    border: 2px dashed #b29458;
+    border-radius: 24px;
+    background: #f5e9cf;
+    color: #b29458;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.tmt-dropzone:hover {background: #f1e1bf;}
+
+.tmt-dropzone > svg {flex-shrink: 0; margin-bottom: 4px;}
+
+.tmt-dropzone input[type="file"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.tmt-file-instruction {font-size: 12px; text-align: center;}
+
+.tmt-file-limit {font-size: 12px; text-align: center;}
+
+.tmt-file-name {
+    max-width: 100%;
+    margin-top: 8px;
+    overflow: hidden;
+    color: #80693e;
+    font-size: 11px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tmt-upload-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-top: 29px;
+}
+
+.tmt-cancel-btn,
+.tmt-send-btn {
+    height: 42px;
+    border-radius: 25px;
+    font-family: inherit;
+    font-size: 15px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.tmt-cancel-btn {
+    border: 1.5px solid #ffb83f;
+    background: transparent;
+    color: #ffad27;
+}
+
+.tmt-cancel-btn:hover {background: #fff0d4;}
+
+.tmt-send-btn {
+    border: none;
+    background: #ffb83f;
+    color: white;
+    font-weight: 700;
+}
+
+.tmt-send-btn:hover {background: #f3a92d;}
+
+@media (max-width: 800px) {
+    .tmt-upload-modal {
+        max-width: 560px;
+        max-height: 90vh;
+        overflow-y: auto;
+        padding: 24px;
     }
-    .schedule-row {
-        min-width: 700px;
-    }
+
+    .tmt-upload-form {grid-template-columns: 1fr; gap: 18px;}
+
+    .tmt-upload-header {margin-bottom: 25px;}
+
+    .tmt-dropzone {height: 180px;}
+
+    .tmt-upload-actions {margin-top: 20px;}
+}
+
+@media (max-width: 480px) {
+    .tmt-upload-modal {padding: 20px 17px; border-radius: 20px;}
+
+    .tmt-upload-header h2 {font-size: 22px;}
+
+    .tmt-back-btn {width: 52px; height: 52px;}
+
+    .tmt-upload-modal .tmt-form-group label,.tmt-upload-modal .tmt-file-label {font-size: 16px;}
+
+    .tmt-upload-actions {gap: 10px;}
 }

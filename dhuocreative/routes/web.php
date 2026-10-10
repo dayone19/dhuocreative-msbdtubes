@@ -8,12 +8,15 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 Route::get('/', function () {
     return redirect()->route('login');
 });
+
 Route::get('/login', [LoginController::class, 'showLogin'])
     ->middleware(['guest', 'prevent.back'])
     ->name('login');
+
 Route::post('/login', [LoginController::class, 'login'])
     ->middleware('guest')
     ->name('login.process');
+
 Route::post('/logout', [LoginController::class, 'logout'])
     ->middleware(['auth', 'prevent.back'])
     ->name('logout');
@@ -28,9 +31,19 @@ Route::post('/forgotPass/verify-otp', [ForgotPasswordController::class, 'verifyO
 Route::post('/forgotPass/reset-password', [ForgotPasswordController::class, 'resetPassword'])
     ->name('password.reset');    
 
-Route::get('/tentor/dashboard', function () {
-    return view('tentor.dashboard');
-})->name('dashboard');
+// tentor
+    Route::get('/dashboard', function () {
+        return view('tentor.dashboard');
+    })->name('dashboard'); 
+
+    Route::get('/materi', function () {
+        return view('tentor.materi');
+    })->name('materi');
+
+    Route::get('/tugas', function () {
+        return view('tentor.tugas');
+    })->name('tugas'); 
+
 
 Route::post('/admin/users', [UserController::class, 'store'])
    ->middleware('auth')
