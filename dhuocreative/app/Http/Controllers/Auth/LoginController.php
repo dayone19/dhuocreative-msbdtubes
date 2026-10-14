@@ -69,7 +69,7 @@ class LoginController extends Controller
             default:
                 Auth::logout();
                 return redirect('/')
-                ->eithErrors(['email' => 'Role akun tidak valid']);
+                ->withErrors(['email' => 'Role akun tidak valid']);
         }
     }
 

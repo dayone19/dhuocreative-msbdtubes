@@ -68,12 +68,12 @@
             </thead>
 
             <tbody id="daftarSiswa">
-                <tr data-status="aktif" data-tahun="2026"
+                <tr data-status="aktif" data-~tahun="2026"
                     data-kelas="web master" data-nama="belerick arbiter of star">
                     <td>1208</td>
                     <td>Belerick Arbiter of Star</td>
                     <td>Aktif</td>
-                    <td><button class="btn-detail" onclick="lihatDetail('1208','Belerick Arbiter of Star','Aktif')">Detail</button></td>
+                    <td><button class="btn-detail">Detail</button></td>
                 </tr>
 
                 <tr data-status="tidak aktif" data-tahun="2025"
@@ -81,7 +81,7 @@
                     <td>1208</td>
                     <td>Belerick Arbiter of Star</td>
                     <td>Tidak aktif</td>
-                    <td><button class="btn-detail" onclick="lihatDetail('1208','Belerick Arbiter of Star','Tidak aktif')">Detail</button></td>
+                    <td><button class="btn-detail">Detail</button></td>
                 </tr>
 
                 <tr data-status="aktif" data-tahun="2026"
@@ -89,7 +89,7 @@
                     <td>1208</td>
                     <td>Belerick Arbiter of Star</td>
                     <td>Aktif</td>
-                    <td><button class="btn-detail" onclick="lihatDetail('1208','Belerick Arbiter of Star','Aktif')">Detail</button></td>
+                    <td><button class="btn-detail">Detail</button></td>
                 </tr>
 
                 <tr data-status="tidak aktif" data-tahun="2024"
@@ -97,7 +97,7 @@
                     <td>1208</td>
                     <td>Belerick Arbiter of Star</td>
                     <td>Tidak aktif</td>
-                    <td><button class="btn-detail" onclick="lihatDetail('1208','Belerick Arbiter of Star','Tidak aktif')">Detail</button></td>
+                    <td><button class="btn-detail">Detail</button></td>
                 </tr>
 
                 <tr data-status="aktif" data-tahun="2025"
@@ -105,7 +105,7 @@
                     <td>1208</td>
                     <td>Belerick Arbiter of Star</td>
                     <td>Aktif</td>
-                    <td><button class="btn-detail" onclick="lihatDetail('1208','Belerick Arbiter of Star','Aktif')">Detail</button></td>
+                    <td><button class="btn-detail">Detail</button></td>
                 </tr>
             </tbody>
         </table>
@@ -219,15 +219,6 @@
         modalSiswa.hidden = true;
     }
 
-    function lihatDetail(id, nama, status) {
-        alert(
-            'Detail Siswa\\n\\n' +
-            'ID: ' + id + '\\n' +
-            'Nama: ' + nama + '\\n' +
-            'Status: ' + status
-        );
-    }
-
     document.getElementById('formSiswa').addEventListener('submit', function(e) {
         e.preventDefault();
 
@@ -261,15 +252,6 @@
 
         const tdStatus = document.createElement('td');
         tdStatus.textContent = status === 'aktif' ? 'Aktif' : 'Tidak aktif';
-
-        const tdAksi = document.createElement('td');
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'btn-detail';
-        btn.textContent = 'Detail';
-        btn.addEventListener('click', () =>
-            lihatDetail(id, nama, tdStatus.textContent)
-        );
 
         tdAksi.appendChild(btn);
         row.append(tdId, tdNama, tdStatus, tdAksi);

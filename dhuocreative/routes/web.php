@@ -6,6 +6,17 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 
 // login
 Route::get('/', function () {
+    if (auth()->check()) {
+        $user = auth()->user();
+        switch ($user->role) {
+            case 'admin': return redirect('/admin/dashboard');
+            case 'operator': return redirect('/operator/dashboard');
+            case 'tentor': return redirect('/tentor/dashboard');
+            case 'siswa': return redirect('/siswa/dashboard');
+            default: return redirect('/login');
+        }
+    }
+    
     return redirect()->route('login');
 });
 
