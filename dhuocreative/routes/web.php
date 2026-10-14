@@ -32,6 +32,7 @@ Route::post('/forgotPass/reset-password', [ForgotPasswordController::class, 'res
     ->name('password.reset');    
 
 // tentor
+Route::middleware(['auth', 'prevent.back'])->prefix('tentor')->name('tentor.')->group(function () {
     Route::get('/dashboard', function () {
         return view('tentor.dashboard');
     })->name('dashboard'); 
@@ -43,13 +44,22 @@ Route::post('/forgotPass/reset-password', [ForgotPasswordController::class, 'res
     Route::get('/tugas', function () {
         return view('tentor.tugas');
     })->name('tugas'); 
+});
 
 
-Route::post('/admin/users', [UserController::class, 'store'])
-   ->middleware('auth')
-   ->name('admin.users.store');
+Route::middleware(['auth', 'prevent.back'])->prefix('operator')->name('operator.')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('operator.dashboard');
+    })->name('dashboard'); 
+    Route::get('/siswa', function () {
+        return view('operator.siswa');
+    })->name('siswa'); 
+});
+
 
 Route::middleware(['auth', 'prevent-back-history'])->group(function () {
+    Route::post('/admin/users', [UserController::class, 'store'])
+   ->name('admin.users.store');
     // admin
     // operator
     // tentor

@@ -15,10 +15,12 @@
 
     <nav class="sidebar-menu">
 
-        <a href="{{ route('dashboard') }}" class="sidebar-item {{ request()->routeIs('tentor.dashboard') ? 'active' : '' }}">
+        <!-- Dashboard -->
+        <a href="{{ route('tentor.dashboard') }}" class="sidebar-item {{ request()->routeIs('tentor.dashboard') ? 'active' : '' }}">
             <span>Dashboard</span>
         </a>
 
+        <!-- Jadwal & Presensi (Contoh jika nanti routenya tentor.jadwal) -->
         <a href="#" class="sidebar-item {{ request()->routeIs('tentor.jadwal') ? 'active' : '' }}">
             <span>
                 Jadwal &<br>
@@ -26,14 +28,17 @@
             </span>
         </a>
 
-        <a href="{{ route('materi') }}" class="sidebar-item {{ request()->routeIs('tentor.materi') ? 'active' : '' }}">
+        <!-- Materi -->
+        <a href="{{ route('tentor.materi') }}" class="sidebar-item {{ request()->routeIs('tentor.materi') ? 'active' : '' }}">
             <span>Materi</span>
         </a>
 
-        <a href="{{ route('tugas') }}" class="sidebar-item {{ request()->routeIs('tentor.tugas') ? 'active' : '' }}">
+        <!-- Tugas & Nilai -->
+        <a href="{{ route('tentor.tugas') }}" class="sidebar-item {{ request()->routeIs('tentor.tugas') ? 'active' : '' }}">
             <span>Tugas & Nilai</span>
         </a>
 
+        <!-- Sertifikat (Contoh jika nanti routenya tentor.sertifikat) -->
         <a href="#" class="sidebar-item {{ request()->routeIs('tentor.sertifikat') ? 'active' : '' }}">
             <span>Sertifikat</span>
         </a>
