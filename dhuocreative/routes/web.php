@@ -76,3 +76,9 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     // tentor
     // siswa
 });
+
+Route::middleware(['auth', 'prevent.back'])->prefix('siswa')->name('siswa.')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('siswa.dashboard');
+    })->name('dashboard');
+});

@@ -1,0 +1,322 @@
+/* css dashboard siswa */
+
+.sd-dashboard {
+    width: 100%;
+    max-width: 100%;
+    font-family: 'Bricolage Grotesque',
+        'Plus Jakarta Sans', sans-serif;
+    box-sizing: border-box;
+}
+
+.sd-dashboard *,
+.sd-dashboard *::before,
+.sd-dashboard *::after {
+    box-sizing: border-box;
+}
+
+/* Welcome */
+.sd-welcome h1 {
+    font-size: 38px;
+    line-height: 1.08;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: #000;
+    margin: 0 0 10px;
+}
+
+.sd-welcome p {
+    font-size: 16px;
+    color: #111;
+    margin: 0 0 24px;
+}
+
+/* Summary Cards */
+.sd-summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 36px;
+    width: 94%;
+    margin-left: -9px;
+    margin-bottom: 56px;
+}
+
+.sd-card {
+    min-width: 0;
+    min-height: 162px;
+    padding: 22px 16px 14px 14px;
+    background: #faf3e3;
+    border-radius: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform .3s ease,
+                box-shadow .3s ease;
+}
+
+.sd-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(40, 108, 101, .12);
+}
+
+.sd-card-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.sd-card-icon {
+    flex-shrink: 0;
+    font-size: 34px;
+    line-height: 1;
+    color: #333;
+}
+
+.sd-card h3 {
+    color: #f27640;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0 0 10px;
+}
+
+.sd-card p {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.25;
+    color: #111;
+    margin: 0;
+}
+
+.sd-arrow-btn,
+.sd-arrow-lg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: flex-end;
+
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    min-height: 48px;
+    padding: 0;
+
+    border: none;
+    border-radius: 50%;
+    background: #fbb941;
+    color: #fff;
+    font-size: 22px;
+    text-decoration: none;
+    transition: background .2s ease,
+                transform .2s ease;
+}
+
+.sd-arrow-btn:hover,
+.sd-arrow-lg:hover {
+    background: #f5a92c;
+    color: #fff;
+    transform: scale(1.06);
+}
+
+/* Bottom Panels */
+.sd-bottom {
+    display: grid;
+    grid-template-columns: minmax(0, 1.67fr) minmax(0, 1fr);
+    gap: 30px;
+    align-items: stretch;
+}
+
+.sd-panel {
+    min-width: 0;
+    padding: 24px 28px 28px;
+    background: #faf3e3;
+    border-radius: 28px;
+    display: flex;
+    flex-direction: column;
+    min-height: 219px;
+}
+
+.sd-panel-title {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+    color: #333;
+    font-size: 22px;
+}
+
+.sd-panel-title > i {
+    flex-shrink: 0;
+}
+
+.sd-panel-title h2 {
+    color: #f27640;
+    font-size: 19px;
+    font-weight: 700;
+    margin: 0;
+}
+
+/* Schedule */
+.sd-schedule-item {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 22px;
+    padding: 18px 20px 65px 12px;
+    background: #fff;
+    border-radius: 24px;
+    min-height: 150px;
+}
+
+.sd-schedule-icon {
+    flex-shrink: 0;
+    font-size: 24px;
+    line-height: 1;
+    color: #111;
+    padding: 3px 9px;
+    border-left: 3px solid #111;
+    border-right: 3px solid #111;
+    margin-top: 6px;
+}
+
+.sd-schedule-info {
+    min-width: 0;
+}
+
+.sd-schedule-info h4 {
+    font-size: 17px;
+    font-weight: 700;
+    margin: 4px 0 12px;
+}
+
+.sd-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #333;
+    margin: 0 0 6px;
+}
+
+.sd-detail-btn {
+    position: absolute;
+    right: 20px;
+    bottom: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 16px;
+    background: #fbb941;
+    color: #111;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background .2s ease;
+}
+
+.sd-detail-btn:hover {
+    background: #f5a92c;
+    color: #111;
+}
+
+/* Announcement */
+.sd-announcement {
+    justify-content: flex-start;
+    padding: 24px 26px 28px 28px;
+}
+
+.sd-announcement-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    background: #fff;
+    border-radius: 14px;
+    font-size: 18px;
+}
+
+.sd-announcement-item > i {
+    flex-shrink: 0;
+}
+
+.sd-announcement-item strong {
+    display: block;
+    font-size: 12px;
+    line-height: 1.4;
+    color: #111;
+}
+
+.sd-announcement-item small {
+    display: block;
+    margin-top: 5px;
+    font-size: 10px;
+    color: #444;
+}
+
+.sd-announcement .sd-arrow-btn {
+    margin-top: auto;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    font-size: 18px;
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+    .sd-summary {
+        gap: 18px;
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .sd-bottom {
+        gap: 20px;
+    }
+
+    .sd-panel {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .sd-welcome h1 {
+        font-size: 30px;
+    }
+
+    .sd-summary {
+        grid-template-columns: 1fr;
+        margin-bottom: 32px;
+    }
+
+    .sd-card {
+        min-height: 145px;
+    }
+
+    .sd-bottom {
+        grid-template-columns: 1fr;
+    }
+
+    .sd-panel {
+        padding: 20px 16px;
+    }
+}
+
+@media (max-width: 420px) {
+    .sd-welcome h1 {
+        font-size: 26px;
+    }
+
+    .sd-card h3 {
+        font-size: 18px;
+    }
+
+    .sd-card p {
+        font-size: 14px;
+        white-space: normal;
+    }
+
+    .sd-schedule-item {
+        gap: 12px;
+    }
+}
