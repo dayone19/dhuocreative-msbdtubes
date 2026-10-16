@@ -23,6 +23,14 @@
             <span>Siswa</span>
         </a>
 
+        <a href="{{ route('operator.kursus') }}" class="sidebar-item {{ request()->routeIs('operator.kursus') ? 'active' : '' }}">
+            <span>Kursus</span>
+        </a>
+
+        <a href="{{ route('operator.jadwal') }}" class="sidebar-item {{ request()->routeIs('operator.jadwal') ? 'active' : '' }}">
+            <span>Jadwal</span>
+        </a>
+
         <!-- sisa -->
         
 

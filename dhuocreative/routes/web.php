@@ -48,6 +48,14 @@ Route::middleware(['auth', 'prevent.back'])->prefix('tentor')->name('tentor.')->
         return view('tentor.dashboard');
     })->name('dashboard'); 
 
+    Route::get('/kelas', function () {
+        return view('tentor.kelas');
+    })->name('kelas');
+
+    Route::get('/kelas/absensi/{kelas}', function ($kelas) {
+        return view('tentor.absensi', compact('kelas'));
+    })->name('absensi');
+
     Route::get('/materi', function () {
         return view('tentor.materi');
     })->name('materi');
@@ -55,6 +63,10 @@ Route::middleware(['auth', 'prevent.back'])->prefix('tentor')->name('tentor.')->
     Route::get('/tugas', function () {
         return view('tentor.tugas');
     })->name('tugas'); 
+
+    Route::get('/nilai', function () {
+        return view('tentor.nilai');
+    })->name('nilai'); 
 });
 
 
@@ -62,9 +74,18 @@ Route::middleware(['auth', 'prevent.back'])->prefix('operator')->name('operator.
     Route::get('/dashboard', function () {
         return view('operator.dashboard');
     })->name('dashboard'); 
+
     Route::get('/siswa', function () {
         return view('operator.siswa');
     })->name('siswa'); 
+
+    Route::get('/kursus', function () {
+        return view('operator.kursus');
+    })->name('kursus'); 
+
+    Route::get('/jadwal', function () {
+        return view('operator.jadwal');
+    })->name('jadwal'); 
 });
 
 

@@ -65,10 +65,9 @@
                     <td>Web Master</td>
                     <td>9/25/26</td>
                     <td>
-                        <button class="tmt-view-btn"
-                                onclick="lihatTugas('Tabel HTML')">
+                        <a href="{{ route('tentor.nilai') }}" class="tmt-view-btn">
                             Lihat
-                        </button>
+                        </a>
                     </td>
                 </tr>
 
@@ -79,10 +78,9 @@
                     <td>Web Master</td>
                     <td>9/24/26</td>
                     <td>
-                        <button class="tmt-view-btn"
-                                onclick="lihatTugas('Dasar CSS')">
+                        <a href="{{ route('tentor.nilai') }}" class="tmt-view-btn">
                             Lihat
-                        </button>
+                        </a>
                     </td>
                 </tr>
 
@@ -93,10 +91,9 @@
                     <td>Pemrograman Web</td>
                     <td>9/21/26</td>
                     <td>
-                        <button class="tmt-view-btn"
-                                onclick="lihatTugas('Pengenalan JavaScript')">
+                        <a href="{{ route('tentor.nilai') }}" class="tmt-view-btn">
                             Lihat
-                        </button>
+                        </a>
                     </td>
                 </tr>
 
@@ -289,12 +286,11 @@ document.getElementById('formUpload').addEventListener('submit', function(e) {
     });
 
     const action = document.createElement('td');
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = 'tmt-view-btn';
-    button.textContent = 'Lihat';
-    button.addEventListener('click', () => lihatTugas(judul));
-    action.appendChild(button);
+    const link = document.createElement('a');
+    link.href = "{{ route('tentor.nilai') }}";
+    link.className = 'tmt-view-btn';
+    link.textContent = 'Lihat';
+    action.appendChild(link);
     row.appendChild(action);
 
     tugasTable.prepend(row);
