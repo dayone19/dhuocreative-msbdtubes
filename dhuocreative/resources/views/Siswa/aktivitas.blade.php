@@ -4,13 +4,11 @@
 
 <div class="ab-page">
 
-    <!-- Judul -->
     <header class="ab-header">
         <i class="bi bi-award"></i>
         <h1>Aktivitas Belajar</h1>
     </header>
 
-    <!-- Ringkasan -->
     <section class="ab-summary">
 
         <div class="ab-stat">
@@ -36,10 +34,8 @@
 
     </section>
 
-    <!-- Tabel -->
     <section class="ab-tables">
 
-        <!-- Absensi -->
         <div class="ab-panel">
             <div class="ab-panel-title">
                 <i class="bi bi-clipboard-check"></i>
@@ -97,7 +93,6 @@
             </div>
         </div>
 
-        <!-- Tugas -->
         <div class="ab-panel ab-panel-tugas">
             <div class="ab-panel-title">
                 <i class="bi bi-journal-check"></i>

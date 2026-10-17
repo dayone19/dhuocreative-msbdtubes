@@ -33,7 +33,7 @@
         </a>
 
         <!-- Sertifikat -->
-        <a href="#" class="sidebar-item">
+        <a href="{{ route('siswa.sertifikat') }}" class="sidebar-item {{ request()->routeIs('siswa.sertifikat') ? 'active' : '' }}">
             <span>Sertifikat</span>
         </a>
 

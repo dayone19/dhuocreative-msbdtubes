@@ -108,4 +108,16 @@ Route::middleware(['auth', 'prevent.back'])->prefix('siswa')->name('siswa.')->gr
     Route::get('/aktivitas', function () {
         return view('siswa.aktivitas');
     })->name('aktivitas');
+    Route::get('/sertifikat', function () {
+        return view('siswa.sertifikat');
+    })->name('sertifikat');
+    Route::get('/pengumpulanTugas', function () {
+        return view('siswa.pengumpulanTugas');
+    })->name('pengumpulanTugas');
+    Route::get('/nilai', function () {
+        return view('siswa.nilai');
+    })->name('nilai');
+    Route::get('/absensi', function () {
+        return view('siswa.absensi');
+    })->name('absensi');
 });

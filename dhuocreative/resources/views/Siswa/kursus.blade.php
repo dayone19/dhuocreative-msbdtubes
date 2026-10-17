@@ -10,15 +10,19 @@
 
     <section class="kc-course">
         <div class="kc-thumb">
-            <img src="{{ asset('images/webdev.png') }}" alt="web.dev">
+            <img src="https://th.bing.com/th/id/OIP.rYfk_nixRSBKHPScLjPEDwHaEK?w=319&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3" alt="web.dev">
         </div>
 
         <div class="kc-info">
             <h2>Web Development</h2>
             <p class="kc-instructor">
                 <i class="bi bi-person-fill"></i>
-                Deyoan Salsabila
+                Tentor : Deyoan Salsabila
             </p>
+            <div class="online-class-logo">
+                <i class="bi bi-laptop"></i>
+                <span>Online Class</span>
+            </div>
 
             <div class="kc-progress-wrap">
                 <div class="kc-progress">
@@ -29,7 +33,6 @@
         </div>
     </section>
 
-    {{-- Ringkasan --}}
     <section class="kc-summary">
         <div class="kc-summary-head">
             <i class="bi bi-book"></i>

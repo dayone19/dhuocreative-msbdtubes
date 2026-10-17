@@ -18,8 +18,8 @@
                     <h3>Tugas</h3>
                     <p>Lihat &amp; Kumpulkan</p>
                 </div>
-            </div>
-            <a href="#" class="sd-arrow-btn">
+            </div> 
+            <a href="{{ route('siswa.pengumpulanTugas') }}" class="sd-arrow-btn {{ request()->routeIs('siswa.pengumpulanTugas') ? 'active' : '' }}">
                 <i class="bi bi-chevron-right"></i>
             </a>
         </div>
@@ -29,10 +29,10 @@
                 <i class="bi bi-check-circle-fill sd-card-icon"></i>
                 <div>
                     <h3>Nilai</h3>
-                    <p>Lihat Nilai Akhir</p>
+                    <p>Lihat Nilai</p>
                 </div>
             </div>
-            <a href="#" class="sd-arrow-btn">
+            <a href="{{ route('siswa.nilai') }}" class="sd-arrow-btn {{ request()->routeIs('siswa.nilai') ? 'active' : '' }}">
                 <i class="bi bi-chevron-right"></i>
             </a>
         </div>
@@ -45,7 +45,7 @@
                     <p>Lihat Absensi</p>
                 </div>
             </div>
-            <a href="#" class="sd-arrow-btn">
+            <a href="{{ route('siswa.absensi') }}" class="sd-arrow-btn {{ request()->routeIs('siswa.absensi') ? 'active' : '' }}">
                 <i class="bi bi-chevron-right"></i>
             </a>
         </div>
@@ -68,7 +68,7 @@
                         <h4>Web Development</h4>
                         <p class="sd-meta">
                             <i class="bi bi-person-fill"></i>
-                            Deyoan Salsabila
+                            Tentor : Deyoan Salsabila
                         </p>
                         <p class="sd-meta">
                             <i class="bi bi-clock"></i>
@@ -83,7 +83,7 @@
                         <h4>Web Development</h4>
                         <p class="sd-meta">
                             <i class="bi bi-person-fill"></i>
-                            Deyoan Salsabila
+                            Tentor : Deyoan Salsabila
                         </p>
                         <p class="sd-meta">
                             <i class="bi bi-clock"></i>
@@ -130,7 +130,7 @@
             <h4>Web Development</h4>
             <p class="sd-meta">
                 <i class="bi bi-person-fill"></i>
-                Deyoan Salsabila
+                Tentor : Deyoan Salsabila
             </p>
 
             <div class="sd-progress-wrap">
@@ -141,7 +141,7 @@
             </div>
         </div>
 
-        <a href="#" class="sd-btn-orange">
+        <a href="{{ route('siswa.kursus') }}" class="sd-btn-orange">
             Lihat Semua <i class="bi bi-arrow-right-short"></i>
         </a>
     </section>
