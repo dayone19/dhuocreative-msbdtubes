@@ -21,7 +21,7 @@
         </a>
 
         <!-- Jadwal & Presensi (Contoh jika nanti routenya tentor.jadwal) -->
-        <a href="#" class="sidebar-item {{ request()->routeIs('tentor.jadwal') ? 'active' : '' }}">
+        <a href="{{ route('tentor.kelas') }}" class="sidebar-item {{ request()->routeIs('tentor.jadwal') ? 'active' : '' }}">
             <span>
                 Jadwal &<br>
                 Presensi

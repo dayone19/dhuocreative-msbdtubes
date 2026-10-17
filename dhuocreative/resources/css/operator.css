@@ -18,10 +18,7 @@
     transition: transform .4s ease, box-shadow .4s ease;
 }
 
-.o-summary-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 20px rgba(40, 108, 101, .10);
-}
+.o-summary-card:hover {transform: translateY(-4px);box-shadow: 0 8px 20px rgba(40, 108, 101, .10);}
 
 .o-summary-card h3 {
     color: #f27640;
@@ -29,12 +26,10 @@
     font-weight: 700;
 }
 
+
 /* css daftar siswa */
 
-.operator-siswa {
-    width: 100%;
-    padding: 0;
-}
+.operator-siswa {width: 100%;padding: 0;}
 
 .siswa-toolbar {
     margin: -36px -7px 47px;
@@ -54,17 +49,12 @@
 
 .siswa-toolbar-content {
     display: grid;
-    grid-template-columns: minmax(180px, 1.65fr)
-                           minmax(250px, 1.7fr)
-                           120px;
+    grid-template-columns: minmax(180px, 1.65fr) minmax(250px, 1.7fr)120px;
     align-items: center;
     gap: 18px;
 }
 
-.search-box {
-    position: relative;
-    width: 100%;
-}
+.search-box {position: relative;width: 100%;}
 
 .search-box input {
     width: 100%;
@@ -78,9 +68,7 @@
     font-size: 18px;
 }
 
-.search-box input::placeholder {
-    color: #f27640;
-}
+.search-box input::placeholder {color: #f27640;}
 
 .search-icon {
     position: absolute;
@@ -114,18 +102,11 @@
     cursor: pointer;
 }
 
-.filter-area select:first-child {
-    grid-column: 1;
-}
+.filter-area select:first-child {grid-column: 1;}
 
-.filter-area select:nth-child(2) {
-    grid-column: 1;
-}
+.filter-area select:nth-child(2) {grid-column: 1;}
 
-.filter-area select:nth-child(3) {
-    grid-column: 2;
-    grid-row: 2;
-}
+.filter-area select:nth-child(3) {grid-column: 2;grid-row: 2;}
 
 .btn-tambah-siswa {
     align-self: stretch;
@@ -151,14 +132,8 @@
     line-height: .9;
 }
 
-.btn-tambah-siswa:hover,
-.btn-detail:hover,
-.btn-simpan-siswa:hover {
-    background: #df6833;
-}
-
-
-/* Tabel siswa */
+.btn-tambah-siswa:hover,.btn-detail:hover,
+.btn-simpan-siswa:hover {background: #df6833;}
 
 .siswa-table-container {
     width: 100%;
@@ -176,9 +151,7 @@
     color: #111;
 }
 
-.siswa-table thead {
-    background: #ffdc59;
-}
+.siswa-table thead {background: #ffdc59;}
 
 .siswa-table th {
     height: 72px;
@@ -190,24 +163,10 @@
     white-space: nowrap;
 }
 
-.siswa-table th:first-child {
-    border-radius: 24px 0 0 24px;
-    width: 12%;
-}
-
-.siswa-table th:nth-child(2) {
-    text-align: left;
-    width: 35%;
-}
-
-.siswa-table th:nth-child(3) {
-    width: 25%;
-}
-
-.siswa-table th:last-child {
-    border-radius: 0 24px 24px 0;
-    width: 20%;
-}
+.siswa-table th:first-child {border-radius: 24px 0 0 24px;width: 12%;}
+.siswa-table th:nth-child(2) {text-align: left;width: 35%;}
+.siswa-table th:nth-child(3) {width: 25%;}
+.siswa-table th:last-child {border-radius: 0 24px 24px 0;width: 20%;}
 
 .siswa-table td {
     height: 70px;
@@ -217,9 +176,7 @@
     white-space: nowrap;
 }
 
-.siswa-table td:nth-child(2) {
-    text-align: left;
-}
+.siswa-table td:nth-child(2) {text-align: left;}
 
 .btn-detail {
     min-width: 120px;
@@ -241,12 +198,8 @@
     color: #666;
 }
 
-
-/* Modal tambah siswa */
-
-.modal-siswa[hidden] {
-    display: none !important;
-}
+/* tambah siswa */
+.modal-siswa[hidden] {display: none !important;}
 
 .modal-siswa {
     position: fixed;
@@ -270,10 +223,7 @@
     background: #fff;
 }
 
-.modal-siswa-content h2 {
-    margin: 0 35px 25px 0;
-    color: #286c65;
-}
+.modal-siswa-content h2 {margin: 0 35px 25px 0; color: #286c65;}
 
 .modal-close {
     position: absolute;
@@ -322,60 +272,26 @@
 
 
 @media (max-width: 1200px) {
-    .dashboard-cards {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 20px;
-    }
-
-    .siswa-toolbar-content {
-        grid-template-columns: 1fr 1fr 100px;
-        gap: 12px;
-    }
-
-    .filter-area {
-        grid-template-columns: 1fr;
-    }
-
+    .dashboard-cards {grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px;}
+    .siswa-toolbar-content {grid-template-columns: 1fr 1fr 100px; gap: 12px;}
+    .filter-area {grid-template-columns: 1fr;}
     .filter-area select:first-child,
     .filter-area select:nth-child(2),
-    .filter-area select:nth-child(3) {
-        grid-column: auto;
-        grid-row: auto;
-    }
-
-    .btn-tambah-siswa {
-        min-height: 176px;
-    }
+    .filter-area select:nth-child(3) {grid-column: auto; grid-row: auto;}
+    .btn-tambah-siswa {min-height: 176px;}
 }
 
 @media (max-width: 768px) {
-    .dashboard-cards {
-        grid-template-columns: 1fr;
-    }
-
-    .dashboard-card {
-        min-height: 190px;
-    }
-
-    .siswa-toolbar {
-        margin: 0 0 25px;
-        padding: 20px;
-    }
-
-    .siswa-toolbar-content {
-        grid-template-columns: 1fr;
-    }
-
-    .filter-area {
-        grid-template-columns: 1fr 1fr;
-    }
+    .dashboard-cards {grid-template-columns: 1fr;}
+    .dashboard-card {min-height: 190px;}
+    .siswa-toolbar {margin: 0 0 25px; padding: 20px;}
+    .siswa-toolbar-content {grid-template-columns: 1fr;}
+    .filter-area {grid-template-columns: 1fr 1fr;}
 
     .filter-area select:first-child,
     .filter-area select:nth-child(2),
     .filter-area select:nth-child(3) {
-        grid-column: auto;
-        grid-row: auto;
-    }
+        grid-column: auto; grid-row: auto;}
 
     .btn-tambah-siswa {
         min-height: 75px;
@@ -384,15 +300,8 @@
         gap: 18px;
     }
 
-    .btn-tambah-siswa strong {
-        font-size: 40px;
-    }
-
-    .siswa-table th {
-        font-size: 17px;
-    }
-
-    .siswa-table td {
-        font-size: 16px;
-    }
+    .btn-tambah-siswa strong {font-size: 40px;}
+    .siswa-table th {font-size: 17px;}
+    .siswa-table td {font-size: 16px;}
 }
+
