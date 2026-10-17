@@ -102,4 +102,10 @@ Route::middleware(['auth', 'prevent.back'])->prefix('siswa')->name('siswa.')->gr
     Route::get('/dashboard', function () {
         return view('siswa.dashboard');
     })->name('dashboard');
+    Route::get('/kursus', function () {
+        return view('siswa.kursus');
+    })->name('kursus');
+    Route::get('/aktivitas', function () {
+        return view('siswa.aktivitas');
+    })->name('aktivitas');
 });

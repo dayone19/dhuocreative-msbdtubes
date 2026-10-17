@@ -21,14 +21,14 @@
         </a>
 
         <!-- Kursus Saya -->
-        <a href="#" class="sidebar-item">
+        <a href="{{ route('siswa.kursus') }}" class="sidebar-item {{ request()->routeIs('siswa.kursus') ? 'active' : '' }}">
             <span>
                 Kursus Saya
             </span>
         </a>
 
         <!-- Aktivitas Belajar -->
-        <a href="#" class="sidebar-item">
+        <a href="{{ route('siswa.aktivitas') }}" class="sidebar-item {{ request()->routeIs('siswa.aktivitas') ? 'active' : '' }}">
             <span>Aktivitas Belajar</span>
         </a>
 

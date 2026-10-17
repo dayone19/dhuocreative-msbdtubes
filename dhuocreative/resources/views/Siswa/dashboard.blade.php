@@ -3,6 +3,7 @@
 @section('content')
 
 <div class="sd-dashboard">
+
     <section class="sd-welcome">
         <h1>Halo, Nadhira Ameera 👋</h1>
         <p>Selamat datang di DhuoCreative Portal!</p>
@@ -41,7 +42,7 @@
                 <i class="bi bi-clipboard-check sd-card-icon"></i>
                 <div>
                     <h3>Absensi</h3>
-                    <p>Lihat Kehadiran</p>
+                    <p>Lihat Absensi</p>
                 </div>
             </div>
             <a href="#" class="sd-arrow-btn">
@@ -51,56 +52,98 @@
 
     </section>
 
-    {{-- Jadwal & Pengumuman --}}
     <section class="sd-bottom">
 
         <div class="sd-panel">
             <div class="sd-panel-title">
                 <i class="bi bi-calendar3"></i>
                 <h2>Jadwal Hari Ini</h2>
+                <a href="#" class="sd-link-all">Lihat Semua <i class="bi bi-arrow-right-short"></i></a>
             </div>
 
-            <div class="sd-schedule-item">
-                <i class="bi bi-code-slash sd-schedule-icon"></i>
+            <div class="sd-schedule-list">
 
-                <div class="sd-schedule-info">
-                    <h4>Web Development</h4>
-                    <p class="sd-meta">
-                        <i class="bi bi-person-fill"></i>
-                        Deyoan Salsabila
-                    </p>
-                    <p class="sd-meta">
-                        <i class="bi bi-clock"></i>
-                        10.00 - 12.00
-                    </p>
+                <div class="sd-schedule-row">
+                    <div class="sd-schedule-info">
+                        <h4>Web Development</h4>
+                        <p class="sd-meta">
+                            <i class="bi bi-person-fill"></i>
+                            Deyoan Salsabila
+                        </p>
+                        <p class="sd-meta">
+                            <i class="bi bi-clock"></i>
+                            10:00 - 12:00
+                        </p>
+                    </div>
+                    <span class="sd-badge sd-badge-online">Online</span>
                 </div>
 
-                <a href="#" class="sd-detail-btn">
-                    Lihat Detail
-                    <i class="bi bi-arrow-right"></i>
-                </a>
+                <div class="sd-schedule-row">
+                    <div class="sd-schedule-info">
+                        <h4>Web Development</h4>
+                        <p class="sd-meta">
+                            <i class="bi bi-person-fill"></i>
+                            Deyoan Salsabila
+                        </p>
+                        <p class="sd-meta">
+                            <i class="bi bi-clock"></i>
+                            10:00 - 12:00
+                        </p>
+                    </div>
+                    <span class="sd-badge sd-badge-online">Online</span>
+                </div>
+
             </div>
         </div>
 
         <div class="sd-panel sd-announcement">
             <div class="sd-panel-title">
-                <i class="bi bi-megaphone"></i>
+                <i class="bi bi-megaphone-fill"></i>
                 <h2>Pengumuman</h2>
             </div>
 
             <div class="sd-announcement-item">
-                <i class="bi bi-card-checklist"></i>
+                <span class="sd-dot"></span>
                 <div>
                     <strong>Pengumpulan tugas minggu ini</strong>
-                    <small>Deadline, 10-03-2026</small>
+                    <small>
+                        <i class="bi bi-calendar3"></i>
+                        Deadline: 10 Oktober 2026
+                    </small>
                 </div>
             </div>
 
-            <a href="#" class="sd-arrow-btn">
-                <i class="bi bi-chevron-right"></i>
+            <a href="#" class="sd-link-all sd-link-bottom">
+                Lihat Semua <i class="bi bi-arrow-right-short"></i>
             </a>
         </div>
 
+    </section>
+
+    <section class="sd-course">
+        <div class="sd-course-info">
+            <span class="sd-badge sd-badge-active">
+                <i class="bi bi-check-circle-fill"></i>
+                Kursus Aktif
+            </span>
+
+            <h4>Web Development</h4>
+            <p class="sd-meta">
+                <i class="bi bi-person-fill"></i>
+                Deyoan Salsabila
+            </p>
+
+            <div class="sd-progress-wrap">
+                <div class="sd-progress">
+                    <div class="sd-progress-bar" style="width: 60%;"></div>
+                </div>
+                <span class="sd-progress-text">60%</span>
+            </div>
+        </div>
+
+        <a href="#" class="sd-btn-orange">
+            Lihat Semua <i class="bi bi-arrow-right-short"></i>
+        </a>
     </section>
 
 </div>
