@@ -67,6 +67,14 @@ Route::middleware(['auth', 'prevent.back'])->prefix('tentor')->name('tentor.')->
     Route::get('/nilai', function () {
         return view('tentor.nilai');
     })->name('nilai'); 
+
+    Route::get('/sertifikat', function () {
+        return view('tentor.sertifikat');
+    })->name('sertifikat');
+
+    Route::get('/pengumuman', function () {
+        return view('tentor.pengumuman');
+    })->name('pengumuman'); 
 });
 
 
@@ -86,6 +94,10 @@ Route::middleware(['auth', 'prevent.back'])->prefix('operator')->name('operator.
     Route::get('/jadwal', function () {
         return view('operator.jadwal');
     })->name('jadwal'); 
+
+    Route::get('/pengumuman', function () {
+        return view('operator.pengumuman');
+    })->name('pengumuman'); 
 });
 
 

@@ -5,7 +5,6 @@
 @section('content')
 <div class="tn-page">
 
-    {{-- HEADER --}}
     <div class="tn-heading">
         <a href="{{ route('tentor.kelas') }}" class="tmt-back-btn" aria-label="Kembali">
             <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
@@ -18,7 +17,6 @@
         </div>
     </div>
 
-    {{-- PENCARIAN SISWA --}}
     <div class="tn-toolbar">
         <div class="tn-search">
             <input type="text"
@@ -35,7 +33,6 @@
         </div>
     </div>
 
-    {{-- TABEL NILAI --}}
     @php
         $daftarNilai = [
             [
@@ -106,7 +103,6 @@
 
                         <td>{{ $siswa['tanggal'] }}</td>
 
-                        {{-- NILAI DAN TOMBOL EDIT BERDAMPINGAN DEKAT --}}
                         <td class="tn-nilai-action-cell">
                             <span class="tn-nilai">
                                 {{ $siswa['nilai'] }}
@@ -137,7 +133,6 @@
 
 </div>
 
-{{-- MODAL EDIT NILAI --}}
 <div class="tn-overlay" id="modalEditNilai" hidden>
     <div class="tn-modal">
         <div class="tn-modal-header">
