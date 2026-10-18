@@ -1,270 +1,168 @@
-```blade
 @extends('layouts.Operator')
-
 @section('title', 'Daftar Siswa')
-
 @section('content')
-<div class="operator-siswa">
 
-    <div class="siswa-toolbar">
-        <div class="siswa-toolbar-content">
-            <div class="search-box">
-                <h1>Daftar Siswa</h1>
-                <input
-                    type="text"
-                    id="searchSiswa"
-                    placeholder="Cari siswa..."
-                >
-                <span class="search-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="#f27640" class="bi bi-search" viewBox="0 0 16 16">
-                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-                    </svg>
-                </span>
-            </div>
+<div class="o-page">
+    <div class="o-page-header">
+        <h1 class="o-page-title">Daftar Siswa</h1>
+        <button type="button" class="o-btn o-btn-orange" id="btnTambahSiswa">
+            <span class="o-plus">+</span>
+             Tambah Pendaftaran
+        </button>
+    </div>
 
-            <div class="filter-area">
-                <select id="filterStatus">
-                    <option value="">Status</option>
-                    <option value="aktif">Aktif</option>
-                    <option value="tidak aktif">Tidak aktif</option>
-                </select>
-
-                <select id="filterTahun">
-                    <option value="">Tahun</option>
-                    <option value="2026">2026</option>
-                    <option value="2025">2025</option>
-                    <option value="2024">2024</option>
-                </select>
-
-                <select id="filterKelas">
-                    <option value="">Kelas</option>
-                    <option value="web master">Web Master</option>
-                    <option value="ui/ux design">UI/UX Design</option>
-                    <option value="digital marketing">Digital Marketing</option>
-                </select>
-            </div>
-
-            <button type="button" class="btn-tambah-siswa"
-                onclick="bukaFormTambah()">
-                <span>Tambah<br>Siswa</span>
-                <span class="tmt-plus">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
-                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
-                    </svg>
-                </span>
-            </button>
+    <div class="o-toolbar">
+        <input class="o-search" id="cariSiswa" type="search" placeholder="Cari siswa, kursus, atau kelas..." aria-label="Cari siswa">
+        <div class="o-schedule-filters">
+            <select class="o-filter" id="filterStatus" aria-label="Filter status">
+                <option value="">Semua status</option>
+                <option value="aktif">Aktif</option>
+                <option value="nonaktif">Nonaktif</option>
+            </select>
+            <select class="o-filter" id="filterKursus" aria-label="Filter kursus">
+                <option value="">Semua kursus</option>
+                <option>Web Master</option>
+                <option>MS Office</option>
+            </select>
         </div>
     </div>
 
-    <div class="siswa-table-container">
-        <table class="siswa-table">
+    <div class="o-table-wrap">
+        <table class="o-table" id="tabelSiswa">
             <thead>
                 <tr>
-                    <th>Id</th>
-                    <th>Nama</th>
-                    <th>Status Siswa</th>
+                    <th>Nama Siswa</th>
+                    <th>Nama Kursus</th>
+                    <th>Nama Kelas</th>
+                    <th>Tanggal Daftar</th>
+                    <th>Status</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
-
-            <tbody id="daftarSiswa">
-                <tr data-status="aktif" data-~tahun="2026"
-                    data-kelas="web master" data-nama="belerick arbiter of star">
-                    <td>1208</td>
+            <tbody>
+                <tr data-status="aktif" data-kursus="Web Master" data-tanggal="2026-01-12">
                     <td>Belerick Arbiter of Star</td>
-                    <td>Aktif</td>
-                    <td><button class="btn-detail">Detail</button></td>
+                    <td>Web Master</td>
+                    <td>001</td>
+                    <td>2026-01-12</td>
+                    <td><span class="o-status aktif">Aktif</span></td>
+                    <td><button type="button" class="o-action" data-detail>Detail</button></td>
                 </tr>
-
-                <tr data-status="tidak aktif" data-tahun="2025"
-                    data-kelas="ui/ux design" data-nama="belerick arbiter of star">
-                    <td>1208</td>
-                    <td>Belerick Arbiter of Star</td>
-                    <td>Tidak aktif</td>
-                    <td><button class="btn-detail">Detail</button></td>
+                <tr data-status="aktif" data-kursus="Web Master" data-tanggal="2026-02-03">
+                    <td>Putri</td>
+                    <td>Web Master</td>
+                    <td>002</td>
+                    <td>2026-02-03</td>
+                    <td><span class="o-status aktif">Aktif</span></td>
+                    <td><button type="button" class="o-action" data-detail>Detail</button></td>
                 </tr>
-
-                <tr data-status="aktif" data-tahun="2026"
-                    data-kelas="digital marketing" data-nama="belerick arbiter of star">
-                    <td>1208</td>
-                    <td>Belerick Arbiter of Star</td>
-                    <td>Aktif</td>
-                    <td><button class="btn-detail">Detail</button></td>
-                </tr>
-
-                <tr data-status="tidak aktif" data-tahun="2024"
-                    data-kelas="web master" data-nama="belerick arbiter of star">
-                    <td>1208</td>
-                    <td>Belerick Arbiter of Star</td>
-                    <td>Tidak aktif</td>
-                    <td><button class="btn-detail">Detail</button></td>
-                </tr>
-
-                <tr data-status="aktif" data-tahun="2025"
-                    data-kelas="ui/ux design" data-nama="belerick arbiter of star">
-                    <td>1208</td>
-                    <td>Belerick Arbiter of Star</td>
-                    <td>Aktif</td>
-                    <td><button class="btn-detail">Detail</button></td>
+                <tr data-status="nonaktif" data-kursus="MS Office" data-tanggal="2025-08-21">
+                    <td>Tama</td>
+                    <td>MS Office</td>
+                    <td>001</td>
+                    <td>2025-08-21</td>
+                    <td><span class="o-status nonaktif">Nonaktif</span></td>
+                    <td><button type="button" class="o-action" data-detail>Detail</button></td>
                 </tr>
             </tbody>
         </table>
-
-        <p id="tidakAdaSiswa" class="empty-state" hidden>
-            Siswa tidak ditemukan.
-        </p>
     </div>
+    <p class="o-empty" id="kosongSiswa" hidden>Pendaftaran siswa tidak ditemukan.</p>
+</div>
 
-    <div id="modalSiswa" class="modal-siswa" hidden>
-        <div class="modal-siswa-content">
-            <button type="button" class="modal-close"
-                onclick="tutupModal()">×</button>
-
-            <h2 id="modalJudul">Tambah Siswa</h2>
-
-            <form id="formSiswa">
-                <div class="form-group">
-                    <label for="siswaId">ID Siswa</label>
-                    <input class="form-control" id="siswaId"
-                        placeholder="Masukkan ID siswa" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="siswaNama">Nama Siswa</label>
-                    <input class="form-control" id="siswaNama"
-                        placeholder="Masukkan nama siswa" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="siswaStatus">Status</label>
-                    <select class="form-control" id="siswaStatus">
-                        <option value="aktif">Aktif</option>
-                        <option value="tidak aktif">Tidak aktif</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="siswaTahun">Tahun</label>
-                    <select class="form-control" id="siswaTahun">
-                        <option value="2026">2026</option>
-                        <option value="2025">2025</option>
-                        <option value="2024">2024</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="siswaKelas">Kelas</label>
-                    <select class="form-control" id="siswaKelas">
-                        <option value="web master">Web Master</option>
-                        <option value="ui/ux design">UI/UX Design</option>
-                        <option value="digital marketing">Digital Marketing</option>
-                    </select>
-                </div>
-
-                <button type="submit" class="btn-simpan-siswa">
-                    Simpan Siswa
-                </button>
-            </form>
+<div class="o-modal" id="modalSiswa" hidden>
+    <div class="o-modal-box">
+        <div class="o-modal-header">
+            <button type="button" class="o-modal-close" data-close aria-label="Tutup">
+                <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
+                <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+                </svg>
+            </button>
+            <h2>Tambah Pendaftaran Siswa</h2>
         </div>
-    </div>
 
+        <form id="formSiswa">
+            <div class="o-form-group">
+                <label for="namaSiswa">Nama Siswa</label>
+                <input id="namaSiswa" maxlength="100" required placeholder="Masukkan nama siswa">
+            </div>
+            <div class="o-form-group">
+                <label for="kursusSiswa">Nama Kursus</label>
+                <select id="kursusSiswa" required>
+                    <option value="">Pilih kursus</option>
+                    <option>Web Master</option>
+                    <option>MS Office</option>
+                </select>
+            </div>
+            <div class="o-form-group">
+                <label for="kelasSiswa">Nama Kelas</label>
+                <select id="kelasSiswa" required>
+                    <option value="">Pilih kelas</option>
+                </select>
+            </div>
+            <div class="o-form-group">
+                <label for="tanggalDaftar">Tanggal Daftar</label>
+                <input id="tanggalDaftar" type="date" required>
+            </div>
+            <div class="o-form-group">
+                <label for="statusSiswa">Status Pendaftaran</label>
+                <select id="statusSiswa" required>
+                    <option value="aktif">Aktif</option>
+                    <option value="nonaktif">Nonaktif</option>
+                </select>
+            </div>
+            <button type="submit" class="o-btn o-btn-orange o-btn-full">Simpan Pendaftaran</button>
+        </form>
+    </div>
+</div>
+
+<div class="o-modal" id="modalDetailSiswa" hidden>
+    <div class="o-modal-box">
+        <div class="o-modal-header">
+            <button type="button" class="o-modal-close" data-close aria-label="Tutup">
+                <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
+                <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+                </svg>
+            </button>
+            <h2>Detail Pendaftaran</h2>
+        </div>
+
+        <div class="o-detail-list">
+            <div>
+                <span>Nama Siswa</span>
+                <strong id="detailNama">-</strong>
+            </div>
+            <div>
+                <span>Nama Kursus</span>
+                <strong id="detailKursus">-</strong>
+            </div>
+            <div>
+                <span>Nama Kelas</span>
+                <strong id="detailKelas">-</strong>
+            </div>
+            <div>
+                <span>Tanggal Daftar</span>
+                <strong id="detailTanggal">-</strong>
+            </div>
+            <div>
+                <span>Status</span>
+                <strong id="detailStatus">-</strong>
+            </div>
+        </div>
+        <button type="button" class="o-btn o-btn-orange o-btn-full" id="editDetailSiswa">Edit Data</button>
+    </div>
 </div>
 
 <script>
-    const searchSiswa = document.getElementById('searchSiswa');
-    const filterStatus = document.getElementById('filterStatus');
-    const filterTahun = document.getElementById('filterTahun');
-    const filterKelas = document.getElementById('filterKelas');
-    const daftarSiswa = document.getElementById('daftarSiswa');
-    const tidakAdaSiswa = document.getElementById('tidakAdaSiswa');
-    const modalSiswa = document.getElementById('modalSiswa');
-
-    function filterDaftarSiswa() {
-        const keyword = searchSiswa.value.toLowerCase().trim();
-        let jumlahTampil = 0;
-
-        daftarSiswa.querySelectorAll('tr').forEach(row => {
-            const cocokNama = row.dataset.nama.includes(keyword);
-            const cocokStatus = !filterStatus.value ||
-                row.dataset.status === filterStatus.value;
-            const cocokTahun = !filterTahun.value ||
-                row.dataset.tahun === filterTahun.value;
-            const cocokKelas = !filterKelas.value ||
-                row.dataset.kelas === filterKelas.value;
-
-            const tampil = cocokNama && cocokStatus &&
-                cocokTahun && cocokKelas;
-
-            row.hidden = !tampil;
-            if (tampil) jumlahTampil++;
-        });
-
-        tidakAdaSiswa.hidden = jumlahTampil > 0;
-    }
-
-    [searchSiswa, filterStatus, filterTahun, filterKelas]
-        .forEach(input => input.addEventListener(
-            input.tagName === 'INPUT' ? 'input' : 'change',
-            filterDaftarSiswa
-        ));
-
-    function bukaFormTambah() {
-        document.getElementById('formSiswa').reset();
-        document.getElementById('modalJudul').textContent = 'Tambah Siswa';
-        document.getElementById('siswaId').readOnly = false;
-        modalSiswa.hidden = false;
-    }
-
-    function tutupModal() {
-        modalSiswa.hidden = true;
-    }
-
-    document.getElementById('formSiswa').addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        const id = document.getElementById('siswaId').value.trim();
-        const nama = document.getElementById('siswaNama').value.trim();
-        const status = document.getElementById('siswaStatus').value;
-        const tahun = document.getElementById('siswaTahun').value;
-        const kelas = document.getElementById('siswaKelas').value;
-
-        if (!id || !nama) return;
-
-        const sudahAda = [...daftarSiswa.querySelectorAll('tr')]
-            .some(row => row.cells[0].textContent.trim() === id);
-
-        if (sudahAda) {
-            alert('ID siswa sudah digunakan.');
-            return;
-        }
-
-        const row = document.createElement('tr');
-        row.dataset.status = status;
-        row.dataset.tahun = tahun;
-        row.dataset.kelas = kelas;
-        row.dataset.nama = nama.toLowerCase();
-
-        const tdId = document.createElement('td');
-        tdId.textContent = id;
-
-        const tdNama = document.createElement('td');
-        tdNama.textContent = nama;
-
-        const tdStatus = document.createElement('td');
-        tdStatus.textContent = status === 'aktif' ? 'Aktif' : 'Tidak aktif';
-
-        tdAksi.appendChild(btn);
-        row.append(tdId, tdNama, tdStatus, tdAksi);
-        daftarSiswa.appendChild(row);
-
-        tutupModal();
-        filterDaftarSiswa();
-        alert('Siswa berhasil ditambahkan ke tampilan.');
-    });
-
-    modalSiswa.addEventListener('click', function(e) {
-        if (e.target === modalSiswa) tutupModal();
-    });
+(()=>{const el=id=>document.getElementById(id),modal=el('modalSiswa'),detail=el('modalDetailSiswa'),map={'Web Master':['001','002'],'MS Office':['001']};
+let editingRow=null,selectedRow=null;function fillClasses(){const s=el('kelasSiswa'),course=el('kursusSiswa').value,old=s.value;s.replaceChildren(new Option('Pilih kelas',''));(map[course]||[]).forEach(n=>s.add(new Option(n,n)));if((map[course]||[]).includes(old))s.value=old}
+el('kursusSiswa').addEventListener('change',fillClasses);
+function filter(){const q=el('cariSiswa').value.toLowerCase().trim(),status=el('filterStatus').value,course=el('filterKursus').value;let n=0;el('tabelSiswa').querySelectorAll('tbody tr').forEach(r=>{const show=r.textContent.toLowerCase().includes(q)&&(!status||r.dataset.status===status)&&(!course||r.dataset.kursus===course);r.hidden=!show;if(show)n++});el('kosongSiswa').hidden=n>0}
+['cariSiswa','filterStatus','filterKursus'].forEach(id=>el(id).addEventListener(id==='cariSiswa'?'input':'change',filter));
+el('btnTambahSiswa').addEventListener('click',()=>{editingRow=null;el('formSiswa').reset();el('modalSiswa').querySelector('h2').textContent='Tambah Pendaftaran Siswa';el('formSiswa').querySelector('[type=submit]').textContent='Simpan Pendaftaran';fillClasses();modal.hidden=false});document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>b.closest('.o-modal').hidden=true));
+el('tabelSiswa').addEventListener('click',e=>{const b=e.target.closest('[data-detail]');if(!b)return;const r=b.closest('tr');selectedRow=r;['Nama','Kursus','Kelas','Tanggal'].forEach((k,i)=>el('detail'+k).textContent=r.cells[i].textContent.trim());el('detailStatus').textContent=r.dataset.status==='aktif'?'Aktif':'Nonaktif';detail.hidden=false});
+el('editDetailSiswa').addEventListener('click',()=>{if(!selectedRow)return;editingRow=selectedRow;const c=selectedRow.cells;el('namaSiswa').value=c[0].textContent.trim();el('kursusSiswa').value=c[1].textContent.trim();fillClasses();el('kelasSiswa').value=c[2].textContent.trim();el('tanggalDaftar').value=selectedRow.dataset.tanggal;el('statusSiswa').value=selectedRow.dataset.status;el('modalSiswa').querySelector('h2').textContent='Edit Pendaftaran Siswa';el('formSiswa').querySelector('[type=submit]').textContent='Simpan Perubahan';detail.hidden=true;modal.hidden=false});
+el('formSiswa').addEventListener('submit',e=>{e.preventDefault();const name=el('namaSiswa').value.trim(),course=el('kursusSiswa').value,cls=el('kelasSiswa').value,date=el('tanggalDaftar').value,status=el('statusSiswa').value,body=el('tabelSiswa').tBodies[0],r=editingRow||body.insertRow();r.dataset.status=status;r.dataset.kursus=course;r.dataset.tanggal=date;[name,course,cls,date].forEach((v,i)=>{if(r.cells[i])r.cells[i].textContent=v;else{const c=r.insertCell();c.textContent=v}});const sc=r.cells[4]||r.insertCell();sc.replaceChildren();const badge=document.createElement('span');badge.className='o-status '+status;badge.textContent=status==='aktif'?'Aktif':'Nonaktif';sc.appendChild(badge);if(!r.cells[5]){const ac=r.insertCell(),btn=document.createElement('button');btn.type='button';btn.className='o-action';btn.dataset.detail='';btn.textContent='Detail';ac.appendChild(btn)}editingRow=null;modal.hidden=true;filter()});
+[modal,detail].forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.hidden=true}));document.addEventListener('keydown',e=>{if(e.key==='Escape')[modal,detail].forEach(m=>m.hidden=true)});filter()})();
 </script>
 @endsection
-```

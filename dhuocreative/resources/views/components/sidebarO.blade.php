@@ -31,6 +31,10 @@
             <span>Jadwal</span>
         </a>
 
+        <a href="{{ route('operator.pengumuman') }}" class="sidebar-item {{ request()->routeIs('operator.pengumuman') ? 'active' : '' }}">
+            <span>Pengumuman</span>
+        </a>
+
         <!-- sisa -->
         
 

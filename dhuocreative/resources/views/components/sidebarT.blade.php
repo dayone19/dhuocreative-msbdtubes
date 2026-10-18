@@ -20,11 +20,9 @@
             <span>Dashboard</span>
         </a>
 
-        <!-- Jadwal & Presensi (Contoh jika nanti routenya tentor.jadwal) -->
-        <a href="{{ route('tentor.kelas') }}" class="sidebar-item {{ request()->routeIs('tentor.jadwal') ? 'active' : '' }}">
+        <a href="{{ route('tentor.kelas') }}" class="sidebar-item {{ request()->routeIs('tentor.kelas') ? 'active' : '' }}">
             <span>
-                Jadwal &<br>
-                Presensi
+                Kelas
             </span>
         </a>
 
@@ -39,8 +37,12 @@
         </a>
 
         <!-- Sertifikat (Contoh jika nanti routenya tentor.sertifikat) -->
-        <a href="#" class="sidebar-item {{ request()->routeIs('tentor.sertifikat') ? 'active' : '' }}">
+        <a href="{{ route('tentor.sertifikat') }}" class="sidebar-item {{ request()->routeIs('tentor.sertifikat') ? 'active' : '' }}">
             <span>Sertifikat</span>
+        </a>
+
+        <a href="{{ route('tentor.pengumuman') }}" class="sidebar-item {{ request()->routeIs('tentor.pengumuman') ? 'active' : '' }}">
+            <span>Pengumuman</span>
         </a>
 
         <!-- Logout -->
