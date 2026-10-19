@@ -9,6 +9,7 @@
 }
 
 .profile {
+    position: relative;
     height: 110px;
     display: flex;
     align-items: center;
@@ -19,6 +20,90 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.profile-icon:hover {
+    transform: scale(1.08);
+    opacity: 0.9;
+}
+
+.profile-popup {
+    position: absolute;
+    top: 95px;
+    left: 20px;
+    width: 250px;
+    background: #fff;
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    z-index: 200;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+}
+
+.profile-popup.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.profile-popup::before {
+    content: "";
+    position: absolute;
+    top: -8px;
+    left: 30px;
+    width: 16px;
+    height: 16px;
+    background: #fff;
+    transform: rotate(45deg);
+    border-radius: 3px;
+}
+
+.popup-row {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.popup-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #286c65;
+}
+
+.popup-value {
+    font-size: 15px;
+    font-weight: 600;
+    color: #f27640;
+    word-break: break-word;
+}
+
+.popup-logout {
+    width: 100%;
+    margin-top: 14px;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    background: #ffb83f;
+    color: #286c65;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.popup-logout:hover {
+    background: #d9622f;
 }
 
 .profile-name {

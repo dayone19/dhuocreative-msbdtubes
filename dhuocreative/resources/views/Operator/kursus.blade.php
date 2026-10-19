@@ -2,21 +2,36 @@
 @section('title', 'Manajemen Kursus')
 @section('content')
 <div class="o-page">
-    <div class="o-page-header">
+     <div class="o-page-header">
         <h1 class="o-page-title">Manajemen Kursus</h1>
-        <button type="button" class="o-btn o-btn-orange" id="btnTambahKursus">
-            <span class="o-plus">+</span> 
-            Tambah Kursus
+    </div>
+
+    <div class="o-tabs" role="tablist" aria-label="Manajemen kursus dan kelas">
+        <button type="button" class="o-tab active" data-tab="kursus">
+            Kursus
+        </button>
+
+        <button type="button" class="o-tab" data-tab="kelas">
+            Kelas
         </button>
     </div>
-    <div class="o-tabs" role="tablist" aria-label="Manajemen kursus dan kelas">
-        <button type="button" class="o-tab active" data-tab="kursus">Program Kursus</button>
-        <button type="button" class="o-tab" data-tab="kelas">Kelas</button>
-    </div>
+
     <section class="o-tab-content active" id="tab-kursus">
         <div class="o-toolbar">
-            <h2>Daftar Program Kursus</h2>
-            <input class="o-search" id="cariKursus" type="search" placeholder="Cari nama kursus..." aria-label="Cari kursus">
+            <h2>Daftar Kursus</h2>
+
+            <input
+                class="o-search"
+                id="cariKursus"
+                type="search"
+                placeholder="Cari nama kursus..."
+                aria-label="Cari kursus"
+            >
+
+            <button type="button" class="o-btn o-btn-orange" id="btnTambahKursus">
+                <span class="o-plus">+</span>
+                Tambah Kursus
+            </button>
         </div>
         <div class="o-table-wrap">
             <table class="o-table" id="tabelKursus">
@@ -53,10 +68,20 @@
     <section class="o-tab-content" id="tab-kelas">
         <div class="o-toolbar">
             <h2>Daftar Kelas</h2>
-            <input class="o-search" id="cariKelas" type="search" placeholder="Cari nama kursus atau kelas..." aria-label="Cari kelas">
+
+            <input
+                class="o-search"
+                id="cariKelas"
+                type="search"
+                placeholder="Cari nama kursus atau kelas..."
+                aria-label="Cari kelas"
+            >
+
             <button type="button" class="o-btn o-btn-orange" id="btnTambahKelas">
-                <span class="o-plus">+</span> Tambah Kelas</button>
-            </div>
+                <span class="o-plus">+</span>
+                Tambah Kelas
+            </button>
+        </div>
         <div class="o-table-wrap">
             <table class="o-table" id="tabelKelas">
                 <thead>
@@ -114,7 +139,7 @@
             </div>
             <div class="o-form-group">
                 <label for="deskripsiKursus">Deskripsi</label>
-                <textarea id="deskripsiKursus" rows="3" placeholder="Deskripsi program kursus"></textarea>
+                <textarea id="deskripsiKursus" rows="3" placeholder="Deskripsi kursus"></textarea>
             </div>
             <div class="o-form-group">
                 <label for="durasiKursus">Durasi</label>

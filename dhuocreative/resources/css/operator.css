@@ -2,19 +2,20 @@
     --m-mint: var(--mint, #e3efed);
     --m-line: var(--mint-line, #cfe0dd);
     --m-yellow: var(--yellow, #ffdc59);
+    --m-orange: var(--orange, #f27640);
     --m-text: var(--teal, #286c65);
     background: var(--m-mint);
     border: 1px solid var(--m-line);
 }
 .o-mint-theme h2 { color: var(--m-text); }
 .o-mint-theme .schedule-row {
-    grid-template-columns: 1.3fr .8fr 1fr 1.1fr 1fr;
+    grid-template-columns: 1.3fr 1fr 1fr 1.1fr 1fr;
     background: #fff;
     border: 1px solid var(--m-line);
     color: var(--m-text);
     font-size:17px;
 }
-.o-mint-theme .schedule-name { color: var(--m-text); font-size:17px;}
+.o-mint-theme .schedule-name { color: var(--m-orange); font-size:17px;}
 .o-mint-theme .schedule-type { font-size: 17px; }
 .o-mint-theme .schedule-tentor { font-size: 17px; }
 .o-mint-theme .schedule-time { font-size: 17px; }
@@ -59,7 +60,7 @@
 }
 .o-tabs { 
     display: flex;
-    width: 249px;
+    width: 182px;
     height: 50px;
     gap: 3px;
     margin-bottom: 23px; 
@@ -108,9 +109,47 @@
 .o-search input[type="search"] {
     width:500px;
 }
-.o-search:focus,.o-filter:focus,.o-form-group input:focus,
-.o-form-group select:focus,.o-form-group textarea:focus { 
-    box-shadow:0 0 0 3px rgba(242,118,64,.22); }
+/* Toolbar Manajemen Kursus */
+.o-page .o-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.o-page .o-toolbar h2 {
+    margin-right: auto;
+}
+
+.o-page .o-toolbar .o-search {
+    flex: 0 1 200px;
+    min-width: 180px;
+}
+
+.o-page .o-toolbar .o-btn {
+    flex-shrink: 0;
+}
+
+/* Tampilan layar kecil */
+@media (max-width: 600px) {
+    .o-page .o-toolbar {
+        align-items: stretch;
+    }
+
+    .o-page .o-toolbar h2 {
+        width: 100%;
+    }
+
+    .o-page .o-toolbar .o-search {
+        flex: 1 1 100%;
+        width: 100%;
+    }
+
+    .o-page .o-toolbar .o-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
 .o-filter {
     appearance: none;
     background-color: #fcf4e5;
@@ -321,6 +360,7 @@
  .o-modal-box { padding:25px 20px; }
  .o-btn-submit { width:100%; }
 }
+
 .o-page { width: 100%; color: var(--teal); }
 .o-page-header { display: flex; justify-content: space-between; align-items: center; gap: 20px; margin-bottom: 28px; }
 .o-page-title { color: var(--teal); font-size: 30px; font-weight: 800; }
@@ -464,6 +504,40 @@
 }
 .o-form-group :is(input, textarea):focus { box-shadow: 0 0 0 2px rgba(242, 118, 64, .25); }
 
+.o-announcement-category {
+    display: inline-block;
+    font-size: .78rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #fff0df;
+    color: #a95412;
+}
+.o-announcement-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.o-announcement-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+.o-announcement-actions button {
+    cursor: pointer;
+}
+.o-announcement-author {
+    opacity: .8;
+    font-size: .9rem;
+}
+.o-page-subtitle {
+    margin-top: 6px;
+    color: #777;
+    font-size: .92rem;
+}
+
 @media (max-width: 850px) {
     .o-announcement-list { grid-template-columns: 1fr; }
 }
@@ -472,3 +546,63 @@
     .o-announcement-card { padding: 20px; }
     .o-announcement-card h2 { font-size: 17px; }
 }
+
+/* CSS tambahan: dashboard laporan dan halaman rekap absensi */
+.o-report-section{margin-top:34px;padding:25px;border:1px solid #cfe0dd;border-radius:25px;background:#e3efed}
+.o-report-heading{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:20px}
+.o-report-heading h2{margin:0 0 6px;color:#286c65;font-size:24px}
+.o-report-heading p,.o-report-preview-note{margin:0;color:#65736d;font-size:14px;line-height:1.6}
+.o-report-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.o-report-card{display:flex;flex-direction:column;gap:15px;min-width:0;padding:22px;border:1px solid #f2e6d4;border-radius:22px;background:#fffaf0}
+.o-report-icon{display:grid;place-items:center;width:45px;height:45px;border-radius:14px;background:#ffdc59;color:#286c65;font-size:24px;font-weight:800}
+.o-report-copy h3{margin:0 0 8px;color:#286c65;font-size:18px}
+.o-report-copy p{margin:0;color:#65736d;font-size:14px;line-height:1.7}
+.o-report-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:auto}
+.o-report-modal-actions{justify-content:flex-end;margin-top:22px}
+.o-btn-outline{border:1px solid #f27640;background:transparent;color:#d96531}
+.o-btn-outline:hover{background:#fff0e7}
+.o-report-preview-note{margin-bottom:16px}
+.o-attendance-filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-items:end;gap:0 16px;margin-bottom:24px;padding:20px;border-radius:22px;background:#fcf4e5}
+.o-attendance-filters .o-form-group{margin-bottom:12px}
+.o-attendance-filter-actions{display:flex;flex-wrap:wrap;gap:8px;grid-column:1/-1}
+.o-attendance-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;margin-bottom:28px}
+.o-attendance-stat{display:flex;flex-direction:column;gap:10px;padding:20px;border-radius:20px;background:#fcf4e5}
+.o-attendance-stat span{color:#f27640;font-size:14px;font-weight:700}
+.o-attendance-stat strong{color:#286c65;font-size:28px}
+.o-attendance-page .o-toolbar{margin-top:8px}
+.o-status.hadir{background:#dcefe3;color:#286c65}
+.o-status.izin,.o-status.sakit{background:#fff0c2;color:#8a6500}
+.o-status.alpa,.o-status.absen,.o-status.tidak-hadir{background:#ffe2d2;color:#c65c31}
+@media(max-width:950px){.o-report-grid{grid-template-columns:1fr}.o-attendance-filters{grid-template-columns:repeat(2,minmax(0,1fr))}.o-attendance-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.o-report-heading{align-items:stretch;flex-direction:column}.o-attendance-filters,.o-attendance-stats{grid-template-columns:1fr}.o-report-section{padding:18px}}
+
+/* CSS tambahan: dashboard laporan dan halaman rekap absensi */
+.o-report-section{margin-top:34px;padding:25px;border:1px solid #cfe0dd;border-radius:25px;background:#e3efed}
+.o-report-heading{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:20px}
+.o-report-heading h2{margin:0 0 6px;color:#286c65;font-size:24px}
+.o-report-heading p,.o-report-preview-note{margin:0;color:#65736d;font-size:14px;line-height:1.6}
+.o-report-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.o-report-card{display:flex;flex-direction:column;gap:15px;min-width:0;padding:22px;border:1px solid #f2e6d4;border-radius:22px;background:#fffaf0}
+.o-report-icon{display:grid;place-items:center;width:45px;height:45px;border-radius:14px;background:#ffdc59;color:#286c65;font-size:24px;font-weight:800}
+.o-report-copy h3{margin:0 0 8px;color:#286c65;font-size:18px}
+.o-report-copy p{margin:0;color:#65736d;font-size:14px;line-height:1.7}
+.o-report-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:auto}
+.o-report-modal-actions{justify-content:flex-end;margin-top:22px}
+.o-btn-outline{border:1px solid #f27640;background:transparent;color:#d96531}
+.o-btn-outline:hover{background:#fff0e7}
+.o-report-preview-note{margin-bottom:16px}
+.o-attendance-filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-items:end;gap:0 16px;margin-bottom:24px;padding:20px;border-radius:22px;background:#e3efed}
+.o-attendance-filters .o-form-group{margin-bottom:12px}
+.o-attendance-filter-actions{display:flex;flex-wrap:wrap;gap:8px;grid-column:1/-1}
+.o-attendance-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;margin-bottom:28px}
+.o-attendance-stat{display:flex;flex-direction:column;gap:10px;padding:20px;border-radius:20px;background:#fcf4e5}
+.o-attendance-stat span{color:#f27640;font-size:14px;font-weight:700}
+.o-attendance-stat strong{color:#286c65;font-size:28px}
+.o-attendance-page .o-toolbar{margin-top:8px}
+.o-attendance-page form {background: #fcf4e5;}
+.o-status.hadir{background:#dcefe3;color:#286c65}
+.o-status.izin,.o-status.sakit{background:#fff0c2;color:#8a6500}
+.o-status.alpa,.o-status.absen,.o-status.tidak-hadir{background:#ffe2d2;color:#c65c31}
+@media(max-width:950px){.o-report-grid{grid-template-columns:1fr}.o-attendance-filters{grid-template-columns:repeat(2,minmax(0,1fr))}.o-attendance-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.o-report-heading{align-items:stretch;flex-direction:column}.o-attendance-filters,.o-attendance-stats{grid-template-columns:1fr}.o-report-section{padding:18px}}
+

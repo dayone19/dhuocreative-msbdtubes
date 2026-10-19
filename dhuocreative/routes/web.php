@@ -77,7 +77,7 @@ Route::middleware(['auth', 'prevent.back'])->prefix('tentor')->name('tentor.')->
     })->name('pengumuman'); 
 });
 
-
+// operator
 Route::middleware(['auth', 'prevent.back'])->prefix('operator')->name('operator.')->group(function () {
     Route::get('/dashboard', function () {
         return view('operator.dashboard');
@@ -94,6 +94,10 @@ Route::middleware(['auth', 'prevent.back'])->prefix('operator')->name('operator.
     Route::get('/jadwal', function () {
         return view('operator.jadwal');
     })->name('jadwal'); 
+
+    Route::get('/absensi', function () {
+        return view('operator.absensi');
+    })->name('absensi'); 
 
     Route::get('/pengumuman', function () {
         return view('operator.pengumuman');

@@ -13,10 +13,10 @@
     ];
 
     $jadwalHariIni = [
-        ['kelas' => 'Web Master 103', 'tipe' => 'Online',  'tentor' => 'Tentor A', 'jam' => '11.30 - 12.30', 'hadir' => 13, 'total' => 13],
-        ['kelas' => 'Web Master 104', 'tipe' => 'Offline', 'tentor' => 'Tentor B', 'jam' => '13.00 - 14.00', 'hadir' => 9,  'total' => 15],
-        ['kelas' => 'Web Master 105', 'tipe' => 'Online',  'tentor' => 'Tentor C', 'jam' => '14.30 - 15.30', 'hadir' => 0,  'total' => 12],
-        ['kelas' => 'Web Master 106', 'tipe' => 'Offline', 'tentor' => 'Tentor D', 'jam' => '15.00 - 16.00', 'hadir' => 0,  'total' => 10],
+        ['kursus' => 'Web Master', 'kelas' => '001', 'tentor' => 'Tentor A', 'jam' => '11.30 - 12.30', 'hadir' => 13, 'total' => 13],
+        ['kursus' => 'Web Master', 'kelas' => '002', 'tentor' => 'Tentor B', 'jam' => '13.00 - 14.00', 'hadir' => 9,  'total' => 15],
+        ['kursus' => 'Office Master', 'kelas' => '001', 'tentor' => 'Tentor C', 'jam' => '14.30 - 15.30', 'hadir' => 0,  'total' => 12],
+        ['kursus' => 'Office Master', 'kelas' => '002', 'tentor' => 'Tentor D', 'jam' => '15.00 - 16.00', 'hadir' => 0,  'total' => 10],
     ];
 @endphp
 
@@ -49,8 +49,8 @@
 
         @forelse ($jadwalHariIni as $row)
             <div class="schedule-row">
+                <div class="schedule-name">{{ $row['kursus'] }}</div>
                 <div class="schedule-name">{{ $row['kelas'] }}</div>
-                <div class="schedule-type">{{ $row['tipe'] }}</div>
                 <div class="schedule-tentor">{{ $row['tentor'] }}</div>
                 <div class="schedule-time">{{ $row['jam'] }}</div>
                 <div class="attendance">
