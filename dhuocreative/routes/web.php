@@ -3,17 +3,21 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\TentorDashboardController;
 
 // login
 Route::get('/', function () {
     return redirect()->route('login');
 });
+
 Route::get('/login', [LoginController::class, 'showLogin'])
     ->middleware(['guest', 'prevent.back'])
     ->name('login');
+
 Route::post('/login', [LoginController::class, 'login'])
     ->middleware('guest')
     ->name('login.process');
+
 Route::post('/logout', [LoginController::class, 'logout'])
     ->middleware(['auth', 'prevent.back'])
     ->name('logout');
@@ -28,15 +32,26 @@ Route::post('/forgotPass/verify-otp', [ForgotPasswordController::class, 'verifyO
 Route::post('/forgotPass/reset-password', [ForgotPasswordController::class, 'resetPassword'])
     ->name('password.reset');    
 
-Route::get('/tentor/dashboard', function () {
-    return view('tentor.dashboard');
-})->name('dashboard');
+// tentor
+Route::middleware(['auth', 'prevent.back'])->prefix('tentor')->name('tentor.')->group(function () {
+    Route::get('/dashboard', [TentorDashboardController::class, 'index'])->name('dashboard'); 
 
-Route::post('/admin/users', [UserController::class, 'store'])
-   ->middleware('auth')
-   ->name('admin.users.store');
+    Route::get('/materi', function () {
+        return view('tentor.materi');
+    })->name('materi');
+
+    Route::get('/tugas', function () {
+        return view('tentor.tugas');
+    })->name('tugas'); 
+});
+
+Route::get('dashboard', function () {
+    return redirect()->route('tentor.dashboard');
+})->middleware('auth')->name('dashboard');
 
 Route::middleware(['auth', 'prevent-back-history'])->group(function () {
+    Route::post('/admin/users', [UserController::class, 'store'])
+   ->name('admin.users.store');
     // admin
     // operator
     // tentor

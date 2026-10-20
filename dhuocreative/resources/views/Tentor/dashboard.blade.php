@@ -1,4 +1,4 @@
-@extends('layouts.Tentor')
+@extends('layouts.tentor')
 
 @section('content')
 
@@ -11,7 +11,7 @@
 
             <div class="summary-bottom">
                 <div class="summary-number">
-                    4
+                    {{ $totalKelas }}
                     <span>Kelas</span>
                 </div>
                 <button class="arrow-button">
@@ -27,7 +27,7 @@
 
             <div class="summary-bottom">
                 <div class="summary-number">
-                    22
+                    {{ $totalSiswa }}
                     <span>Siswa</span>
                 </div>
             </div>
@@ -38,7 +38,7 @@
 
             <div class="summary-bottom">
                 <div class="summary-number">
-                    1
+                    {{ $tugasMenunggu }}
                     <span>
                         Menunggu<br>
                         penilaian
@@ -58,7 +58,38 @@
     <section class="schedule-section">
         <h2>Jadwal Hari Ini</h2>
 
+        @forelse ($jadwalHariIni as $jadwal)
         <div class="schedule-row">
+            <div class="schedule-name">
+                {{ $jadwal->nama_kursus }} <small>({{ $jadwal->nama_kelas }})</small>
+            </div>
+
+            <div class="schedule-type">
+                {{ ucfirst($jadwal->status) }}
+            </div>
+
+            <div class="schedule-time">
+                {{ date('H.i', strtotime($jadwal->jam_mulai)) }} - {{ date('H.i', strtotime($jadwal->jam_selesai)) }}
+            </div>
+
+            <div class="attendance">
+                <div class="attendance-number">
+                    0 / 0
+                </div>
+                <div class="progress">
+                    <div
+                        class="progress-fill"
+                        style="width: 75%;">
+                    </div>
+                </div>
+            </div>
+        </div>
+        @empty
+            <p style="color: #666; margin-top: 10px;">Belum ada jadwal mengajar untuk hari ini.</p>
+        @endforelse
+
+
+        <!-- <div class="schedule-row">
             <div class="schedule-name">
                 Web Master
             </div>
@@ -82,34 +113,7 @@
                     </div>
                 </div>
             </div>
-        </div>
-
-
-        <div class="schedule-row">
-            <div class="schedule-name">
-                Web Master
-            </div>
-
-            <div class="schedule-type">
-                Offline
-            </div>
-
-            <div class="schedule-time">
-                10.30 - 12.00
-            </div>
-
-            <div class="attendance">
-                <div class="attendance-number">
-                    9 / 12
-                </div>
-                <div class="progress">
-                    <div
-                        class="progress-fill"
-                        style="width: 75%;">
-                    </div>
-                </div>
-            </div>
-        </div>
+        </div> -->
 
     </section>
 

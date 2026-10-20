@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 
 class User extends Authenticatable
 {
+
+    use HasFactory;
+
     protected $table = 'users';
     protected $primaryKey = 'id_user';
     const UPDATED_AT = 'update_at';
@@ -44,7 +48,7 @@ class User extends Authenticatable
     }
 
     public function pengumpulanTugas() {
-        return $this->hasaMany(PengumpulanTugas::class, 'id_user', 'id_siswa');
+        return $this->hasMany(PengumpulanTugas::class, 'id_user', 'id_siswa');
     }
 
     public function jadwal() {

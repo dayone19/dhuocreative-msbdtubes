@@ -42,7 +42,8 @@ class LoginController extends Controller
             return back()
                 ->withErrors([
                     'email' => "Akun kamu tidak aktif.",
-                ]);
+                ])
+                ->withInput($request->only('email', 'role'));
         }
 
         // cek role
@@ -69,7 +70,7 @@ class LoginController extends Controller
             default:
                 Auth::logout();
                 return redirect('/')
-                ->eithErrors(['email' => 'Role akun tidak valid']);
+                ->weithErrors(['email' => 'Role akun tidak valid']);
         }
     }
 
