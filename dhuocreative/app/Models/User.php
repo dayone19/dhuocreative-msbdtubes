@@ -74,4 +74,8 @@ class User extends Authenticatable
     public function pengumuman() {
         return $this->hasMany(Pengumuman::class, 'id_user', 'id_user');
     }
+
+    public function kelas() {
+        return $this->hasMany(Kelas::class, 'id_user', 'id_siswa');
+    }
 }

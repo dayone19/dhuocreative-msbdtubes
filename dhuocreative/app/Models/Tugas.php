@@ -12,6 +12,7 @@ class Tugas extends Model
         'id_tugas',
         'id_kelas',
         'id_tentor',
+        'tipe',
         'judul',
         'deskripsi',
         'deadline',

@@ -12,8 +12,8 @@ class Sertifikat extends Model
         'id_sertifikat',
         'id_siswa',
         'id_tentor',
-        'nama_ujian',
-        'tanggal_ujian',
+        'nama_projek',
+        'tanggal_pengumpulan',
         'file_sertifikat',
         'tanggal_upload'
     ];
