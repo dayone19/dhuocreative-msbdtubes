@@ -10,6 +10,7 @@ export default defineConfig({
                     'resources/css/login.css',
                     'resources/css/sidebar.css',
                     'resources/css/tentor.css',
+                    'resources/css/siswa.css',
                     'resources/js/app.js',
                    ],
             refresh: true,

@@ -3,10 +3,21 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
-use App\Http\Controllers\TentorDashboardController;
+use App\Http\Controllers\Tentor;
 
 // login
 Route::get('/', function () {
+    if (auth()->check()) {
+        $user = auth()->user();
+        switch ($user->role) {
+            case 'admin': return redirect('/admin/dashboard');
+            case 'operator': return redirect('/operator/dashboard');
+            case 'tentor': return redirect('/tentor/dashboard');
+            case 'siswa': return redirect('/siswa/dashboard');
+            default: return redirect('/login');
+        }
+    }
+    
     return redirect()->route('login');
 });
 
@@ -34,7 +45,16 @@ Route::post('/forgotPass/reset-password', [ForgotPasswordController::class, 'res
 
 // tentor
 Route::middleware(['auth', 'prevent.back'])->prefix('tentor')->name('tentor.')->group(function () {
-    Route::get('/dashboard', [TentorDashboardController::class, 'index'])->name('dashboard'); 
+    // Memakai Controller milikmu
+    Route::get('/dashboard', [Tentor\DashboardController::class, 'index'])->name('dashboard'); 
+
+    Route::get('/kelas', function () {
+        return view('tentor.kelas');
+    })->name('kelas');
+
+    Route::get('/kelas/absensi/{kelas}', function ($kelas) {
+        return view('tentor.absensi', compact('kelas'));
+    })->name('absensi');
 
     Route::get('/materi', function () {
         return view('tentor.materi');
@@ -43,17 +63,77 @@ Route::middleware(['auth', 'prevent.back'])->prefix('tentor')->name('tentor.')->
     Route::get('/tugas', function () {
         return view('tentor.tugas');
     })->name('tugas'); 
+
+    Route::get('/nilai', function () {
+        return view('tentor.nilai');
+    })->name('nilai'); 
+
+    Route::get('/sertifikat', function () {
+        return view('tentor.sertifikat');
+    })->name('sertifikat');
+
+    Route::get('/pengumuman', function () {
+        return view('tentor.pengumuman');
+    })->name('pengumuman'); 
 });
 
 Route::get('dashboard', function () {
     return redirect()->route('tentor.dashboard');
 })->middleware('auth')->name('dashboard');
 
+// operator
+Route::middleware(['auth', 'prevent.back'])->prefix('operator')->name('operator.')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('operator.dashboard');
+    })->name('dashboard'); 
+
+    Route::get('/siswa', function () {
+        return view('operator.siswa');
+    })->name('siswa'); 
+
+    Route::get('/kursus', function () {
+        return view('operator.kursus');
+    })->name('kursus'); 
+
+    Route::get('/jadwal', function () {
+        return view('operator.jadwal');
+    })->name('jadwal'); 
+
+    Route::get('/absensi', function () {
+        return view('operator.absensi');
+    })->name('absensi'); 
+
+    Route::get('/pengumuman', function () {
+        return view('operator.pengumuman');
+    })->name('pengumuman'); 
+});
+
 Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     Route::post('/admin/users', [UserController::class, 'store'])
    ->name('admin.users.store');
-    // admin
-    // operator
-    // tentor
-    // siswa
+});
+
+// siswa
+Route::middleware(['auth', 'prevent.back'])->prefix('siswa')->name('siswa.')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('siswa.dashboard');
+    })->name('dashboard');
+    Route::get('/kursus', function () {
+        return view('siswa.kursus');
+    })->name('kursus');
+    Route::get('/aktivitas', function () {
+        return view('siswa.aktivitas');
+    })->name('aktivitas');
+    Route::get('/sertifikat', function () {
+        return view('siswa.sertifikat');
+    })->name('sertifikat');
+    Route::get('/pengumpulanTugas', function () {
+        return view('siswa.pengumpulanTugas');
+    })->name('pengumpulanTugas');
+    Route::get('/nilai', function () {
+        return view('siswa.nilai');
+    })->name('nilai');
+    Route::get('/absensi', function () {
+        return view('siswa.absensi');
+    })->name('absensi');
 });

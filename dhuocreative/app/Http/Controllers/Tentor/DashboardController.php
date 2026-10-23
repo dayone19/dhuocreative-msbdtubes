@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Tentor;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 
-class TentorDashboardController extends Controller
+class DashboardController extends Controller
 {
     public function index()
     {

@@ -22,7 +22,6 @@ class LoginController extends Controller
             'email'   => 'required|email',
             'password' => 'required',
             'role'    => 'required'
-
         ]);
 
         // cari akun dari email
@@ -70,7 +69,7 @@ class LoginController extends Controller
             default:
                 Auth::logout();
                 return redirect('/')
-                ->weithErrors(['email' => 'Role akun tidak valid']);
+                ->withErrors(['email' => 'Role akun tidak valid']);
         }
     }
 
