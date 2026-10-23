@@ -126,11 +126,23 @@ body {
 }
 
 .sd-bottom {
-    margin-top: -30px;
     display: grid;
-    grid-template-columns: minmax(0, 1.67fr) minmax(0, 1fr);
-    gap: 18px;
-    align-items: stretch;
+    grid-template-columns: minmax(0, 1.7fr) minmax(280px, 1fr);
+    gap: 20px;
+    align-items: start;
+    width: 100%;
+}
+
+.sd-bottom > .sd-panel {
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+}
+
+.sd-bottom .sd-panel-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .sd-panel {
@@ -464,7 +476,6 @@ body {
 
     .sd-bottom {
         grid-template-columns: minmax(0, 1fr);
-        gap: 16px;
     }
 
     .sd-course {
@@ -543,6 +554,117 @@ body {
 
     .sd-progress-wrap {
         gap: 8px;
+    }
+}
+
+.sd-schedule-side {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.sd-schedule-actions {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.sd-btn-tunda,
+.sd-btn-setuju,
+.sd-badge-online,
+.sd-badge-disetujui {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+}
+
+.sd-btn-tunda,
+.sd-btn-setuju {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 14px;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.3;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    border: 1.5px solid #f4773e;
+    transition: background .2s, color .2s;
+}
+
+.sd-btn-tunda {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 9px 18px;
+    border: 1px solid #dedede;
+    border-radius: 25px;
+    background: #fff;
+    color: #222;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.sd-btn-tunda:hover {
+    background: #f5f5f5;
+}
+
+.sd-btn-setuju {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 9px 18px;
+    border: none;
+    border-radius: 25px;
+    background: #f8753f;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.sd-btn-setuju:hover {
+    background: #e9612c;
+}
+
+.sd-badge-disetujui {
+    color: #269b52;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.sd-schedule-actions[hidden],
+.sd-badge-disetujui[hidden] {
+    display: none !important;
+}
+
+@media (max-width: 600px) {
+    .sd-schedule-row {
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+
+    .sd-schedule-side {
+        width: 100%;
+        align-items: flex-start;
+    }
+
+    .sd-schedule-actions {
+        width: 100%;
+        justify-content: flex-start;
+        flex-wrap: wrap;
     }
 }
 

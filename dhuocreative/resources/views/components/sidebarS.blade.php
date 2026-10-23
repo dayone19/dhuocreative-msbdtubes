@@ -58,14 +58,6 @@
             <span>Sertifikat</span>
         </a>
 
-        <!-- Logout -->
-        <form action="{{ route('logout') }}" method="POST">
-            @csrf
-            <button type="submit" class="sidebar-item">
-                Logout
-            </button>
-        </form>
-
     </nav>
 </aside>
 
