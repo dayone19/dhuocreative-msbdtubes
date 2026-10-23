@@ -1034,7 +1034,7 @@
     <dialog class="as-dialog" id="dialog-ajukan" aria-labelledby="judul-form">
         <form class="as-form" id="form-ajukan" method="dialog" novalidate>
             <h3 id="judul-form">Ajukan Izin / Sakit</h3>
-            <p class="as-form-sub">Pengajuan akan dikirim ke tentor untuk dikonfirmasi.</p>
+            <p class="as-form-sub">Pengajuan akan dikirim ke operator untuk dikonfirmasi.</p>
 
             <fieldset class="as-field">
                 <legend>Jenis pengajuan</legend>
@@ -1094,7 +1094,7 @@
             <div class="as-form-actions">
                 <button type="button" class="as-btn-ghost" id="btn-batal">Batal</button>
                 <button type="submit" class="as-btn">
-                    Kirim ke Tentor
+                    Kirim ke Operator
                     <i class="bi bi-send"></i>
                 </button>
             </div>
@@ -1192,6 +1192,12 @@
         }
 
         document.getElementById('btn-ajukan').addEventListener('click', openDialog);
+       
+        const params = new URLSearchParams(window.location.search);
+
+        if (params.get('ajukan') === '1') {
+            openDialog();
+        }
         document.getElementById('btn-batal').addEventListener('click', closeDialog);
 
         dialog.addEventListener('click', function (e) {
