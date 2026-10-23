@@ -63,8 +63,12 @@
                 Web Master
             </div>
 
-            <div class="schedule-type">
-                Offline
+            <div class="schedule-stud">
+                Siswa B
+            </div>
+
+            <div class="schedule-tentor">
+                Tentor C
             </div>
 
             <div class="schedule-time">
@@ -90,8 +94,12 @@
                 Web Master
             </div>
 
-            <div class="schedule-type">
-                Offline
+            <div class="schedule-stud">
+                Siswa A
+            </div>
+
+            <div class="schedule-tentor">
+                Tentor C
             </div>
 
             <div class="schedule-time">

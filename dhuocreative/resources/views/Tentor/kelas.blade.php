@@ -30,30 +30,30 @@
         $kelasSaya = [
             [
                 'id' => 103,
-                'nama' => 'Web Master 103 - Online',
-                'jam' => '11.30 - 12.30',
-                'siswa' => 13,
+                'kursus' => 'Web Master',
+                'kelas' => 'online',
+                'siswa' => 'Siswa A',
                 'warna' => 'teal'
             ],
             [
                 'id' => 104,
-                'nama' => 'Web Master 104 - Offline',
-                'jam' => '13.00 - 14.00',
-                'siswa' => 15,
+                'kursus' => 'Web Master',
+                'kelas' => 'Offline Rumah',
+                'siswa' => 'Siswa B',
                 'warna' => 'orange'
             ],
             [
                 'id' => 105,
-                'nama' => 'Web Master 105 - Online',
-                'jam' => '11.30 - 12.30',
-                'siswa' => 12,
+                'kursus' => 'Office Master',
+                'kelas' => 'Offline',
+                'siswa' => 'Siswa F',
                 'warna' => 'orange'
             ],
             [
                 'id' => 106,
-                'nama' => 'Web Master 106 - Offline',
-                'jam' => '15.00 - 16.00',
-                'siswa' => 10,
+                'kursus' => 'Office Master',
+                'kelas' => 'Online',
+                'siswa' => 'Siswa D',
                 'warna' => 'teal'
             ],
         ];
@@ -64,12 +64,12 @@
             <a href="{{ route('tentor.absensi', ['kelas' => $kelasItem['id']]) }}" class="kelas-card">
 
                 <div class="kelas-card-info {{ $kelasItem['warna'] }}">
-                    <h3>{{ $kelasItem['nama'] }}</h3>
-                    <p>{{ $kelasItem['jam'] }}</p>
+                    <h3>{{ $kelasItem['kursus'] }}</h3>
+                    <p>{{ $kelasItem['kelas'] }}</p>
                 </div>
 
                 <div class="kelas-card-footer">
-                    <span>{{ $kelasItem['siswa'] }} Siswa</span>
+                    <span>{{ $kelasItem['siswa'] }}</span>
                     <span class="kelas-arrow">›</span>
                 </div>
 

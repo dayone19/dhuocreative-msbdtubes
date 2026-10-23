@@ -41,9 +41,6 @@
         <a href="{{ route('tentor.kelas') }}" class="sidebar-item {{ request()->routeIs('tentor.kelas') ? 'active' : '' }}">
             <span>Kelas</span>
         </a>
-        <a href="{{ route('tentor.materi') }}" class="sidebar-item {{ request()->routeIs('tentor.materi') ? 'active' : '' }}">
-            <span>Materi</span>
-        </a>
         <a href="{{ route('tentor.tugas') }}" class="sidebar-item {{ request()->routeIs('tentor.tugas') ? 'active' : '' }}">
             <span>Tugas & Nilai</span>
         </a>

@@ -49,9 +49,9 @@
                 <input class="o-search" id="cariJadwal" type="search" placeholder="Cari kursus, kelas, atau tentor..." aria-label="Cari jadwal">
                 <input class="o-filter" style="background-image:none" id="filterTanggal" type="month" aria-label="Filter bulan">
                 <select class="o-filter" id="filterStatus" aria-label="Filter status">
-                    <option value="">Semua status</option>
-                    <option value="aktif">Aktif</option>
-                    <option value="nonaktif">Nonaktif</option>
+                    <option value="">Terjadwal</option>
+                    <option value="aktif">Selesai</option>
+                    <option value="nonaktif">Dibatalkan</option>
                 </select>
             </div>
         </div>
@@ -61,8 +61,9 @@
                 <thead>
                     <tr>
                         <th>Nama Kursus</th>
-                        <th>Nama Kelas</th>
-                        <th>Nama Tentor</th>
+                        <th>Kelas</th>
+                        <th>Tentor</th>
+                        <th>Siswa</th>
                         <th>Tanggal</th>
                         <th>Jam Mulai</th>
                         <th>Jam Selesai</th>
@@ -73,42 +74,13 @@
                 <tbody>
                     <tr data-tanggal="2026-10-19" data-status="aktif">
                         <td>Web Master</td>
-                        <td>001</td>
-                        <td>Andi</td>
+                        <td>Online</td>
+                        <td>Tentor C</td>
+                        <td>Siswa A</td>
                         <td>2026-10-19</td>
                         <td>09:00</td>
                         <td>10:30</td>
-                        <td><span class="o-status aktif">Aktif</span></td>
-                        <td><button type="button" class="o-action" data-detail>Detail</button></td>
-                    </tr>
-                    <tr data-tanggal="2026-10-20" data-status="aktif">
-                        <td>Web Master</td>
-                        <td>002</td>
-                        <td>Rina</td>
-                        <td>2026-10-20</td>
-                        <td>13:00</td>
-                        <td>14:30</td>
-                        <td><span class="o-status aktif">Aktif</span></td>
-                        <td><button type="button" class="o-action" data-detail>Detail</button></td>
-                    </tr>
-                    <tr data-tanggal="2026-10-21" data-status="aktif">
-                        <td>MS Office</td>
-                        <td>001</td>
-                        <td>Budi</td>
-                        <td>2026-10-21</td>
-                        <td>09:00</td>
-                        <td>10:00</td>
-                        <td><span class="o-status aktif">Aktif</span></td>
-                        <td><button type="button" class="o-action" data-detail>Detail</button></td>
-                    </tr>
-                    <tr data-tanggal="2026-10-23" data-status="nonaktif">
-                        <td>Web Master</td>
-                        <td>001</td>
-                        <td>Andi</td>
-                        <td>2026-10-23</td>
-                        <td>13:00</td>
-                        <td>14:30</td>
-                        <td><span class="o-status nonaktif">Nonaktif</span></td>
+                        <td><span class="o-status aktif">Terjadwal</span></td>
                         <td><button type="button" class="o-action" data-detail>Detail</button></td>
                     </tr>
                 </tbody>
@@ -195,8 +167,8 @@
                 <strong id="detailTentor">-</strong>
             </div>
             <div>
-                <span>Tanggal</span>
-                <strong id="detailTanggal">-</strong>
+                <span>Nama Siswa</span>
+                <strong id="detailSiswa">-</strong>
             </div>
             <div>
                 <span>Jam Mulai</span>
@@ -205,6 +177,10 @@
             <div>
                 <span>Jam Selesai</span>
                 <strong id="detailSelesai">-</strong>
+            </div>
+            <div>
+                <span>Tanggal</span>
+                <strong id="detailTanggal">-</strong>
             </div>
             <div>
                 <span>Status</span>

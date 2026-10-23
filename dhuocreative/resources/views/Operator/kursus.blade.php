@@ -2,20 +2,6 @@
 @section('title', 'Manajemen Kursus')
 @section('content')
 <div class="o-page">
-     <div class="o-page-header">
-        <h1 class="o-page-title">Manajemen Kursus</h1>
-    </div>
-
-    <div class="o-tabs" role="tablist" aria-label="Manajemen kursus dan kelas">
-        <button type="button" class="o-tab active" data-tab="kursus">
-            Kursus
-        </button>
-
-        <button type="button" class="o-tab" data-tab="kelas">
-            Kelas
-        </button>
-    </div>
-
     <section class="o-tab-content active" id="tab-kursus">
         <div class="o-toolbar">
             <h2>Daftar Kursus</h2>

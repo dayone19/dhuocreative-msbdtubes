@@ -100,7 +100,7 @@ body {
     margin-bottom: 20px;
     padding: 0 24px;
     display: grid;
-    grid-template-columns: 1.2fr 1fr 1fr 1fr;
+    grid-template-columns: 1.2fr 1fr 1fr 1fr 1fr;
     align-items: center;
     gap: 20px;
     background: #f7f7f7;
@@ -109,7 +109,7 @@ body {
 }
 .schedule-row:last-child { margin-bottom: 0; }
 .schedule-name { color: var(--orange); font-size: 21px; font-weight: 700; }
-.schedule-type, .schedule-time { font-size: 20px; }
+.schedule-type, .schedule-time { font-size: 18px; }
 
 .attendance { display: flex; flex-direction: column; align-items: flex-start; }
 .attendance-number { margin-bottom: 4px; font-size: 18px; }
@@ -198,21 +198,23 @@ body {
 
 .tmt-table-container { width: 100%; min-height: 425px; overflow-x: auto; border-radius: 18px; background: var(--cream); }
 .tmt-table { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; }
-.tmt-table thead { background: var(--olive); color: #fff; }
+.tmt-table thead { width: 100%;background: var(--olive); color: #fff; }
 
 .tmt-table th {
     height: 65px;
-    padding: 10px 18px;
+    padding: 10px 15px;
     text-align: center;
     vertical-align: middle;
     font-size: 17px;
     font-weight: 700;
     line-height: 21px;
 }
-.tmt-table th:nth-child(1) { width: 33%; border-radius: 22px 0 0 22px; }
+.tmt-table th:nth-child(1) { width: 28%; border-radius: 22px 0 0 22px; }
 .tmt-table th:nth-child(2) { width: 20%; }
-.tmt-table th:nth-child(3) { width: 19%; }
-.tmt-table th:nth-child(4) { width: 28%; border-radius: 0 22px 22px 0; }
+.tmt-table th:nth-child(3) { width: 20%; }
+.tmt-table th:nth-child(4) { width: 8%; }
+.tmt-table th:nth-child(5) { width: 24%; border-radius: 0 22px 22px 0; }
+
 
 .tmt-table td { height: 65px; padding: 10px 18px; text-align: center; vertical-align: middle; font-size: 16px; color: #111; }
 .tmt-table td:first-child { padding-left: 30px; text-align: left; }
@@ -234,6 +236,13 @@ body {
     text-decoration: none;
     cursor: pointer;
     transition: background .2s ease;
+}
+
+.tmt-action-group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px; /* Jarak antar tombol */
 }
 
 .tmt-empty { padding: 25px; text-align: center; color: #8a7a5d; font-size: 14px; }
@@ -261,6 +270,7 @@ body {
 
 .tmt-modal-header { display: flex; align-items: center; gap: 15px; margin-bottom: 24px; }
 .tmt-modal-header h2 { font-size: 23px; color: #263d3a; }
+
 
 .tmt-close {
     width: 36px;
@@ -342,7 +352,7 @@ body {
 }
 
 .tmt-upload-header { display: flex; align-items: center; gap: 22px; margin-bottom: 36px; }
-.tmt-upload-header h2 { color: var(--gold); font-size: 23px; font-weight: 700; line-height: 25px; }
+.tmt-upload-header h2 { color: var(--gold); font-size: 23px; font-weight: 800; line-height: 25px; }
 
 .tmt-back-btn {
     width: 60px;
@@ -393,7 +403,7 @@ body {
     padding: 0 38px 0 16px;
     cursor: pointer;
     appearance: none;
-    background: var(--olive) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='none' stroke='white' stroke-width='3' viewBox='0 0 16 16'%3E%3Cpath d='m2 5 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 13px center / 18px;
+    background: var(--olive) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='16' viewBox='0 0 24 16'%3E%3Cpath d='M3 3l9 9 9-9' fill='none' stroke='white' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 18px center / 16px;
 }
 .tmt-upload-modal .tmt-form-group select option { background: #fff; color: var(--gold-dk); }
 .tmt-upload-modal .tmt-form-group textarea { height: 87px; min-height: 87px; padding: 13px 16px; resize: vertical; }
@@ -410,7 +420,7 @@ body {
 
 .tmt-dropzone {
     position: relative;
-    height: 213px;
+    height: 180px;
     padding: 15px;
     display: flex;
     flex-direction: column;
@@ -421,10 +431,9 @@ body {
     transition: background .2s ease;
 }
 .tmt-dropzone:hover { background: #f1e1bf; }
-.tmt-dropzone > svg { flex-shrink: 0; margin-bottom: 4px; }
+.tmt-dropzone > svg { align-items: center; margin-bottom: 4px; }
 .tmt-dropzone input[type="file"] { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 
-.tmt-file-instruction, .tmt-file-limit { font-size: 12px; text-align: center; }
 .tmt-file-name { max-width: 100%; overflow: hidden; color: #80693e; font-size: 14px; text-overflow: ellipsis; white-space: nowrap; }
 
 .tmt-upload-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 29px; }
@@ -433,6 +442,57 @@ body {
 .tmt-cancel-btn:hover { background: #fff0d4; }
 .tmt-send-btn { border: 0; background: var(--amber); color: #fff; font-weight: 700; }
 .tmt-send-btn:hover { background: var(--amber-dk); }
+
+/* Styling File Preview / Display Box pada Detail Tugas */
+.tmt-file-preview-box {
+    width: 100%;
+    height: 75px;
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    border: 2px dashed var(--gold);
+    border-radius: 20px;
+    background: var(--cream);
+    color: var(--gold);
+    font-size: 15px;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Modal Pratinjau / Lihat File */
+.tmt-preview-modal {
+    max-width: 500px;
+    min-height: auto;
+}
+
+.tmt-file-viewer-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.tmt-file-info-card {
+    background: var(--cream);
+    padding: 20px;
+    border-radius: 16px;
+    color: var(--gold-dk, #80693e);
+    border: 1px dashed var(--gold);
+}
+
+.tmt-file-info-card p {
+    margin: 6px 0;
+    font-size: 15px;
+}
+
+.tmt-btn-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
 
 @media (max-width: 800px) {
     .tmt-upload-modal { max-width: 560px; max-height: 90vh; overflow-y: auto; padding: 24px; }
@@ -447,6 +507,158 @@ body {
     .tmt-back-btn { width: 52px; height: 52px; }
     .tmt-upload-modal .tmt-form-group label, .tmt-upload-modal .tmt-file-label { font-size: 16px; }
     .tmt-upload-actions { gap: 10px; }
+}
+
+/* =========================================================
+   MODAL LIHAT & DETAIL TUGAS (satu gaya, mengikuti desain)
+   ========================================================= */
+.tmt-upload-modal.tmt-modal-wide {
+    width: min(940px, 100%);
+    max-width: 940px;
+    min-height: 0;
+    max-height: 92vh;
+    overflow-y: auto;
+    padding: 30px 38px 36px;
+    border: 1px solid #ece4d0;
+    border-radius: 28px;
+    background: #fdf9ee;
+    box-shadow: 0 20px 55px rgba(0, 0, 0, .14);
+    color: var(--gold);
+}
+
+.tmt-modal-wide .tmt-upload-header { gap: 28px; margin-bottom: 20px; }
+.tmt-modal-wide .tmt-upload-header h2 { font-size: 30px; line-height: 1.05; font-weight: 800; }
+.tmt-modal-wide .tmt-back-btn { width: 76px; height: 76px; }
+.tmt-modal-wide .tmt-back-btn svg { width: 38px; height: 38px; }
+
+.tmt-modal-wide .tmt-upload-form { gap: 56px; }
+.tmt-upload-modal.tmt-modal-wide .tmt-form-group { margin-bottom: 14px; }
+
+.tmt-upload-modal.tmt-modal-wide .tmt-form-group label,
+.tmt-upload-modal.tmt-modal-wide .tmt-file-label {
+    margin: 0 0 4px 10px;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.tmt-upload-modal.tmt-modal-wide .tmt-form-group :is(input, select, textarea) {
+    border-radius: 28px;
+    font-size: 15px;
+    transition: box-shadow .2s ease;
+}
+.tmt-upload-modal.tmt-modal-wide .tmt-form-group select { 
+    height: 43px;
+    padding: 0 38px 0 16px;
+    cursor: pointer;
+    appearance: none;
+    background: var(--olive) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='16' viewBox='0 0 24 16'%3E%3Cpath d='M3 3l9 9 9-9' fill='none' stroke='white' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 18px center / 16px;
+}
+.tmt-upload-modal.tmt-modal-wide .tmt-form-group select {
+    padding-right: 42px;
+    background-position: right 20px center;
+    background-size: 20px;
+}
+.tmt-upload-modal.tmt-modal-wide .tmt-form-group textarea {
+    height: 150px;
+    min-height: 120px;
+    padding: 14px 24px;
+    border-radius: 26px;
+    resize: none;
+}
+
+/* mode baca: teks tetap putih penuh */
+.tmt-modal-wide .tmt-form-group :is(input, select):disabled,
+.tmt-modal-wide .tmt-form-group :is(input, textarea)[readonly] {
+    opacity: 1;
+    cursor: default;
+    -webkit-text-fill-color: #fff;
+}
+
+/* modal detail: dropdown tanpa panah saat belum diedit */
+#modalDetail .tmt-modal-wide:not(.is-editing) .tmt-form-group select {
+    background-image: none;
+    padding-right: 24px;
+}
+
+/* mode edit: tampilan sama seperti modal upload, ada cincin saat fokus */
+.tmt-modal-wide.is-editing .tmt-form-group :is(input, select, textarea) { cursor: text; }
+.tmt-modal-wide.is-editing .tmt-form-group select { cursor: pointer; }
+
+/* kotak file: tampilan statis (detail) */
+.tmt-file-view,
+.tmt-lihat-dropzone {
+    width: 100%;
+    border: 3px dashed var(--gold);
+    border-radius: 16px;
+    background: var(--cream);
+    color: var(--gold);
+}
+.tmt-file-view {
+    min-height: 40px;
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    font-size: 15px;
+    overflow-wrap: anywhere;
+}
+
+/* kotak file: ikon awan + teks (lihat & edit) */
+.tmt-lihat-dropzone {
+    min-height: 30px;
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 15px;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background .2s ease;
+}
+.tmt-lihat-dropzone:hover { background: #f1e1bf; }
+.tmt-lihat-dropzone svg { flex-shrink: 0; }
+.tmt-lihat-dropzone input[type="file"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* input nilai: tanpa spinner bawaan */
+.tmt-modal-wide input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
+.tmt-modal-wide input[type="number"]::-webkit-outer-spin-button,
+.tmt-modal-wide input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+/* tombol */
+.tmt-modal-wide .tmt-upload-actions { gap: 22px; margin-top: 30px; }
+.tmt-modal-wide .tmt-upload-actions > * {
+    min-width: 0;
+    height: 53px;
+    border-radius: 28px;
+    font-size: 19px;
+}
+.tmt-modal-wide .tmt-cancel-btn { border: 2px solid var(--amber); color: var(--amber); }
+.tmt-modal-wide .tmt-send-btn { font-weight: 600; }
+.tmt-modal-wide .tmt-btn-link { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
+
+@media (max-width: 800px) {
+    .tmt-upload-modal.tmt-modal-wide { max-width: 560px; padding: 24px; }
+    .tmt-modal-wide .tmt-upload-form { gap: 10px; }
+    .tmt-modal-wide .tmt-upload-header { gap: 20px; margin-bottom: 18px; }
+    .tmt-modal-wide .tmt-upload-header h2 { font-size: 25px; }
+    .tmt-modal-wide .tmt-back-btn { width: 62px; height: 62px; }
+    .tmt-upload-modal.tmt-modal-wide .tmt-form-group label,
+    .tmt-upload-modal.tmt-modal-wide .tmt-file-label { font-size: 19px; }
+}
+@media (max-width: 480px) {
+    .tmt-upload-modal.tmt-modal-wide { padding: 20px 17px; border-radius: 22px; }
+    .tmt-modal-wide .tmt-back-btn { width: 54px; height: 54px; }
+    .tmt-upload-modal.tmt-modal-wide .tmt-form-group :is(input, select) { font-size: 16px; }
+    .tmt-modal-wide .tmt-upload-actions { gap: 10px; }
+    .tmt-modal-wide .tmt-upload-actions > * { font-size: 16px; }
 }
 
 /* css jadwal */
@@ -544,7 +756,6 @@ body {
 .radio-absensi input { position: absolute; opacity: 0; width: 1px; height: 1px; }
 .radio-absensi span { position: relative; width: 22px; height: 22px; display: inline-block; border: 1.5px solid var(--orange); border-radius: 50%; }
 .radio-absensi input:checked + span::after { content: ""; position: absolute; inset: 4px; border-radius: 50%; background: var(--orange); }
-.radio-absensi input:focus-visible + span { outline: 2px solid var(--teal); outline-offset: 3px; }
 
 .pesan-absensi { margin-top: 18px; padding: 13px 18px; border-radius: 12px; font-size: 15px; }
 .pesan-absensi.sukses { background: #e0f2e8; color: var(--teal); }
@@ -925,7 +1136,6 @@ body {
     font-family: inherit;
     font-size: 14px;
 }
-.t-form-group :is(input, textarea):focus { box-shadow: 0 0 0 2px rgba(242, 118, 64, .25); }
 .t-form-group textarea { resize: vertical; }
 .t-form-group select {
     appearance: none;
@@ -955,9 +1165,11 @@ body {
 
 /* css sertif */
 .ts-page { width: 100%; min-width: 0; color: #111; font-family: Arial, Helvetica, sans-serif; }
+.ts-page,.ts-page *,.ts-overlay,.ts-overlay * {box-sizing: border-box;}
+.ts-page [hidden],.ts-overlay[hidden] {display: none !important;}
 
 .ts-header { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 28px; }
-.ts-title { margin-bottom: 8px; color: var(--teal); font-size: 30px; font-weight: 800; line-height: 1.2; }
+.ts-title { margin-bottom: 0 0 8px; color: var(--teal); font-size: 30px; font-weight: 800; line-height: 1.2; }
 .ts-subtitle { color: #555; font-size: 15px; line-height: 1.5; }
 
 .ts-btn {
@@ -1018,6 +1230,20 @@ body {
     outline: 0;
     appearance: none;
     background: var(--mint) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='12' viewBox='0 0 16 12'%3E%3Cpath d='m2 3 6 6 6-6' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 16px center;
+    color: #205951;
+    font: inherit;
+    cursor: pointer;
+}
+.ts-nameUp {
+    width: 100%;
+    min-width: 0;
+    height: 48px;
+    padding: 0 40px 0 17px;
+    border: 0;
+    border-radius: 26px;
+    outline: 0;
+    appearance: none;
+    background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='12' viewBox='0 0 16 12'%3E%3Cpath d='m2 3 6 6 6-6' fill='none' stroke='%23286c65' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 16px center !important;
     color: #205951;
     font: inherit;
     cursor: pointer;
@@ -1173,6 +1399,61 @@ body {
 }
 .ts-certificate-preview img { display: block; }
 
+
+/* Tombol sekunder */
+.ts-btn-secondary {
+    background: var(--cream);
+    color: var(--teal);
+    border: 1px solid var(--mint-line);
+}
+
+.ts-btn-secondary:hover {
+    background: var(--mint-line);
+}
+
+/* Tombol aksi modal Edit */
+.ts-edit-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 22px;
+}
+
+.ts-edit-actions .ts-btn {
+    width: 100%;
+    margin-top: 0;
+}
+
+/* Area pilihan file */
+.ts-edit-dropzone {
+    min-height: 54px;
+    height: auto;
+    padding: 14px;
+}
+
+.ts-edit-dropzone input[type="file"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
+.ts-edit-dropzone .ts-selected-file {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.4;
+    text-align: center;
+}
+
+@media (max-width: 420px) {
+    .ts-edit-actions {
+        grid-template-columns: 1fr;
+    }
+}
+
 @media (max-width: 800px) {
     .ts-header { align-items: flex-start; flex-direction: column; }
     .ts-toolbar { grid-template-columns: minmax(0, 1fr) 160px; }
@@ -1184,4 +1465,55 @@ body {
     .ts-modal-header h2 { font-size: 21px; }
     .ts-detail-list > div { flex-direction: column; gap: 5px; }
     .ts-detail-list dd { text-align: left; }
+}
+/* FIX: modal Lihat Tugas hanya menampilkan nilai, bukan dropdown */
+#modalLihat.tmt-modal-overlay .tmt-upload-modal.tmt-modal-wide .tmt-form-group input[readonly] {
+    background: var(--olive) !important;
+    background-image: none !important;
+    padding-right: 16px;
+    cursor: default;
+    opacity: 1;
+    color: #fff;
+    -webkit-text-fill-color: #fff;
+}
+
+/* Samakan ikon panah filter Kelas dan Terbaru */
+.tmt-toolbar select.tmt-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding-right: 45px;
+    background-color: var(--gold);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='16' viewBox='0 0 24 16'%3E%3Cpath d='M3 3l9 9 9-9' fill='none' stroke='white' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 18px center;
+    background-size: 16px;
+}
+
+@media (max-width: 600px) {
+    .tmt-toolbar select.tmt-select {
+        padding-right: 38px;
+        background-position: right 12px center;
+        background-size: 15px;
+    }
+}
+
+
+/* FIX FINAL: modal Detail tidak menampilkan ikon dropdown/kalender saat mode baca */
+#modalDetail:not([hidden]) .tmt-form-group input[readonly],
+#modalDetail:not([hidden]) .tmt-form-group select:disabled {
+    background-image: none !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    padding-right: 24px !important;
+    cursor: default !important;
+}
+#modalDetail:not([hidden]) .tmt-form-group input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    display: none !important;
+    -webkit-appearance: none !important;
+
+}
+#modalDetail:not([hidden]) .tmt-form-group select:disabled {
+    pointer-events: none;
 }

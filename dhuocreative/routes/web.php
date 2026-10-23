@@ -56,10 +56,6 @@ Route::middleware(['auth', 'prevent.back'])->prefix('tentor')->name('tentor.')->
         return view('tentor.absensi', compact('kelas'));
     })->name('absensi');
 
-    Route::get('/materi', function () {
-        return view('tentor.materi');
-    })->name('materi');
-
     Route::get('/tugas', function () {
         return view('tentor.tugas');
     })->name('tugas'); 
