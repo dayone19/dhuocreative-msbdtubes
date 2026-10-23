@@ -7,7 +7,7 @@
         <h1 class="o-page-title">Daftar Siswa</h1>
         <button type="button" class="o-btn o-btn-orange" id="btnTambahSiswa">
             <span class="o-plus">+</span>
-             Tambah Pendaftaran
+            Tambah Pendaftaran
         </button>
     </div>
 
@@ -31,17 +31,19 @@
         <table class="o-table" id="tabelSiswa">
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Nama Siswa</th>
+                    <th>Kursus</th>
+                    <th>Kelas</th>
                     <th>Tanggal Daftar</th>
                     <th>Status</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
-                <tr data-status="aktif" data-kursus="Web Master" data-tanggal="2026-01-12">
-                    <td>1208</td>
+                <tr data-status="aktif" data-kursus="Web Master" data-kelas="Online" data-telp="08123456789" data-tanggal="2026-01-12">
                     <td>Siswa A</td>
+                    <td>Web Master</td>
+                    <td>Online</td>
                     <td>2026-01-12</td>
                     <td><span class="o-status aktif">Aktif</span></td>
                     <td><button type="button" class="o-action" data-detail>Detail</button></td>
@@ -69,8 +71,8 @@
                 <input id="namaSiswa" maxlength="100" required placeholder="Masukkan nama siswa">
             </div>
             <div class="o-form-group">
-                <label for="telp">No. Telp</label>
-                <input id="telp" maxlength="12" required placeholder="Masukkan nomor telepon">
+                <label for="telpSiswa">No. Telp</label> <!-- Diperbaiki dari 'telp' agar unik -->
+                <input id="telpSiswa" maxlength="12" required placeholder="Masukkan nomor telepon">
             </div>
             <div class="o-form-group">
                 <label for="kursusSiswa">Nama Kursus</label>
@@ -123,11 +125,15 @@
             </div>
             <div>
                 <span>No. Telp</span>
-                <strong id="telp">-</strong>
+                <strong id="detailTelp">-</strong> <!-- Diperbaiki dari 'telp' -->
             </div>
             <div>
                 <span>Daftar Kursus</span>
                 <strong id="detailKursus">-</strong>
+            </div>
+            <div>
+                <span>Kelas</span>
+                <strong id="detailKelas">-</strong>
             </div>
             <div>
                 <span>Tanggal Daftar</span>
@@ -143,15 +149,127 @@
 </div>
 
 <script>
-(()=>{const el=id=>document.getElementById(id),modal=el('modalSiswa'),detail=el('modalDetailSiswa'),map={'Web Master':['offline','offline Rumah','online'],'MS Office':['offline','offline Rumah','online']};
-let editingRow=null,selectedRow=null;function fillClasses(){const s=el('kelasSiswa'),course=el('kursusSiswa').value,old=s.value;s.replaceChildren(new Option('Pilih kelas',''));(map[course]||[]).forEach(n=>s.add(new Option(n,n)));if((map[course]||[]).includes(old))s.value=old}
+(()=>{
+const el=id=>document.getElementById(id),modal=el('modalSiswa'),detail=el('modalDetailSiswa'),map={'Web Master':['Offline','Offline Rumah','Online'],'MS Office':['Offline','Offline Rumah','Online']};
+let editingRow=null,selectedRow=null;
+
+function fillClasses(){
+    const s=el('kelasSiswa'),course=el('kursusSiswa').value,old=s.value;
+    s.replaceChildren(new Option('Pilih kelas',''));
+    (map[course]||[]).forEach(n=>s.add(new Option(n,n)));
+    if((map[course]||[]).includes(old))s.value=old;
+}
+
 el('kursusSiswa').addEventListener('change',fillClasses);
-function filter(){const q=el('cariSiswa').value.toLowerCase().trim(),status=el('filterStatus').value,course=el('filterKursus').value;let n=0;el('tabelSiswa').querySelectorAll('tbody tr').forEach(r=>{const show=r.textContent.toLowerCase().includes(q)&&(!status||r.dataset.status===status)&&(!course||r.dataset.kursus===course);r.hidden=!show;if(show)n++});el('kosongSiswa').hidden=n>0}
+
+function filter(){
+    const q=el('cariSiswa').value.toLowerCase().trim(),status=el('filterStatus').value,course=el('filterKursus').value;
+    let n=0;
+    el('tabelSiswa').querySelectorAll('tbody tr').forEach(r=>{
+        const show=r.textContent.toLowerCase().includes(q)&&(!status||r.dataset.status===status)&&(!course||r.dataset.kursus===course);
+        r.hidden=!show;
+        if(show)n++;
+    });
+    el('kosongSiswa').hidden=n>0;
+}
+
 ['cariSiswa','filterStatus','filterKursus'].forEach(id=>el(id).addEventListener(id==='cariSiswa'?'input':'change',filter));
-el('btnTambahSiswa').addEventListener('click',()=>{editingRow=null;el('formSiswa').reset();el('modalSiswa').querySelector('h2').textContent='Pendaftaran Siswa';el('formSiswa').querySelector('[type=submit]').textContent='Simpan Pendaftaran';fillClasses();modal.hidden=false});document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>b.closest('.o-modal').hidden=true));
-el('tabelSiswa').addEventListener('click',e=>{const b=e.target.closest('[data-detail]');if(!b)return;const r=b.closest('tr');selectedRow=r;['Nama','Kursus','Kelas','Tanggal'].forEach((k,i)=>el('detail'+k).textContent=r.cells[i].textContent.trim());el('detailStatus').textContent=r.dataset.status==='aktif'?'Aktif':'Nonaktif';detail.hidden=false});
-el('editDetailSiswa').addEventListener('click',()=>{if(!selectedRow)return;editingRow=selectedRow;const c=selectedRow.cells;el('namaSiswa').value=c[0].textContent.trim();el('kursusSiswa').value=c[1].textContent.trim();fillClasses();el('kelasSiswa').value=c[2].textContent.trim();el('tanggalDaftar').value=selectedRow.dataset.tanggal;el('statusSiswa').value=selectedRow.dataset.status;el('modalSiswa').querySelector('h2').textContent='Edit Pendaftaran Siswa';el('formSiswa').querySelector('[type=submit]').textContent='Simpan Perubahan';detail.hidden=true;modal.hidden=false});
-el('formSiswa').addEventListener('submit',e=>{e.preventDefault();const name=el('namaSiswa').value.trim(),course=el('kursusSiswa').value,cls=el('kelasSiswa').value,date=el('tanggalDaftar').value,status=el('statusSiswa').value,body=el('tabelSiswa').tBodies[0],r=editingRow||body.insertRow();r.dataset.status=status;r.dataset.kursus=course;r.dataset.tanggal=date;[name,course,cls,date].forEach((v,i)=>{if(r.cells[i])r.cells[i].textContent=v;else{const c=r.insertCell();c.textContent=v}});const sc=r.cells[4]||r.insertCell();sc.replaceChildren();const badge=document.createElement('span');badge.className='o-status '+status;badge.textContent=status==='aktif'?'Aktif':'Nonaktif';sc.appendChild(badge);if(!r.cells[5]){const ac=r.insertCell(),btn=document.createElement('button');btn.type='button';btn.className='o-action';btn.dataset.detail='';btn.textContent='Detail';ac.appendChild(btn)}editingRow=null;modal.hidden=true;filter()});
-[modal,detail].forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.hidden=true}));document.addEventListener('keydown',e=>{if(e.key==='Escape')[modal,detail].forEach(m=>m.hidden=true)});filter()})();
+
+el('btnTambahSiswa').addEventListener('click',()=>{
+    editingRow=null;
+    el('formSiswa').reset();
+    el('modalSiswa').querySelector('h2').textContent='Pendaftaran Siswa';
+    el('formSiswa').querySelector('[type=submit]').textContent='Simpan Pendaftaran';
+    fillClasses();
+    modal.hidden=false;
+});
+
+document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>b.closest('.o-modal').hidden=true));
+
+el('tabelSiswa').addEventListener('click',e=>{
+    const b=e.target.closest('[data-detail]');
+    if(!b)return;
+    const r=b.closest('tr');
+    selectedRow=r;
+    el('detailNama').textContent = r.cells[0].textContent.trim();
+    el('detailKursus').textContent = r.cells[1].textContent.trim();
+    el('detailKelas').textContent = r.cells[2].textContent.trim();
+    el('detailTelp').textContent = r.dataset.telp || '-';
+    el('detailTanggal').textContent = r.cells[3].textContent.trim();
+    el('detailStatus').textContent = r.dataset.status==='aktif'?'Aktif':'Nonaktif';
+    detail.hidden=false;
+});
+
+el('editDetailSiswa').addEventListener('click',()=>{
+    if(!selectedRow)return;
+    editingRow=selectedRow;
+    const c=selectedRow.cells;
+    el('namaSiswa').value=c[0].textContent.trim();
+    el('telpSiswa').value=selectedRow.dataset.telp || '';
+    el('kursusSiswa').value=c[1].textContent.trim();
+    fillClasses();
+    el('kelasSiswa').value=c[2].textContent.trim();
+    el('tanggalDaftar').value=selectedRow.dataset.tanggal;
+    el('statusSiswa').value=selectedRow.dataset.status;
+    el('modalSiswa').querySelector('h2').textContent='Edit Pendaftaran Siswa';
+    el('formSiswa').querySelector('[type=submit]').textContent='Simpan Perubahan';
+    detail.hidden=true;
+    modal.hidden=false;
+});
+
+el('formSiswa').addEventListener('submit',e=>{
+    e.preventDefault();
+    const name=el('namaSiswa').value.trim(),
+          telp=el('telpSiswa').value.trim(),
+          course=el('kursusSiswa').value,
+          cls=el('kelasSiswa').value,
+          date=el('tanggalDaftar').value,
+          status=el('statusSiswa').value,
+          body=el('tabelSiswa').tBodies[0],
+          r=editingRow||body.insertRow();
+          
+    r.dataset.status=status;
+    r.dataset.kursus=course;
+    r.dataset.kelas=cls;
+    r.dataset.telp=telp;
+    r.dataset.tanggal=date;
+
+    const values = [name, course, cls, date];
+    values.forEach((v,i)=>{
+        if(r.cells[i]) r.cells[i].textContent=v;
+        else { const c=r.insertCell(i); c.textContent=v; }
+    });
+
+    // Kolom Status (indeks 4)
+    let sc = r.cells[4];
+    if(!sc) sc = r.insertCell(4);
+    sc.replaceChildren();
+    const badge=document.createElement('span');
+    badge.className='o-status '+status;
+    badge.textContent=status==='aktif'?'Aktif':'Nonaktif';
+    sc.appendChild(badge);
+
+    // Kolom Aksi (indeks 5)
+    let ac = r.cells[5];
+    if(!ac) ac = r.insertCell(5);
+    if(!ac.querySelector('[data-detail]')){
+        ac.replaceChildren();
+        const btn=document.createElement('button');
+        btn.type='button';
+        btn.className='o-action';
+        btn.dataset.detail='';
+        btn.textContent='Detail';
+        ac.appendChild(btn);
+    }
+
+    editingRow=null;
+    modal.hidden=true;
+    filter();
+});
+
+[modal,detail].forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.hidden=true}));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')[modal,detail].forEach(m=>m.hidden=true)});
+filter();
+})();
 </script>
 @endsection

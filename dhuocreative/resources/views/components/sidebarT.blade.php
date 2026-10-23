@@ -38,8 +38,11 @@
         <a href="{{ route('tentor.dashboard') }}" class="sidebar-item {{ request()->routeIs('tentor.dashboard') ? 'active' : '' }}">
             <span>Dashboard</span>
         </a>
-        <a href="{{ route('tentor.kelas') }}" class="sidebar-item {{ request()->routeIs('tentor.kelas') ? 'active' : '' }}">
-            <span>Kelas</span>
+        <a href="{{ route('tentor.jadwal') }}" class="sidebar-item {{ request()->routeIs('tentor.jadwal') ? 'active' : '' }}">
+            <span>Jadwal</span>
+        </a>
+        <a href="{{ route('tentor.kursus') }}" class="sidebar-item {{ request()->routeIs('tentor.kursus') ? 'active' : '' }}">
+            <span>Kursus Saya</span>
         </a>
         <a href="{{ route('tentor.tugas') }}" class="sidebar-item {{ request()->routeIs('tentor.tugas') ? 'active' : '' }}">
             <span>Tugas & Nilai</span>

@@ -5,26 +5,6 @@
 @section('content')
 <div class="tentor-kelas-page">
 
-    @php
-        $jadwal = [
-            ['hari' => 'Senin', 'detail' => 'Web Master, 11.30 - 12.30'],
-            ['hari' => 'Selasa', 'detail' => '-'],
-            ['hari' => 'Rabu', 'detail' => 'Web Master, 11.30 - 12.30'],
-            ['hari' => 'Kamis', 'detail' => '-'],
-            ['hari' => 'Jumat', 'detail' => 'Web Master, 11.30 - 12.30'],
-            ['hari' => 'Sabtu', 'detail' => '-'],
-        ];
-    @endphp
-
-    <div class="jadwal-mingguan">
-        @foreach ($jadwal as $item)
-            <div class="jadwal-hari">
-                <h3>{{ $item['hari'] }}</h3>
-                <p>{{ $item['detail'] }}</p>
-            </div>
-        @endforeach
-    </div>
-
     {{-- DAFTAR KELAS STATIS --}}
     @php
         $kelasSaya = [
@@ -59,9 +39,11 @@
         ];
     @endphp
 
+    <h1 class="tmt-title">Daftar Kursus Aktif</h1>
+
     <div class="kelas-grid">
         @foreach ($kelasSaya as $kelasItem)
-            <a href="{{ route('tentor.absensi', ['kelas' => $kelasItem['id']]) }}" class="kelas-card">
+            <a href="{{ route('tentor.absensi', ['kursus' => $kelasItem['id']]) }}" class="kelas-card">
 
                 <div class="kelas-card-info {{ $kelasItem['warna'] }}">
                     <h3>{{ $kelasItem['kursus'] }}</h3>

@@ -718,6 +718,128 @@ body {
 
 .kelas-arrow { font-size: 58px; font-weight: 500; line-height: .7; }
 
+.tj-page { width: 100%; color: var(--teal); }
+
+/* kartu hari: bisa lebih dari 1 kelas */
+.jadwal-hari .jadwal-item + .jadwal-item { margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255, 255, 255, .35); }
+.jadwal-hari p + p { margin-top: 2px; }
+
+/* notifikasi */
+.tj-notif { margin-bottom: 24px; padding: 16px 20px; border-radius: 22px; background: var(--sand); border: 1px solid #f2e6d4; }
+.tj-notif-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; color: var(--teal); }
+.tj-notif-item { display: flex; flex-direction: column; gap: 2px; padding: 8px 0; border-top: 1px solid #f0e5d4; font-size: 14px; }
+.tj-notif-item b { color: var(--orange); }
+.tj-notif-item span { color: #626e68; }
+.tj-link-btn { border: 0; background: none; color: var(--orange); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+
+/* judul section + toolbar */
+.tj-section-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 22px; }
+.tj-section-gap { margin-top: 44px; }
+.tj-section-title { color: var(--teal); font-size: 27px; font-weight: 800; }
+.tj-toolbar { display: flex; flex-wrap: wrap; gap: 14px; }
+
+.tj-input {
+    height: 48px;
+    min-width: 0;
+    padding: 0 22px;
+    border: 0;
+    border-radius: 28px;
+    outline: 0;
+    background: var(--sand);
+    color: var(--teal);
+    font: inherit;
+    font-size: 16px;
+}
+.tj-input::placeholder { color: #8b918b; opacity: 1; }
+#cariJadwal { width: 300px; }
+.tj-select {
+    width: 270px;
+    padding-right: 44px;
+    appearance: none;
+    cursor: pointer;
+    background: var(--sand) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='12' viewBox='0 0 16 12'%3E%3Cpath d='m2 3 6 6 6-6' fill='none' stroke='%23f27640' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 20px center;
+}
+
+/* tabel: header kuning, baris krem */
+.tj-table-wrap { width: 100%; overflow-x: auto; border-radius: 28px; background: var(--sand); }
+.tj-table { width: 100%; min-width: 860px; border-collapse: separate; border-spacing: 0; }
+.tj-table th {
+    height: 68px;
+    padding: 10px 14px;
+    background: var(--yellow);
+    color: var(--teal);
+    text-align: left;
+    font-size: 17px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+.tj-table th:first-child { padding-left: 24px; border-radius: 28px 0 0 28px; }
+.tj-table th:last-child { border-radius: 0 28px 28px 0; }
+.tj-table td { height: 78px; padding: 10px 14px; font-size: 16px; color: #111; }
+.tj-table td:first-child { padding-left: 24px; }
+.tj-table tbody tr:not([hidden]):hover td { background: #f8ecd3; }
+.tj-table tbody tr:hover td:first-child { border-radius: 24px 0 0 24px; }
+.tj-table tbody tr:hover td:last-child { border-radius: 0 24px 24px 0; }
+.tj-empty { text-align: center !important; color: var(--teal-muted) !important; }
+.tj-ket { max-width: 260px; font-size: 14px !important; color: #626e68 !important; }
+
+/* status */
+.tj-pill { display: inline-block; padding: 7px 14px; border-radius: 20px; background: var(--mint); color: var(--teal); font-size: 14px; font-weight: 700; }
+.tj-selesai, .tj-disetujui, .tj-hadir { background: #dff3e6; color: #1f7a45; }
+.tj-menunggu, .tj-terlambat { background: #fff0cc; color: #a8700b; }
+.tj-dibatalkan, .tj-ditolak { background: #ffe3d6; color: #b74c24; }
+.tj-pill-card { margin-top: 12px; }
+
+/* tombol */
+.tj-actions { display: flex; gap: 8px; }
+.tj-btn-detail {
+    height: 50px;
+    padding: 0 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 26px;
+    background: var(--orange);
+    color: #fff;
+    font: inherit;
+    font-size: 16px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background .2s ease;
+}
+.tj-btn-detail:hover { background: var(--orange-dk); }
+.tj-btn-gold { background: var(--teal); }
+.tj-btn-gold:hover { background: #205951; }
+
+.tj-btn-absen {
+    margin-top: 12px;
+    height: 44px;
+    padding: 0 22px;
+    border: 0;
+    border-radius: 24px;
+    background: #fff;
+    color: var(--orange);
+    font: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+}
+.tj-btn-absen:hover:not(:disabled) { background: var(--cream); }
+.tj-btn-absen:disabled { opacity: .6; cursor: not-allowed; }
+
+.tj-hint { margin: 4px 0 14px; color: var(--teal-muted); font-size: 13px; line-height: 1.5; }
+.tj-hint-block { margin-bottom: 26px; padding: 12px 18px; border-radius: 16px; background: var(--sand); font-size: 14px; }
+.tj-hariini .jadwal-hari { min-height: 140px; }
+
+@media (max-width: 800px) {
+    #cariJadwal, .tj-select { width: 100%; }
+    .tj-toolbar { width: 100%; }
+    .tj-input { flex: 1 1 100%; }
+    .tj-section-title { font-size: 23px; }
+}
+
 /* css absensi  */
 .tentor-absensi-page { padding: 0 24px 35px; }
 
@@ -1102,7 +1224,7 @@ body {
 .t-modal-box h2 { margin: 0 35px 20px 0; color: var(--orange); font-size: 23px; font-weight: 800; }
 
 .t-modal-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
-.t-modal-heading { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-bottom: 22px; }
+.t-modal-heading { display: flex; align-items: center;  gap: 15px; margin-bottom: 22px; }
 .t-modal-heading h2 { color: var(--orange); font-size: 23px; font-weight: 800; }
 
 .t-modal-close {

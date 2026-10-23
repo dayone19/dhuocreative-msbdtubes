@@ -48,12 +48,16 @@ Route::middleware(['auth', 'prevent.back'])->prefix('tentor')->name('tentor.')->
         return view('tentor.dashboard');
     })->name('dashboard'); 
 
-    Route::get('/kelas', function () {
-        return view('tentor.kelas');
-    })->name('kelas');
+    Route::get('/jadwal', function () {
+        return view('tentor.jadwal');
+    })->name('jadwal');
 
-    Route::get('/kelas/absensi/{kelas}', function ($kelas) {
-        return view('tentor.absensi', compact('kelas'));
+    Route::get('/kursus', function () {
+        return view('tentor.kursus');
+    })->name('kursus');
+
+    Route::get('/kursus/absensi/{kursus}', function ($kursus) {
+        return view('tentor.absensi', compact('kursus'));
     })->name('absensi');
 
     Route::get('/tugas', function () {
