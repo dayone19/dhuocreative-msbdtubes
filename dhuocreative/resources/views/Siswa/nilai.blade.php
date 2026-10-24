@@ -11,6 +11,23 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <style>
+        :root {
+            --teal: #286c65;
+            --orange: #f27640;
+            --orange-dk: #df6833;
+            --amber: #ffb83f;
+            --amber-dk: #f3a92d;
+            --yellow: #ffdc59;
+            --gold: #b29458;
+            --gold-dk: #987840;
+            --olive: #b4a052;
+            --cream: #f5e9cf;
+            --ivory: #fffaf0;
+            --sand: #fcf4e5;
+            --mint: #e3efed;
+            --mint-line: #cfe0dd;
+            --teal-muted: #5f7f7b;
+        }
         body {
             margin: 0;
             padding: 24px 40px;
@@ -21,7 +38,7 @@
             width: 100%;
             max-width: 100%;
             font-family: 'Plus Jakarta Sans', 'Bricolage Grotesque', sans-serif;
-            color: #111;
+            color: var(--teal);
             box-sizing: border-box;
         }
 
@@ -41,7 +58,7 @@
         .nl-header i {
             font-size: 40px;
             line-height: 1;
-            color: #286c65;
+            color: var(--teal);
         }
 
         .nl-header h1 {
@@ -49,7 +66,7 @@
             font-size: 36px;
             font-weight: 800;
             line-height: 1.1;
-            color: #000;
+            color: var(--teal);
             margin: 0;
         }
 
@@ -66,7 +83,7 @@
             gap: 16px;
             min-width: 0;
             padding: 18px 22px;
-            background: #faf3e3;
+            background: var(--mint);
             border-radius: 22px;
         }
 
@@ -77,17 +94,17 @@
             justify-content: center;
             width: 46px;
             height: 46px;
-            background: #fff;
             border-radius: 14px;
             font-size: 22px;
-            color: #286c65;
+            background: var(--ivory);
+            color: var(--teal);
         }
 
         .nl-stat-label {
             display: block;
             font-size: 13px;
             font-weight: 500;
-            color: #4a5568;
+            color: var(--teal-muted);
         }
 
         .nl-stat-value {
@@ -96,19 +113,19 @@
             font-size: 24px;
             font-weight: 800;
             line-height: 1.2;
-            color: #000;
+            color: var(--orange);
         }
 
         .nl-stat-value small {
             font-size: 14px;
             font-weight: 500;
-            color: #4a5568;
+            color: var(--teal-muted);
         }
 
         .nl-table {
             overflow: hidden;
-            background: #fff;
-            border: 1.5px solid #e3e3e3;
+            background: var(--ivory);
+            border: 1px solid var(--mint-line);
             border-radius: 20px;
         }
 
@@ -122,16 +139,17 @@
 
         .nl-thead {
             min-height: 46px;
-            background: #faf3e3;
             font-size: 15px;
             font-weight: 700;
-            color: #f27640;
+            background: var(--cream);
+            color: var(--orange-dk);
         }
 
         .nl-row {
             padding-top: 16px;
             padding-bottom: 16px;
             border-top: 1px solid #ececec;
+            border-color: var(--mint-line);
         }
 
         .nl-thead + .nl-row {
@@ -142,23 +160,23 @@
             display: block;
             font-size: 15px;
             font-weight: 700;
-            color: #0f1b2d;
+            color: var(--teal);
         }
 
         .nl-name span {
             display: block;
             margin-top: 4px;
             font-size: 12px;
-            color: #4a5568;
+            color: var(--teal-muted);
         }
 
         .nl-date {
             font-size: 14.5px;
-            color: #222;
+            color: var(--teal);
         }
 
         .nl-date.is-empty {
-            color: #667085;
+            color: var(--teal-muted);
         }
 
         .nl-score {
@@ -169,11 +187,11 @@
             min-width: 50px;
             height: 28px;
             padding: 0 14px;
-            background: #dff3e3;
             border-radius: 14px;
             font-size: 15px;
             font-weight: 800;
-            color: #17623a;
+            background: var(--mint);
+            color: var(--teal);
         }
 
         .nl-score-empty {
@@ -181,7 +199,7 @@
             padding-left: 16px;
             font-size: 18px;
             font-weight: 700;
-            color: #667085;
+            color: var(--teal-muted);
         }
 
         .nl-badge {
@@ -205,24 +223,24 @@
         }
 
         .nl-badge-great {
-            background: #dff3e3;
-            color: #1f9d3a;
+            bbackground: var(--mint);
+            color: var(--teal);
         }
 
         .nl-badge-good {
-            background: #e3f1e6;
-            color: #2f9e44;
+            background: var(--sand);
+            color: var(--gold-dk);
         }
 
         .nl-badge-wait {
-            background: #fdeaa8;
-            color: #e58a00;
+            background: #fff0cf;
+            color: var(--orange-dk);
         }
 
         .nl-scale {
             margin-top: 20px;
             padding: 20px 24px 22px;
-            background: #e3ede9;
+            background: var(--mint);
             border-radius: 24px;
         }
 
@@ -232,7 +250,7 @@
             gap: 10px;
             font-size: 18px;
             font-weight: 700;
-            color: #1f6b5f;
+            color: var(--teal);
             margin: 0 0 14px;
         }
 
@@ -251,25 +269,25 @@
             justify-content: space-between;
             gap: 10px;
             padding: 12px 14px;
-            background: #fff;
+            background: var(--ivory);
             border-radius: 14px;
             font-size: 13px;
         }
 
         .nl-scale-list b {
             font-weight: 700;
-            color: #111;
+            color: var(--teal);
         }
 
         .nl-scale-list span {
-            color: #4a5568;
+            color: var(--teal-muted);
             white-space: nowrap;
         }
 
         .nl-note {
             margin: 14px 0 0;
             font-size: 12.5px;
-            color: #3d5a54;
+            color: var(--teal-muted);
         }
 
         @media (max-width: 900px) {
@@ -334,14 +352,12 @@
 <div class="nl-page">
 
     <header class="nl-header">
-        <i class="bi bi-check-circle"></i>
         <h1>Nilai</h1>
     </header>
 
     <section class="nl-summary" aria-label="Ringkasan nilai">
 
         <div class="nl-stat">
-            <span class="nl-stat-icon"><i class="bi bi-graph-up-arrow"></i></span>
             <div>
                 <span class="nl-stat-label">Rata-rata Nilai</span>
                 <strong class="nl-stat-value">91,5</strong>
@@ -349,7 +365,6 @@
         </div>
 
         <div class="nl-stat">
-            <span class="nl-stat-icon"><i class="bi bi-trophy"></i></span>
             <div>
                 <span class="nl-stat-label">Nilai Tertinggi</span>
                 <strong class="nl-stat-value">95</strong>
@@ -357,7 +372,6 @@
         </div>
 
         <div class="nl-stat">
-            <span class="nl-stat-icon"><i class="bi bi-clipboard-check"></i></span>
             <div>
                 <span class="nl-stat-label">Tugas Dinilai</span>
                 <strong class="nl-stat-value">2 <small>dari 3 tugas</small></strong>

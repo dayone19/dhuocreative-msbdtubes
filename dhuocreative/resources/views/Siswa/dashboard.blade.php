@@ -4,7 +4,7 @@
 
 <div class="sd-dashboard">
     <section class="sd-welcome">
-        <h1>Halo, Nadhira Ameera 👋</h1>
+        <h1>Halo, Nadhira Ameera</h1>
         <p>Selamat datang di DhuoCreative Portal!</p>
     </section>
 
@@ -12,7 +12,6 @@
 
         <div class="sd-card">
             <div class="sd-card-top">
-                <i class="bi bi-journal-check sd-card-icon"></i>
                 <div>
                     <h3>Tugas</h3>
                     <p>Lihat &amp; Kumpulkan</p>
@@ -27,7 +26,6 @@
 
         <div class="sd-card">
             <div class="sd-card-top">
-                <i class="bi bi-check-circle-fill sd-card-icon"></i>
                 <div>
                     <h3>Nilai</h3>
                     <p>Lihat Nilai</p>
@@ -42,10 +40,9 @@
 
         <div class="sd-card">
             <div class="sd-card-top">
-                <i class="bi bi-clipboard-check sd-card-icon"></i>
                 <div>
-                    <h3>Absensi</h3>
-                    <p>Lihat Absensi</p>
+                    <h3>Presensi Kelas</h3>
+                    <p>Lakukan Absensi</p>
                 </div>
             </div>
 
@@ -62,7 +59,6 @@
         <div class="sd-panel">
 
             <div class="sd-panel-title">
-                <i class="bi bi-calendar3"></i>
                 <h2>Jadwal Kelas</h2>
             </div>
 
@@ -89,24 +85,6 @@
                         <span class="sd-badge sd-badge-online">
                             Online
                         </span>
-
-                        <div class="sd-schedule-actions">
-                            <a href="{{ route('siswa.absensi') }}?ajukan=1"
-                               class="sd-btn-tunda">
-                                Tunda Kelas
-                            </a>
-
-                            <button type="button"
-                                    class="sd-btn-setuju js-setujui-kelas">
-                                Setujui Kelas
-                            </button>
-                        </div>
-
-                        <span class="sd-badge-disetujui" hidden>
-                            <i class="bi bi-check-circle-fill"></i>
-                            Kelas Disetujui
-                        </span>
-
                     </div>
                 </div>
 
@@ -131,24 +109,6 @@
                         <span class="sd-badge sd-badge-online">
                             Online
                         </span>
-
-                        <div class="sd-schedule-actions">
-                            <a href="{{ route('siswa.absensi') }}"
-                               class="sd-btn-tunda">
-                                Tunda Kelas
-                            </a>
-
-                            <button type="button"
-                                    class="sd-btn-setuju js-setujui-kelas">
-                                Setujui Kelas
-                            </button>
-                        </div>
-
-                        <span class="sd-badge-disetujui" hidden>
-                            <i class="bi bi-check-circle-fill"></i>
-                            Kelas Disetujui
-                        </span>
-
                     </div>
                 </div>
 
@@ -158,7 +118,6 @@
         <div class="sd-panel sd-announcement">
 
             <div class="sd-panel-title">
-                <i class="bi bi-megaphone-fill"></i>
                 <h2>Pengumuman</h2>
             </div>
 
@@ -169,7 +128,6 @@
                     <strong>Pengumpulan tugas minggu ini</strong>
 
                     <small>
-                        <i class="bi bi-calendar3"></i>
                         Deadline: 10 Oktober 2026
                     </small>
                 </div>

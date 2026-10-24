@@ -11,6 +11,23 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <style>
+        :root {
+            --teal: #286c65;
+            --orange: #f27640;
+            --orange-dk: #df6833;
+            --amber: #ffb83f;
+            --amber-dk: #f3a92d;
+            --yellow: #ffdc59;
+            --gold: #b29458;
+            --gold-dk: #987840;
+            --olive: #b4a052;
+            --cream: #f5e9cf;
+            --ivory: #fffaf0;
+            --sand: #fcf4e5;
+            --mint: #e3efed;
+            --mint-line: #cfe0dd;
+            --teal-muted: #5f7f7b;
+        }
         body {
             margin: 0;
             padding: 24px 40px;
@@ -21,7 +38,7 @@
             width: 100%;
             max-width: 100%;
             font-family: 'Plus Jakarta Sans', 'Bricolage Grotesque', sans-serif;
-            color: #111;
+            color: var(--teal);
             box-sizing: border-box;
         }
 
@@ -41,7 +58,7 @@
         .pt-header i {
             font-size: 40px;
             line-height: 1;
-            color: #286c65;
+            color: var(--teal);
         }
 
         .pt-header h1 {
@@ -49,7 +66,7 @@
             font-size: 36px;
             font-weight: 800;
             line-height: 1.1;
-            color: #000;
+            color: var(--teal);
             margin: 0;
         }
 
@@ -63,18 +80,19 @@
         .pt-thead {
             padding: 0 34px;
             min-height: 52px;
-            background: #faf3e3;
             border-radius: 14px;
             font-size: 17px;
             font-weight: 700;
-            color: #f27640;
+            background: var(--cream);
+            color: var(--orange-dk);
         }
 
         .pt-list {
             margin-top: 14px;
             padding: 0 22px;
-            background: #fff;
-            border: 1.5px solid #d9d9d9;
+            background: var(--ivory);
+            border: 1px solid var(--mint-line);
+            border: 1.5px solid var(--ivory);
             border-radius: 18px;
         }
 
@@ -83,27 +101,27 @@
         }
 
         .pt-row + .pt-row {
-            border-top: 1px solid #e6e6e6;
+            border-top: 1px solid var(--mint-line);
         }
 
         .pt-name strong {
             display: block;
             font-size: 16px;
             font-weight: 700;
-            color: #0f1b2d;
+            color: var(--teal);
         }
 
         .pt-name span {
             display: block;
             margin-top: 6px;
             font-size: 14px;
-            color: #4a5568;
+            color: var(--teal-muted);
         }
 
         .pt-deadline {
             font-size: 14.5px;
             line-height: 1.65;
-            color: #222;
+            color: var(--teal);
         }
 
         .pt-status {
@@ -127,26 +145,26 @@
         }
 
         .pt-status-done {
-            background: #dff3e3;
-            color: #1f9d3a;
+            background: var(--mint);
+            color: var(--teal);
         }
 
         .pt-status-pending {
-            background: #fdeaa8;
-            color: #e58a00;
+            background: #fff0c9;
+            color: var(--gold-dk);
         }
 
         .pt-submit {
             margin-top: 16px;
             padding: 22px 36px 26px;
-            background: #e3ede9;
+            background: var(--mint);
             border-radius: 28px;
         }
 
         .pt-submit h2 {
             font-size: 21px;
             font-weight: 700;
-            color: #1f6b5f;
+            color: var(--teal);
             margin: 0 0 14px;
         }
 
@@ -161,7 +179,7 @@
         .pt-upload-label {
             font-size: 15px;
             font-weight: 700;
-            color: #111;
+            color: var(--teal);
         }
 
         .pt-select {
@@ -171,13 +189,14 @@
             padding: 0 40px 0 14px;
             border: none;
             border-radius: 14px;
-            background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23222' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 16 16'%3E%3Cpath d='m3 6 5 5 5-5'/%3E%3C/svg%3E") no-repeat right 14px center;
+            background: var(--ivory) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23222' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 16 16'%3E%3Cpath d='m3 6 5 5 5-5'/%3E%3C/svg%3E") no-repeat right 14px center;
             font-family: inherit;
             font-size: 14px;
-            color: #111;
             appearance: none;
             -webkit-appearance: none;
             cursor: pointer;
+            background-color: var(--ivory);
+            color: var(--teal);
         }
 
         .pt-upload-row {
@@ -200,23 +219,25 @@
             width: 100%;
             height: 142px;
             padding: 16px;
-            background: #f8eedd;
-            border: 2px dashed #d1a95c;
+            border: 2px dashed var(--gold);
             border-radius: 18px;
-            color: #8a6a34;
             text-align: center;
             cursor: pointer;
+            background: var(--cream);
+            border-color: var(--gold);
+            color: var(--teal);
             transition: background .2s ease, border-color .2s ease;
         }
 
         .pt-drop:hover,
         .pt-drop.is-over {
-            background: #f5e6c8;
-            border-color: #b98a2f;
+            background: var(--sand);
+            border-color: var(--orange);
         }
 
         .pt-drop:focus-within {
-            outline: 3px solid #f27640;
+            outline-color: var(--orange);
+            outline: 3px solid var(--orange);
             outline-offset: 2px;
         }
 
@@ -233,7 +254,7 @@
 
         .pt-drop-note {
             font-size: 11px;
-            color: #9a7d4d;
+            color: var(--teal-muted);
         }
 
         .pt-file-input {
@@ -251,7 +272,7 @@
             white-space: nowrap;
             font-size: 14px;
             font-weight: 700;
-            color: #1f6b5f;
+            color: var(--teal);
         }
 
         .pt-btn {
@@ -267,8 +288,8 @@
             padding: 0 32px;
             border: none;
             border-radius: 999px;
-            background: #f4713a;
-            color: #fff;
+            background: var(--orange-dk);
+            color: var(--ivory);
             font-family: inherit;
             font-size: 16px;
             font-weight: 700;
@@ -364,7 +385,6 @@
 
     <!-- Judul -->
     <header class="pt-header">
-        <i class="bi bi-clipboard2-check"></i>
         <h1>Tugas</h1>
     </header>
 

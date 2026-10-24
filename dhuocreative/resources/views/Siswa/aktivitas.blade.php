@@ -5,7 +5,6 @@
 <div class="ab-page">
 
     <header class="ab-header">
-        <i class="bi bi-award"></i>
         <h1>Aktivitas Belajar</h1>
     </header>
 
@@ -13,7 +12,6 @@
 
         <div class="ab-stat">
             <div class="ab-stat-head">
-                <i class="bi bi-calendar-check"></i>
                 <h3>Kehadiran</h3>
             </div>
             <div class="ab-stat-body">
@@ -24,7 +22,6 @@
 
         <div class="ab-stat">
             <div class="ab-stat-head">
-                <i class="bi bi-card-checklist"></i>
                 <h3>Tugas Dikumpulkan</h3>
             </div>
             <div class="ab-stat-body">
@@ -38,7 +35,6 @@
 
         <div class="ab-panel">
             <div class="ab-panel-title">
-                <i class="bi bi-clipboard-check"></i>
                 <h2>Absensi</h2>
             </div>
 
@@ -58,19 +54,19 @@
                 <div class="ab-row">
                     <span class="ab-bold">10 Oktober 2026</span>
                     <span>10:00 - 12:00</span>
-                    <span><em class="ab-badge ab-badge-alpha">Alpha</em></span>
+                    <span><em class="ab-badge ab-badge-hadir">Hadir</em></span>
                 </div>
 
                 <div class="ab-row">
                     <span class="ab-bold">10 Oktober 2026</span>
                     <span>10:00 - 12:00</span>
-                    <span><em class="ab-badge ab-badge-izin">Izin</em></span>
+                    <span><em class="ab-badge ab-badge-hadir">Hadir</em></span>
                 </div>
 
                 <div class="ab-row">
                     <span class="ab-bold">10 Oktober 2026</span>
                     <span>10:00 - 12:00</span>
-                    <span><em class="ab-badge ab-badge-sakit">Sakit</em></span>
+                    <span><em class="ab-badge ab-badge-hadir">Hadir</em></span>
                 </div>
 
                 <div class="ab-row">
@@ -95,7 +91,6 @@
 
         <div class="ab-panel ab-panel-tugas">
             <div class="ab-panel-title">
-                <i class="bi bi-journal-check"></i>
                 <h2>Tugas</h2>
             </div>
 

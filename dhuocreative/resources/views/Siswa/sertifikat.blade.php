@@ -5,7 +5,6 @@
 <div class="sf-page">
 
     <header class="sf-header">
-        <i class="bi bi-patch-check"></i>
         <h1>Sertifikat Saya</h1>
     </header>
 
@@ -13,7 +12,6 @@
 
         <div class="sf-stat">
             <div class="sf-stat-head">
-                <i class="bi bi-award"></i>
                 <h3>Sertifikat Diperoleh</h3>
             </div>
             <strong class="sf-stat-num">1</strong>
@@ -21,7 +19,6 @@
 
         <div class="sf-stat">
             <div class="sf-stat-head">
-                <i class="bi bi-journal-check"></i>
                 <h3>Kursus Selesai</h3>
             </div>
             <strong class="sf-stat-num">1</strong>
@@ -29,7 +26,6 @@
 
         <div class="sf-stat">
             <div class="sf-stat-head">
-                <i class="bi bi-clock"></i>
                 <h3>Dalam Proses</h3>
             </div>
             <strong class="sf-stat-num">1</strong>
