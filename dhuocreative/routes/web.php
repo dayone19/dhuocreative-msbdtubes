@@ -87,6 +87,10 @@ Route::middleware(['auth', 'prevent.back'])->prefix('operator')->name('operator.
         return view('operator.siswa');
     })->name('siswa'); 
 
+    Route::get('/siswa/tugas/{siswa}', function ($siswa) {
+        return view('operator.tugas', compact('siswa'));
+    })->name('tugas');
+
     Route::get('/kursus', function () {
         return view('operator.kursus');
     })->name('kursus'); 

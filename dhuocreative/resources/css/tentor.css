@@ -41,6 +41,25 @@ body {
     box-shadow: 0 12px 25px rgba(6, 65, 61, .527);
 }
 
+/* CSS scrollbar */
+* {scrollbar-width: thin;scrollbar-color: var(--orange) white;}
+*::-webkit-scrollbar {width: 7px;height: 7px;}
+*::-webkit-scrollbar-track {background: white;}
+*::-webkit-scrollbar-thumb {background: var(--orange);border-radius: 10px;}
+*::-webkit-scrollbar-corner {background: white;}
+.ts-modal::-webkit-scrollbar {width: 6px;height: 5px;}
+.ts-modal::-webkit-scrollbar-track, .ts-modal::-webkit-scrollbar-track-piece,
+.ts-modal::-webkit-scrollbar-corner {background: transparent !important;}
+.ts-modal::-webkit-scrollbar-thumb {background: var(--orange);border-radius: 10px;}
+.t-modal::-webkit-scrollbar {width: 6px;height: 5px;}
+.t-modal::-webkit-scrollbar-track,.t-modal::-webkit-scrollbar-track-piece,
+.t-modal::-webkit-scrollbar-corner {background: transparent !important;}
+.t-modal::-webkit-scrollbar-thumb {background: var(--orange);border-radius: 10px;}
+.t-modal-box::-webkit-scrollbar {width: 6px;height: 5px;}
+.t-modal-box::-webkit-scrollbar-track,.t-modal-box::-webkit-scrollbar-track-piece,
+.t-modal-box::-webkit-scrollbar-corner {background: transparent !important;}
+.t-modal-box::-webkit-scrollbar-thumb {background: var(--orange);border-radius: 10px;}
+
 /* css dashboard */
 .dashboard { width: 100%; min-height: 100vh; }
 
@@ -266,6 +285,8 @@ body {
     border-radius: 22px;
     background: #fff;
     box-shadow: 0 15px 50px rgba(0, 0, 0, .12);
+    scrollbar-width: thin;
+    scrollbar-color: var(--orange) transparent;
 }
 
 .tmt-modal-header { display: flex; align-items: center; gap: 15px; margin-bottom: 24px; }
@@ -1219,6 +1240,8 @@ body {
     border-radius: 25px;
     background: var(--ivory);
     box-shadow: 0 15px 45px rgba(35, 65, 55, .13);
+    scrollbar-width: thin;
+    scrollbar-color: var(--orange) transparent;
 }
 .t-modal-wide { max-width: 650px; }
 .t-modal-box h2 { margin: 0 35px 20px 0; color: var(--orange); font-size: 23px; font-weight: 800; }
@@ -1438,6 +1461,8 @@ body {
     border-radius: 25px;
     background: var(--mint);
     box-shadow: 0 15px 45px rgb(35 65 55 / 18%);
+    scrollbar-width: thin;
+    scrollbar-color: var(--orange) transparent;
 }
 
 .ts-modal-header { display: flex; align-items: center; gap: 15px; margin-bottom: 24px; }
