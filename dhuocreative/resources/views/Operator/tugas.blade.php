@@ -119,7 +119,7 @@
                 <strong id="detKursus">-</strong>
             </div>
             <div>
-                <span>Nama Siswa</span>
+                <span>Nama Tentor</span>
                 <strong id="detSiswa">-</strong>
             </div>
             <div>
