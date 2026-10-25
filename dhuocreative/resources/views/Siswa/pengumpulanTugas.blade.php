@@ -381,12 +381,11 @@
 </head>
 <body>
 
-<div class="pt-page">
+@extends('layouts.siswa')
 
-    <!-- Judul -->
-    <header class="pt-header">
-        <h1>Tugas</h1>
-    </header>
+@section('content')
+
+<div class="pt-page">
 
     <!-- Daftar tugas -->
     <section aria-label="Daftar tugas">
@@ -524,6 +523,6 @@
         });
     })();
 </script>
-
+@endsection
 </body>
 </html>

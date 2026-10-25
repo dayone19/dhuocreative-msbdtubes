@@ -4,10 +4,6 @@
 
 <div class="ab-page">
 
-    <header class="ab-header">
-        <h1>Aktivitas Belajar</h1>
-    </header>
-
     <section class="ab-summary">
 
         <div class="ab-stat">

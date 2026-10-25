@@ -4,10 +4,6 @@
 
 <div class="sf-page">
 
-    <header class="sf-header">
-        <h1>Sertifikat Saya</h1>
-    </header>
-
     <section class="sf-summary">
 
         <div class="sf-stat">

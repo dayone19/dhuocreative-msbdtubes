@@ -289,10 +289,14 @@
         }
     }
 
-
-
 </style>
+
 <body>
+
+@extends('layouts.siswa')
+
+@section('content')
+
     <main class="page">
         <header class="top">
             <div>
@@ -397,5 +401,6 @@
             </div>
         </section>
     </main>
+@endsection
 </body>
 </html>

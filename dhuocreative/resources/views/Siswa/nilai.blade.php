@@ -349,11 +349,11 @@
 </head>
 <body>
 
-<div class="nl-page">
+@extends('layouts.siswa')
 
-    <header class="nl-header">
-        <h1>Nilai</h1>
-    </header>
+@section('content')
+
+<div class="nl-page">
 
     <section class="nl-summary" aria-label="Ringkasan nilai">
 
@@ -438,8 +438,8 @@
             Nilai akhir kursus dihitung dari rata-rata seluruh tugas yang sudah dinilai tentor.
         </p>
     </section>
-
 </div>
 
+@endsection
 </body>
 </html>
