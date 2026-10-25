@@ -60,8 +60,7 @@
                     data-deadline="2026-09-30T23:59"
                     data-status-pengumpulan="terlambat"
                     data-jenis="tugas"
-                    data-deskripsi="-"
-                    data-file="Tugas1.html">
+                    data-deskripsi="-">
                     <td>Membuat tabel html</td>
                     <td>Web Master</td>
                     <td>Siswa A</td>
@@ -119,11 +118,6 @@
                 </div>
 
                 <div class="tmt-form-group">
-                    <label for="deadlineBaru">Deadline Tugas</label>
-                    <input type="datetime-local" id="deadlineBaru" required>
-                </div>
-
-                <div class="tmt-form-group">
                     <label for="kelasBaru">Kursus</label>
                     <select id="kelasBaru" required>
                         <option value="">Pilih kursus</option>
@@ -145,28 +139,15 @@
 
             <div class="tmt-upload-right">
                 <div class="tmt-form-group">
+                    <label for="deadlineBaru">Deadline Tugas</label>
+                    <input type="datetime-local" id="deadlineBaru" required>
+                </div>
+
+                <div class="tmt-form-group">
                     <label for="deskripsiBaru">Deskripsi Tugas</label>
                     <textarea id="deskripsiBaru"
                               placeholder="Tulis deskripsi tugas..."
                               required></textarea>
-                </div>
-
-                <div class="tmt-form-group">
-                    <label class="tmt-file-label" for="fileBaru">
-                        File Pendukung
-                    </label>
-                    <label for="fileBaru" class="tmt-dropzone">
-                        <input type="file"
-                            id="fileBaru"
-                            accept=".pdf,.doc,.docx,.ppt,.pptx,.zip"
-                            required>
-                        <svg xmlns="http://www.w3.org/2000/svg" height="55px" viewBox="0 -960 960 960" width="55px" fill="#b29458">
-                            <path d="M260-160q-91 0-155.5-63T40-377q0-78 47-139t123-78q25-92 100-149t170-57q117 0 198.5 81.5T760-520q69 8 114.5 59.5T920-340q0 75-52.5 127.5T740-160H520q-33 0-56.5-23.5T440-240v-206l-64 62-56-56 160-160 160 160-56 56-64-62v206h220q42 0 71-29t29-71q0-42-29-71t-71-29h-60v-80q0-83-58.5-141.5T480-720q-83 0-141.5 58.5T280-520h-20q-58 0-99 41t-41 99q0 58 41 99t99 41h100v80H260Zm220-280Z"/>
-                        </svg>
-                        <span class="tmt-file-name" id="namaFile">
-                            Belum ada file dipilih
-                        </span>
-                    </label>
                 </div>
 
                 <div class="tmt-upload-actions">
@@ -229,36 +210,17 @@
                         <option value="Siswa B">Siswa B</option>
                     </select>
                 </div>
-
-                <div class="tmt-form-group">
-                    <label for="detailDeadline">Deadline Tugas</label>
-                    <input type="datetime-local" id="detailDeadline" readonly required>
-                </div>
             </div>
 
             <div class="tmt-upload-right">
                 <div class="tmt-form-group">
+                    <label for="detailDeadline">Deadline Tugas</label>
+                    <input type="datetime-local" id="detailDeadline" readonly required>
+                </div>
+                
+                <div class="tmt-form-group">
                     <label for="detailDeskripsi">Deskripsi</label>
                     <textarea id="detailDeskripsi" placeholder="Tulis deskripsi tugas..." readonly></textarea>
-                </div>
-
-                <div class="tmt-form-group">
-                    <label class="tmt-file-label">File Tugas</label>
-
-                    {{-- tampilan detail --}}
-                    <div class="tmt-file-view" id="detailFileView">
-                        <span id="detailNamaFile">Tugas1.html</span>
-                    </div>
-
-                    {{-- tampilan edit (seperti modal upload) --}}
-                    <label class="tmt-lihat-dropzone" id="detailFileDrop" for="editFileBaru" hidden>
-                        <input type="file" id="editFileBaru" accept=".pdf,.doc,.docx,.ppt,.pptx,.zip,.html" disabled>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="38" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
-                            <path d="M8 18H7a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 8.5a4.75 4.75 0 0 1-.5 9.5H16"/>
-                            <path d="M12 21v-9m-3.5 3.5L12 12l3.5 3.5"/>
-                        </svg>
-                        <span id="detailNamaFileEdit">Upload file</span>
-                    </label>
                 </div>
 
                 <div class="tmt-upload-actions" id="actionDetail">
@@ -321,17 +283,6 @@
                 <div class="tmt-form-group">
                     <label for="lihatDeskripsi">Deskripsi</label>
                     <textarea id="lihatDeskripsi" readonly placeholder="-"></textarea>
-                </div>
-
-                <div class="tmt-form-group">
-                    <label class="tmt-file-label">File Tugas</label>
-                    <a class="tmt-lihat-dropzone" id="lihatFileLink" href="#" target="_blank" rel="noopener">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="38" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
-                            <path d="M8 18H7a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 8.5a4.75 4.75 0 0 1-.5 9.5H16"/>
-                            <path d="M12 21v-9m-3.5 3.5L12 12l3.5 3.5"/>
-                        </svg>
-                        <span id="lihatNamaFile">Lihat file</span>
-                    </a>
                 </div>
 
                 <div class="tmt-form-group">
@@ -399,12 +350,6 @@ function tutupUpload() {
     document.getElementById('modalUpload').hidden = true;
 }
 
-// Perbarui nama file dropzone segera setelah file dipilih.
-document.getElementById('fileBaru').addEventListener('change', function () {
-    const label = document.getElementById('namaFile');
-    label.textContent = this.files.length ? this.files[0].name : 'Belum ada file dipilih';
-    label.title = this.files.length ? this.files[0].name : '';
-});
 
 // ===== MODAL LIHAT TUGAS =====
 let currentNilaiRow = null;
@@ -417,7 +362,6 @@ function lihatTugas(btn) {
     const siswa = row.children[2].textContent.trim();
     const jenis = row.dataset.jenis || 'tugas';
     const deskripsi = row.dataset.deskripsi || '-';
-    const file = row.dataset.file || 'Tugas1.html';
 
     document.getElementById('lihatNamaTugas').value = judul;
     document.getElementById('lihatJenisTugas').value = jenis;
@@ -425,10 +369,6 @@ function lihatTugas(btn) {
     document.getElementById('lihatNamaSiswa').value = siswa;
     document.getElementById('lihatStatusPengumpulan').value = row.dataset.statusPengumpulan || 'tidak kumpul';
     document.getElementById('lihatDeskripsi').value = deskripsi;
-    document.getElementById('lihatNamaFile').textContent = file;
-
-    const fileLink = document.getElementById('lihatFileLink');
-    fileLink.href = file;
 
     currentNilaiRow = row;
     document.getElementById('lihatNilai').value = row.dataset.nilai || '';
@@ -463,7 +403,6 @@ function buatBarisTugas(data) {
     row.dataset.statusPengumpulan = 'tidak kumpul';
     row.dataset.jenis = data.jenis;
     row.dataset.deskripsi = data.deskripsi || '-';
-    row.dataset.file = data.file;
 
     [data.judul, data.kursus, data.siswa, data.tanggalTampil].forEach(text => {
         const td = document.createElement('td');
@@ -493,10 +432,8 @@ document.getElementById('formUpload').addEventListener('submit', function(e) {
     const judul = document.getElementById('judulBaru').value.trim();
     const kursus = document.getElementById('kelasBaru').value;
     const deadline = document.getElementById('deadlineBaru').value;
-    const file = document.getElementById('fileBaru').files[0];
 
-    if (!judul || !kursus || !deadline || !file) return;
-
+    if (!judul || !kursus || !deadline) return;
     const tanggal = new Date();
     const tanggalISO = [
         tanggal.getFullYear(),
@@ -516,7 +453,6 @@ document.getElementById('formUpload').addEventListener('submit', function(e) {
         jenis: document.getElementById('jenisTgs').value,
         deskripsi: document.getElementById('deskripsiBaru').value.trim(),
         deadline,
-        file: file.name,
         tanggalISO,
         tanggalTampil
     }));
@@ -528,8 +464,6 @@ document.getElementById('formUpload').addEventListener('submit', function(e) {
     filterTugas();
     tutupUpload();
     this.reset();
-    document.getElementById('namaFile').textContent = 'Belum ada file dipilih';
-    document.getElementById('fileBaru').value = '';
 
     alert('Tugas ditambahkan untuk pratinjau.');
 });
@@ -548,7 +482,6 @@ function isiDetail(row) {
     document.getElementById('detailNamaSiswa').value = row.children[2].textContent.trim();
     document.getElementById('detailDeadline').value = row.dataset.deadline || '';
     document.getElementById('detailDeskripsi').value = row.dataset.deskripsi || '';
-    document.getElementById('detailNamaFile').textContent = row.dataset.file || 'Tugas1.html';
 }
 
 function bukaDetail(btn) {
@@ -576,15 +509,6 @@ function aktifkanEditMode() {
     detailTextFields.forEach(id => document.getElementById(id).removeAttribute('readonly'));
     detailSelectFields.forEach(id => document.getElementById(id).removeAttribute('disabled'));
 
-    const fileInput = document.getElementById('editFileBaru');
-    fileInput.disabled = false;
-    fileInput.value = '';
-    document.getElementById('detailNamaFileEdit').textContent =
-        document.getElementById('detailNamaFile').textContent;
-
-    document.getElementById('detailFileView').hidden = true;
-    document.getElementById('detailFileDrop').hidden = false;
-
     detailBox.classList.add('is-editing');
     document.getElementById('detailJudulModal').innerHTML = 'Edit<br>Tugas';
     document.getElementById('actionDetail').hidden = true;
@@ -600,25 +524,12 @@ function batalEditMode() {
     detailTextFields.forEach(id => document.getElementById(id).setAttribute('readonly', true));
     detailSelectFields.forEach(id => document.getElementById(id).setAttribute('disabled', true));
 
-    const fileInput = document.getElementById('editFileBaru');
-    fileInput.value = '';
-    fileInput.disabled = true;
-
-    document.getElementById('detailFileView').hidden = false;
-    document.getElementById('detailFileDrop').hidden = true;
-
     detailBox.classList.remove('is-editing');
     document.getElementById('detailJudulModal').innerHTML = 'Detail<br>Tugas';
     document.getElementById('actionDetail').hidden = false;
     document.getElementById('actionEdit').hidden = true;
 }
 
-// tampilkan nama file yang baru dipilih
-document.getElementById('editFileBaru').addEventListener('change', function() {
-    if (this.files.length > 0) {
-        document.getElementById('detailNamaFileEdit').textContent = this.files[0].name;
-    }
-});
 
 // Handler Submit Form Edit
 document.getElementById('formEditTugas').addEventListener('submit', function(e) {
@@ -632,7 +543,6 @@ document.getElementById('formEditTugas').addEventListener('submit', function(e) 
     const siswaBaru = document.getElementById('detailNamaSiswa').value;
     const deskripsiBaru = document.getElementById('detailDeskripsi').value;
     const deadlineBaru = document.getElementById('detailDeadline').value;
-    const fileInput = document.getElementById('editFileBaru');
 
     // Update kolom di tabel
     currentEditingRow.children[0].textContent = judulBaru;
@@ -646,9 +556,6 @@ document.getElementById('formEditTugas').addEventListener('submit', function(e) 
     currentEditingRow.dataset.deskripsi = deskripsiBaru;
     currentEditingRow.dataset.deadline = deadlineBaru;
 
-    if (fileInput.files.length > 0) {
-        currentEditingRow.dataset.file = fileInput.files[0].name;
-    }
 
     alert('Data tugas berhasil diperbarui!');
     batalEditMode(); // muat ulang tampilan dari data yang baru disimpan

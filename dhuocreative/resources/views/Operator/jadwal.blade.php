@@ -65,8 +65,8 @@
             </div>
         </div>
 
-        <div class="o-table-wrap">
-            <table class="o-table" id="tabelJadwal">
+        <div class="j-table-wrap">
+            <table class="j-table" id="tabelJadwal">
                 <thead>
                     <tr>
                         <th>Nama Kursus</th>
@@ -100,23 +100,40 @@
         <div class="o-toolbar o-approval-heading" style="margin-top:42px">
             <h2>Persetujuan Pergantian Jadwal dari Tentor</h2>
         </div>
-        <div class="o-table-wrap">
-            <table class="o-table" id="tabelPersetujuan">
+        <div class="j-table-wrap">
+            <table class="j-table" id="tabelPersetujuan">
                 <thead><tr>
-                    <th>Nama Kursus</th><th>Kelas</th><th>Tentor</th><th>Siswa</th>
-                    <th>Jadwal Lama</th><th>Jadwal Diajukan</th><th>Alasan</th><th>Status</th><th>Aksi</th>
+                    <th>Nama Kursus</th>
+                    <th>Kelas</th>
+                    <th>Tentor</th>
+                    <th>Siswa</th>
+                    <th>Jadwal Lama</th>
+                    <th>Jadwal Diajukan</th>
+                    <th>Alasan</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
                 </tr></thead>
                 <tbody id="persetujuanBody">
                     <tr data-status="menunggu">
-                        <td>Web Master</td><td>Online</td><td>Tentor C</td><td>Siswa A</td>
-                        <td>19 Okt 2026 · 09:00–10:30</td><td>21 Okt 2026 · 13:00–14:30</td>
-                        <td>Berhalangan pada jadwal semula</td><td><span class="o-status menunggu">Menunggu</span></td>
+                        <td>Web Master</td>
+                        <td>Online</td>
+                        <td>Tentor C</td> 
+                        <td>Siswa A</td>
+                        <td>19 Okt 2026 · 09:00–10:30</td>
+                        <td>21 Okt 2026 · 13:00–14:30</td>
+                        <td>Berhalangan pada jadwal semula</td>
+                        <td><span class="o-status menunggu">Menunggu</span></td>
                         <td><div class="o-approval-actions"><button type="button" class="o-action o-approve" data-approval="setuju">Setujui</button><button type="button" class="o-action o-reject" data-approval="tolak">Tolak</button></div></td>
                     </tr>
                     <tr data-status="menunggu">
-                        <td>MS Office</td><td>offline</td><td>Tentor D</td><td>Siswa B</td>
-                        <td>20 Okt 2026 · 10:00–11:30</td><td>22 Okt 2026 · 14:00–15:30</td>
-                        <td>Ada keperluan mendadak</td><td><span class="o-status menunggu">Menunggu</span></td>
+                        <td>MS Office</td>
+                        <td>offline</td>
+                        <td>Tentor D</td>
+                        <td>Siswa B</td>
+                        <td>20 Okt 2026 · 10:00–11:30</td>
+                        <td>22 Okt 2026 · 14:00–15:30</td>
+                        <td>Ada keperluan mendadak</td>
+                        <td><span class="o-status menunggu">Menunggu</span></td>
                         <td><div class="o-approval-actions"><button type="button" class="o-action o-approve" data-approval="setuju">Setujui</button><button type="button" class="o-action o-reject" data-approval="tolak">Tolak</button></div></td>
                     </tr>
                 </tbody>
@@ -243,7 +260,7 @@ let editingRow=null,selectedRow=null;function fillClasses(){const s=el('jadwalKe
 el('jadwalKursus').addEventListener('change',fillClasses);
 function filter(){const q=el('cariJadwal').value.toLowerCase().trim(),month=el('filterTanggal').value,status=el('filterStatus').value;let n=0;el('tabelJadwal').querySelectorAll('tbody tr').forEach(r=>{const show=r.textContent.toLowerCase().includes(q)&&(!month||r.dataset.tanggal.startsWith(month))&&(!status||r.dataset.status===status);r.hidden=!show;if(show)n++});el('jadwalKosong').hidden=n>0}
 ['cariJadwal','filterTanggal','filterStatus'].forEach(id=>el(id).addEventListener(id==='cariJadwal'?'input':'change',filter));
-el('btnTambahJadwal').addEventListener('click',()=>{editingRow=null;el('formJadwal').reset();el('modalJadwal').querySelector('h2').textContent='Tambah Jadwal';el('formJadwal').querySelector('[type=submit]').textContent='Simpan Jadwal';fillClasses();modal.hidden=false});document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>b.closest('.t-modal').hidden=true));
+el('btnTambahJadwal').addEventListener('click',()=>{editingRow=null;el('formJadwal').reset();el('modalJadwal').querySelector('h2').textContent='Tambah Jadwal';el('formJadwal').querySelector('[type=submit]').textContent='Simpan Jadwal';fillClasses();modal.hidden=false});document.querySelectorAll('[data-close]').forEach(b => {b.addEventListener('click', () => {b.closest('.o-modal').hidden = true;});});
 function fmt(v){return v?new Date(v+'T12:00:00').toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'}):'-'}
 el('tabelJadwal').addEventListener('click',e=>{const b=e.target.closest('[data-detail]');if(!b)return;const r=b.closest('tr'),c=r.cells;selectedRow=r;['Kursus','Kelas','Tentor','Siswa'].forEach((k,i)=>el('detail'+k).textContent=c[i].textContent.trim());el('detailTanggal').textContent=fmt(r.dataset.tanggal);el('detailMulai').textContent=c[5].textContent;el('detailSelesai').textContent=c[6].textContent;el('detailStatus').textContent=r.dataset.status.charAt(0).toUpperCase()+r.dataset.status.slice(1);detail.hidden=false});
 el('editDetailJadwal').addEventListener('click',()=>{if(!selectedRow)return;editingRow=selectedRow;const c=selectedRow.cells;el('jadwalKursus').value=c[0].textContent.trim();fillClasses();el('jadwalKelas').value=c[1].textContent.trim();el('jadwalTentor').value=c[2].textContent.trim();el('jadwalSiswa').value=c[3].textContent.trim();el('jadwalTanggalBaru').value=selectedRow.dataset.tanggal;el('jadwalMulai').value=c[5].textContent.trim();el('jadwalSelesai').value=c[6].textContent.trim();el('jadwalStatus').value=selectedRow.dataset.status;el('modalJadwal').querySelector('h2').textContent='Edit Jadwal';el('formJadwal').querySelector('[type=submit]').textContent='Simpan Perubahan';detail.hidden=true;modal.hidden=false});

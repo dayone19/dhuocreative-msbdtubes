@@ -27,8 +27,8 @@
         </div>
     </div>
 
-    <div class="o-table-wrap">
-        <table class="o-table" id="tabelSiswa">
+    <div class="s-table-wrap">
+        <table class="s-table" id="tabelSiswa">
             <thead>
                 <tr>
                     <th>Nama Siswa</th>
@@ -46,7 +46,10 @@
                     <td>Online</td>
                     <td>2026-01-12</td>
                     <td><span class="o-status aktif">Aktif</span></td>
-                    <td><button type="button" class="o-action" data-detail>Detail</button></td>
+                    <td>
+                        <button type="button" class="o-action" data-detail>Detail</button>
+                        <a href="{{ route('operator.tugas', ['siswa' => 'Siswa A']) }}" class="o-action" style="background:#286c65; text-decoration:none;">Lihat Tugas</a>
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -252,6 +255,27 @@ el('formSiswa').addEventListener('submit',e=>{
     // Kolom Aksi (indeks 5)
     let ac = r.cells[5];
     if(!ac) ac = r.insertCell(5);
+    ac.replaceChildren();
+
+    const btnDetail = document.createElement('button');
+    btnDetail.type = 'button';
+    btnDetail.className = 'o-action';
+    btnDetail.dataset.detail = '';
+    btnDetail.textContent = 'Detail';
+
+    const btnTugas = document.createElement('a');
+    btnTugas.href = `/operator/tugas?siswa=${encodeURIComponent(name)}`;
+    btnTugas.className = 'o-action';
+    btnTugas.style.cssText = 'background:#286c65; text-decoration:none;';
+    btnTugas.textContent = 'Lihat Tugas';
+
+    const wrapBtn = document.createElement('div');
+    wrapBtn.style.cssText = 'display:flex; gap:6px;';
+    wrapBtn.appendChild(btnDetail);
+    wrapBtn.appendChild(btnTugas);
+
+    ac.appendChild(wrapBtn);
+
     if(!ac.querySelector('[data-detail]')){
         ac.replaceChildren();
         const btn=document.createElement('button');

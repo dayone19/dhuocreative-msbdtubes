@@ -55,8 +55,8 @@
         <input type="search" class="o-search" id="searchRekapAbsensi" placeholder="Cari siswa, kelas, atau tentor...">
     </div>
 
-    <div class="o-table-wrap">
-        <table class="o-table" id="tableRekapAbsensi">
+    <div class="j-table-wrap">
+        <table class="j-table" id="tableRekapAbsensi">
             <thead><tr><th>No.</th><th>Tanggal Jadwal</th><th>Kelas</th><th>Tentor</th><th>Siswa</th><th>Waktu Absen</th><th>Status</th></tr></thead>
             <tbody>
             @forelse (($rekapAbsensi ?? []) as $index => $row)
