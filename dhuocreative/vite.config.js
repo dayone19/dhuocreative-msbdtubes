@@ -11,6 +11,7 @@ export default defineConfig({
                     'resources/css/sidebar.css',
                     'resources/css/tentor.css',
                     'resources/css/siswa.css',
+                    'resources/css/admin.css',
                     'resources/js/app.js',
                    ],
             refresh: true,

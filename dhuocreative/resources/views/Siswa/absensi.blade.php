@@ -12,17 +12,12 @@
         --orange: #f27640;
         --orange-dk: #df6833;
         --amber: #ffb83f;
-        --amber-dk: #f3a92d;
         --yellow: #ffdc59;
-        --gold: #b29458;
-        --gold-dk: #987840;
-        --olive: #b4a052;
         --cream: #f5e9cf;
         --ivory: #fffaf0;
         --sand: #fcf4e5;
-
-        --mint: #e3efed;
-        --mint-line: #cfe0dd;
+        --red: #c44747;
+        --red-light: #fde8e7;
         --teal-muted: #5f7f7b;
     }
     * {
@@ -113,22 +108,29 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 7px;
-        padding: 6px 14px;
+        min-width: 80px;
+        height: 32px;
+        padding: 0 14px;
         border-radius: 999px;
-        background: #fff0e5;
-        color: var(--orange-dk);
         font-size: 13px;
         font-weight: 600;
         white-space: nowrap;
     }
-    .pill::before {
-        content: "";
-        width: 7px;
-        height: 7px;
-        flex-shrink: 0;
-        border-radius: 50%;
-        background: var(--orange);
+    .pill-online {
+        background: var(--mint);
+        color: var(--teal);
+    }
+    .pill-hadir {
+        background: var(--mint);
+        color: var(--teal);
+    }
+    .pill-izin {
+        background: var(--yellow);
+        color: var(--gold-dk);
+    }
+    .pill-sakit {
+        background: var(--red-light);
+        color: var(--red);
     }
     .btn {
         padding: 14px 26px;
@@ -317,11 +319,7 @@
                     </div>
                 </div>
 
-                <span class="pill">Online</span>
-
-                <button class="btn go" id="attandance-button type="button">
-                    Presensi
-                </button>
+                <span class="pill pill-online">Online</span>
             </div>
 
             <div class="class">
@@ -333,11 +331,7 @@
                     </div>
                 </div>
 
-                <span class="pill">Online</span>
-
-                <button class="btn done" type="button" disabled>
-                    Presensi Berhasil
-                </button>
+                <span class="pill pill-online">Online</span>
             </div>
         </section>
 
@@ -355,7 +349,7 @@
                     <thead>
                         <tr>
                             <th>Tanggal</th>
-                            <th>Mata Kuliah</th>
+                            <th>Nama Kelas</th>
                             <th>Waktu</th>
                             <th>Status</th>
                         </tr>
@@ -366,35 +360,35 @@
                             <td>10 Oktober 2026</td>
                             <td>Web Development</td>
                             <td>10.00 – 12.00</td>
-                            <td><span class="pill">Hadir</span></td>
+                            <td><span class="pill pill-hadir">Hadir</span></td>
                         </tr>
 
                         <tr>
                             <td>8 Oktober 2026</td>
                             <td>Web Development</td>
                             <td>10.00 – 12.00</td>
-                            <td><span class="pill">Hadir</span></td>
+                            <td><span class="pill pill-hadir">Hadir</span></td>
                         </tr>
 
                         <tr>
                             <td>6 Oktober 2026</td>
                             <td>Basis Data</td>
                             <td>15.30 – 17.30</td>
-                            <td><span class="pill">Hadir</span></td>
+                            <td><span class="pill pill-izin">Izin</span></td>
                         </tr>
 
                         <tr>
                             <td>4 Oktober 2026</td>
                             <td>Web Development</td>
                             <td>10.00 – 12.00</td>
-                            <td><span class="pill">Hadir</span></td>
+                            <td><span class="pill pill-sakit">Sakit</span></td>
                         </tr>
 
                         <tr>
                             <td>2 Oktober 2026</td>
                             <td>Basis Data</td>
                             <td>15.30 – 17.30</td>
-                            <td><span class="pill">Hadir</span></td>
+                            <td><span class="pill pill-sakit">Sakit</span></td>
                         </tr>
                     </tbody>
                 </table>

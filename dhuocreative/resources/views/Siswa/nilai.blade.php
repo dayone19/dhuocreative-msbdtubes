@@ -433,10 +433,6 @@
             <li><b>Baik</b> <span>80 - 89</span></li>
             <li><b>Cukup Baik</b> <span>70 - 79</span></li>
         </ul>
-
-        <p class="nl-note">
-            Nilai akhir kursus dihitung dari rata-rata seluruh tugas yang sudah dinilai tentor.
-        </p>
     </section>
 </div>
 

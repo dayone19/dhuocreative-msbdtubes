@@ -711,54 +711,27 @@ body {
     color: var(--teal);
 }
 
-.kc-header i {
-    font-size: 40px;
-    line-height: 1;
-    color: var(--orange);
-}
-
 .kc-header h1 {
-    font-size: 30px;
+    font-size: 26px;
     line-height: 1.2;
     font-weight: 800;
     color: var(--teal);
     margin: 0;
-    letter-spacing: -0.3px;
 }
 
 .kc-course {
     display: flex;
     align-items: flex-start;
-    gap: 38px;
-    padding: 18px 22px;
+    padding: 18px 20px;
     margin-bottom: 16px;
     background: var(--ivory);
-    border-color: var(--mint-line);
-    border-radius: 24px;
+    border: 1px solid var(--mint-line);
+    border-radius: 20px;
     transition: box-shadow .3s ease;
 }
 
 .kc-course:hover {
     box-shadow: 0 8px 20px rgba(40, 108, 101, .12);
-}
-
-.kc-thumb {
-    flex-shrink: 0;
-    width: 205px;
-    height: 133px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 14px;
-    background: var(--mint);
-    border-radius: 16px;
-    overflow: hidden;
-}
-
-.kc-thumb img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
 }
 
 .kc-info {
@@ -819,65 +792,15 @@ body {
     color: var(--teal);
 }
 
-.kc-summary {
-    padding: 16px 22px 32px;
-    background: var(--ivory);
-    border-color: var(--mint-line);
-    border: 1.5px solid #d3d3d3;
-    border-radius: 22px;
-}
-
-.kc-summary-head {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 0 0 14px 0;
-    margin: 0 8px 22px;
-    border-bottom: 1px solid #e6e6e6;
-    background: var(--mint);
-    border-color: var(--mint-line);
-}
-
-.kc-summary-head i {
-    font-size: 30px;
-    line-height: 1;
-    color: var(--orange);
-}
-
-.kc-summary-head h3 {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--teal);
-    margin: 0;
-}
-
-.kc-summary-body {
-    min-height: 205px;
-    padding: 24px 26px;
-    background: #faf3e3;
-    border-radius: 20px;
-}
-
-.kc-summary-body p {
-    font-size: 15px;
-    font-weight: 400;
-    line-height: 1.7;
-    letter-spacing: 0.2px;
-    text-align: justify;
-    color: var(--teal-muted);
-    margin: 0;
-}
-
 .online-class-logo {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
-    font-size: 20px;
-    font-weight: 700;
-    padding: 8px 14px;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 4px 8px;
     background: var(--mint);
-    border: 1.5px solid var(--mint-line);
-    border-radius: 12px;
+    border: 1px solid var(--mint-line);
+    border-radius: 8px;
     color: var(--teal);
 }
 

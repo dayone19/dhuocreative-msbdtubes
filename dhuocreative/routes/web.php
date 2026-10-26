@@ -141,3 +141,33 @@ Route::middleware(['auth', 'prevent.back'])->prefix('siswa')->name('siswa.')->gr
         return view('siswa.absensi');
     })->name('absensi');
 });
+
+Route::middleware(['auth', 'prevent.back'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('admin.dashboard');
+    })->name('dashboard');
+    Route::get('/manajemenAkun', function () {
+        return view('admin.manajemenAkun');
+    })->name('manajemenAkun');
+    Route::get('/dataPengguna', function () {
+        return view('admin.dataPengguna');
+    })->name('dataPengguna');
+    Route::get('/manajemenKursus', function () {
+        return view('admin.manajemenKursus');
+    })->name('manajemenKursus');
+    Route::get('/jadwalAbsensi', function () {
+        return view('admin.jadwalAbsensi');
+    })->name('jadwalAbsensi');
+    Route::get('/tugas', function () {
+        return view('admin.tugas');
+    })->name('tugas');
+    Route::get('/nilaiSertifikat', function () {
+        return view('admin.nilaiSertifikat');
+    })->name('nilaiSertifikat');
+    Route::get('/pengumuman', function () {
+        return view('admin.pengumuman');
+    })->name('pengumuman');
+    Route::get('/buatAkun', function () {
+        return view('admin.buatAkun');
+    })->name('buatAkun');
+});
