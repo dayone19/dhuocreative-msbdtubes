@@ -22,16 +22,16 @@
             <input type="search" id="cariTugas" placeholder="Cari judul tugas..." aria-label="Cari tugas">
         </div>
         <div class="o-schedule-filters" style="display: flex; gap: 10px; flex: 2; justify-content: flex-end;">
+            {{-- Diubah dari filterStatus menjadi filterTentor --}}
+            <select class="tt-select" id="filterTentor" style="width: auto; min-width: 160px;" aria-label="Filter tentor">
+                <option value="">Semua Tentor</option>
+                <option value="Tentor C">Tentor C</option>
+                <option value="Tentor D">Tentor D</option>
+            </select>
             <select class="tt-select" id="filterKursus" style="width: auto; min-width: 160px;" aria-label="Filter kursus">
                 <option value="">Semua Kursus</option>
                 <option value="Web Master">Web Master</option>
                 <option value="MS Office">MS Office</option>
-            </select>
-            <select class="tt-select" id="filterStatus" style="width: auto; min-width: 160px;" aria-label="Filter status pengumpulan">
-                <option value="">Semua Status</option>
-                <option value="sudah">Terkumpul</option>
-                <option value="sudah">Terlambat</option>
-                <option value="belum">Tidak Mengumpulkan</option>
             </select>
         </div>
     </div>
@@ -63,14 +63,14 @@
                     <td>Web Master</td>
                     <td>Tentor C</td>
                     <td>30 Sep 2026 · 23:59</td>
-                    <td><span class="o-status aktif">Terkumpul</span></td>
+                    <td><span class="o-status kmpl">Terkumpul</span></td>
                     <td><span class="o-nilai-badge">85</span></td>
                     <td>
                         <button type="button" class="tt-view-btn" onclick="lihatDetailTugas(this)">Detail</button>
                     </td>
                 </tr>
                 <tr data-kursus="Web Master" 
-                    data-tentor="Tentor C" 
+                    data-tentor="Tentor D" 
                     data-status="belum"
                     data-jenis="Projek"
                     data-deskripsi="Membuat halaman portofolio pribadi menggunakan HTML & CSS."
@@ -79,9 +79,9 @@
                     data-status-pengumpulan="Belum Mengumpulkan">
                     <td>Projek Portofolio</td>
                     <td>Web Master</td>
-                    <td>Tentor C</td>
+                    <td>Tentor D</td>
                     <td>10 Okt 2026 · 23:59</td>
-                    <td><span class="o-status nonaktif">Tidak Mengumpulkan</span></td>
+                    <td><span class="o-status tdk">Tidak Kumpul</span></td>
                     <td><span class="o-nilai-empty">-</span></td>
                     <td>
                         <button type="button" class="tt-view-btn" onclick="lihatDetailTugas(this)">Detail</button>
@@ -120,7 +120,7 @@
             </div>
             <div>
                 <span>Nama Tentor</span>
-                <strong id="detSiswa">-</strong>
+                <strong id="detTentor">-</strong>
             </div>
             <div>
                 <span>Deadline</span>
@@ -142,7 +142,7 @@
             </div>
             <div>
                 <span>Nilai Akhir</span>
-                <strong id="detNilai" style="font-size:18px; color:var;">-</strong>
+                <strong id="detNilai" style="font-size:18px;">-</strong>
             </div>
         </div>
     </div>
@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const modalDetail = el('modalDetailTugas');
     const cariInput = el('cariTugas');
     const filterKursus = el('filterKursus');
-    const filterStatus = el('filterStatus');
+    const filterTentor = el('filterTentor'); // Diubah dari filterStatus ke filterTentor
 
     // Menangkap parameter query URL (misal: ?siswa=Siswa+A) untuk menyesuaikan judul halaman privat
     const urlParams = new URLSearchParams(window.location.search);
@@ -167,18 +167,15 @@ document.addEventListener('DOMContentLoaded', function () {
     function filter() {
         const q = cariInput.value.toLowerCase().trim();
         const kursus = filterKursus.value;
-        const status = filterStatus.value;
+        const tentor = filterTentor.value;
         let count = 0;
 
         document.querySelectorAll('#bodyTugas tr').forEach(row => {
             const textMatch = row.textContent.toLowerCase().includes(q);
             const kursusMatch = !kursus || row.dataset.kursus === kursus;
-            const statusMatch = !status || row.dataset.status === status;
+            const tentorMatch = !tentor || row.dataset.tentor === tentor;
 
-            // Karena sistem privat (1 siswa spesifik), baris otomatis difilter berdasarkan nama siswa di URL jika ada
-            const siswaMatch = !siswaParam || row.dataset.siswa.toLowerCase() === siswaParam.toLowerCase();
-
-            const show = textMatch && kursusMatch && statusMatch && siswaMatch;
+            const show = textMatch && kursusMatch && tentorMatch;
             row.hidden = !show;
             if (show) count++;
         });
@@ -186,7 +183,7 @@ document.addEventListener('DOMContentLoaded', function () {
         el('kosongTugas').hidden = count > 0;
     }
 
-    [cariInput, filterKursus, filterStatus].forEach(item => {
+    [cariInput, filterKursus, filterTentor].forEach(item => {
         item.addEventListener(item === cariInput ? 'input' : 'change', filter);
     });
 
@@ -195,7 +192,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const row = btn.closest('tr');
         el('detJudul').textContent = row.cells[0].textContent.trim();
         el('detKursus').textContent = row.cells[1].textContent.trim();
-        el('detSiswa').textContent = row.cells[2].textContent.trim();
+        el('detTentor').textContent = row.cells[2].textContent.trim();
         el('detDeadline').textContent = row.cells[3].textContent.trim();
         el('detStatus').textContent = row.dataset.statusPengumpulan || '-';
         el('detJenis').textContent = row.dataset.jenis || 'Tugas';

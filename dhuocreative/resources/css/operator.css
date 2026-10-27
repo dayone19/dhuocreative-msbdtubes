@@ -19,8 +19,8 @@
 .o-mint-theme .schedule-type { font-size: 17px; }
 .o-mint-theme .schedule-tentor { font-size: 17px; }
 .o-mint-theme .schedule-time { font-size: 17px; }
-.o-mint-theme .progress { background: var(--m-line); }
-.o-mint-theme .progress-fill { background: var(--m-yellow); }
+.o-mint-theme .progress { width: 125px; height: 11px; overflow: hidden; background: #f3d99b; border-radius: 20px; }
+.o-mint-theme .progress-fill { height: 100%; background: linear-gradient(90deg, var(--amber), var(--orange)); border-radius: 20px; }
 
 @media (max-width: 768px) {
     .o-mint-theme .schedule-row { min-width: 850px; }
@@ -251,8 +251,18 @@
     font-weight:700; 
     white-space:nowrap; 
 }
-.o-status.aktif { background:#dcefe3; color:#286c65; }
-.o-status.nonaktif { background:#ffe2d2; color:#c65c31; }
+.o-status.kmpl {
+    background: #dcefe3;
+    color: #286c65;
+}
+.o-status.tlt {
+    background: #f27640;
+    color: #ffdc59;
+}
+.o-status.tdk {
+    background: #ffe2d2;
+    color: #c65c31;
+}
 .o-action { 
     padding:9px 17px; 
     border:0; 
@@ -608,45 +618,17 @@
     .o-announcement-card h2 { font-size: 17px; }
 }
 
-/* CSS tambahan: dashboard laporan dan halaman rekap absensi */
-.o-report-section{margin-top:34px;padding:25px;border:1px solid #cfe0dd;border-radius:25px;background:#e3efed}
-.o-report-heading{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:20px}
-.o-report-heading h2{margin:0 0 6px;color:#286c65;font-size:24px}
-.o-report-heading p,.o-report-preview-note{margin:0;color:#65736d;font-size:14px;line-height:1.6}
-.o-report-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
-.o-report-card{display:flex;flex-direction:column;gap:15px;min-width:0;padding:22px;border:1px solid #f2e6d4;border-radius:22px;background:#fffaf0}
-.o-report-icon{display:grid;place-items:center;width:45px;height:45px;border-radius:14px;background:#ffdc59;color:#286c65;font-size:24px;font-weight:800}
-.o-report-copy h3{margin:0 0 8px;color:#286c65;font-size:18px}
-.o-report-copy p{margin:0;color:#65736d;font-size:14px;line-height:1.7}
-.o-report-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:auto}
-.o-report-modal-actions{justify-content:flex-end;margin-top:22px}
-.o-btn-outline{border:1px solid #f27640;background:transparent;color:#d96531}
-.o-btn-outline:hover{background:#fff0e7}
-.o-report-preview-note{margin-bottom:16px}
-.o-attendance-filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-items:end;gap:0 16px;margin-bottom:24px;padding:20px;border-radius:22px;background:#fcf4e5}
-.o-attendance-filters .o-form-group{margin-bottom:12px}
-.o-attendance-filter-actions{display:flex;flex-wrap:wrap;gap:8px;grid-column:1/-1}
-.o-attendance-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;margin-bottom:28px}
-.o-attendance-stat{display:flex;flex-direction:column;gap:10px;padding:20px;border-radius:20px;background:#fcf4e5}
-.o-attendance-stat span{color:#f27640;font-size:14px;font-weight:700}
-.o-attendance-stat strong{color:#286c65;font-size:28px}
-.o-attendance-page .o-toolbar{margin-top:8px}
-.o-status.hadir{background:#dcefe3;color:#286c65}
-.o-status.izin,.o-status.sakit{background:#fff0c2;color:#8a6500}
-.o-status.alpa,.o-status.absen,.o-status.tidak-hadir{background:#ffe2d2;color:#c65c31}
-@media(max-width:950px){.o-report-grid{grid-template-columns:1fr}.o-attendance-filters{grid-template-columns:repeat(2,minmax(0,1fr))}.o-attendance-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:600px){.o-report-heading{align-items:stretch;flex-direction:column}.o-attendance-filters,.o-attendance-stats{grid-template-columns:1fr}.o-report-section{padding:18px}}
 
 /* CSS tambahan: dashboard laporan dan halaman rekap absensi */
-.o-report-section{margin-top:34px;padding:25px;border:1px solid #cfe0dd;border-radius:25px;background:#e3efed}
+.o-report-section{margin-top:34px;padding:20px;border:1px solid #cfe0dd;border-radius:25px;background:#e3efed}
 .o-report-heading{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:20px}
-.o-report-heading h2{margin:0 0 6px;color:#286c65;font-size:24px}
+.o-report-heading h2{margin:0 0 6px;color:#286c65;font-size:20px}
 .o-report-heading p,.o-report-preview-note{margin:0;color:#65736d;font-size:14px;line-height:1.6}
 .o-report-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
 .o-report-card{display:flex;flex-direction:column;gap:15px;min-width:0;padding:22px;border:1px solid #f2e6d4;border-radius:22px;background:#fffaf0}
-.o-report-icon{display:grid;place-items:center;width:45px;height:45px;border-radius:14px;background:#ffdc59;color:#286c65;font-size:24px;font-weight:800}
-.o-report-copy h3{margin:0 0 8px;color:#286c65;font-size:18px}
-.o-report-copy p{margin:0;color:#65736d;font-size:14px;line-height:1.7}
+.o-report-icon{display:grid;place-items:center;width:70px;height:45px;border-radius:25px;background:#ffdc59;color:#286c65;font-size:24px;font-weight:bolder}
+.o-report-copy h3{margin:0 0 8px;color:#286c65;font-size:15px}
+.o-report-copy p{margin:0;color:#65736d;font-size:13px;line-height:1.7}
 .o-report-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:auto}
 .o-report-modal-actions{justify-content:flex-end;margin-top:22px}
 .o-btn-outline{border:1px solid #f27640;background:transparent;color:#d96531}
@@ -669,6 +651,36 @@
 
 
 /* css tugas nilai */
+.at-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 18px;
+}
+.at-filter {
+    appearance: none;
+    background-color: #fcf4e5;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='12' viewBox='0 0 16 12'%3E%3Cpath d='m2 3 6 6 6-6' fill='none' stroke='%23f27640' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    font: inherit;
+    cursor: pointer;
+}
+.at-search {
+    height: 48px;
+    display: flex;
+    align-items: center;
+    padding: 0 17px 0 22px;
+    background: var(--cream);
+    border-radius: 28px;
+}
+.at-search-main {
+    flex: 1;
+    min-width: 220px;
+    height: 48px;
+}
 .tt-search {
     height: 48px;
     display: flex;

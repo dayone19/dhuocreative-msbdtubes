@@ -19,7 +19,6 @@
     <div class="t-page-header">
         <div>
             <h1 class="t-page-title">Pengumuman</h1>
-            <p class="t-page-subtitle">Pengumuman dapat dilihat oleh seluruh pengguna.</p>
         </div>
 
         @if ($bolehPosting)

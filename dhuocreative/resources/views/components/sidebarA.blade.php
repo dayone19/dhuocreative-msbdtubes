@@ -65,11 +65,11 @@
         </a>
 
         <a href="{{ route('admin.tugas') }}" class="sidebar-item {{ request()->routeIs('admin.tugas') ? 'active' : '' }}">
-            <span>Tugas</span>
+            <span>Tugas & Nilai</span>
         </a>
 
         <a href="{{ route('admin.nilaiSertifikat') }}" class="sidebar-item {{ request()->routeIs('admin.nilaiSertifikat') ? 'active' : '' }}">
-            <span>Nilai & Sertifikat</span>
+            <span>Sertifikat</span>
         </a>
 
         <a href="{{ route('admin.pengumuman') }}" class="sidebar-item {{ request()->routeIs('admin.pengumuman') ? 'active' : '' }}">

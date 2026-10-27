@@ -3,210 +3,261 @@
 @section('title', 'Absensi Siswa')
 
 @section('content')
-<div class="tentor-absensi-page">
+@php
+    $siswa = [
+        'id' => 1208,
+        'nama' => 'Siswa A',
+        'kursus' => 'Web Master',
+        'mode' => 'Online',
+        'tentor' => 'Tentor A',
+        'mulai_kontrak' => '2026-10-05',
+        'akhir_kontrak' => '2026-12-05',
+    ];
 
-    <div class="absensi-heading">
-        <a href="{{ route('tentor.kursus') }}" class="tmt-back-btn">
+    $daftarPertemuan = [
+        ['ke' => 1,  'tanggal' => '2026-10-05', 'hari' => 'Senin', 'jam' => '16.00–17.30', 'status' => 'hadir', 'jadwal' => 'Jadwal tetap'],
+        ['ke' => 2,  'tanggal' => '2026-10-07', 'hari' => 'Rabu',  'jam' => '16.00–17.30', 'status' => 'hadir', 'jadwal' => 'Jadwal tetap'],
+        ['ke' => 3,  'tanggal' => '2026-10-09', 'hari' => 'Jumat', 'jam' => '16.00–17.30', 'status' => 'hadir', 'jadwal' => 'Jadwal tetap'],
+        ['ke' => 4,  'tanggal' => '2026-10-12', 'hari' => 'Senin', 'jam' => '16.00–17.30', 'status' => 'hadir', 'jadwal' => 'Jadwal tetap'],
+        ['ke' => 5,  'tanggal' => '2026-10-14', 'hari' => 'Rabu',  'jam' => '16.00–17.30', 'status' => 'hadir', 'jadwal' => 'Jadwal tetap'],
+        ['ke' => 6,  'tanggal' => '2026-10-16', 'hari' => 'Jumat', 'jam' => '16.00–17.30', 'status' => 'hadir', 'jadwal' => 'Jadwal tetap'],
+        ['ke' => 7,  'tanggal' => '2026-10-19', 'hari' => 'Senin', 'jam' => '16.00–17.30', 'status' => 'hadir', 'jadwal' => 'Jadwal tetap'],
+        ['ke' => 8,  'tanggal' => '2026-10-21', 'hari' => 'Rabu',  'jam' => '16.00–17.30', 'status' => 'hadir', 'jadwal' => 'Jadwal tetap'],
+        ['ke' => 9,  'tanggal' => '2026-10-23', 'hari' => 'Jumat', 'jam' => '16.00–17.30', 'status' => 'hadir', 'jadwal' => 'Jadwal tetap'],
+        ['ke' => 10, 'tanggal' => '2026-10-26', 'hari' => 'Senin', 'jam' => '16.00–17.30', 'status' => 'hadir', 'jadwal' => 'Jadwal tetap'],
+        ['ke' => 11, 'tanggal' => '2026-10-28', 'hari' => 'Rabu',  'jam' => '16.00–17.30', 'status' => 'hadir', 'jadwal' => 'Jadwal tetap'],
+        ['ke' => 12, 'tanggal' => '2026-10-30', 'hari' => 'Jumat', 'jam' => '16.00–17.30', 'status' => 'hadir', 'jadwal' => 'Jadwal tetap'],
+    ];
+@endphp
+
+<div class="tentor-absensi-page ta-page">
+    <div class="absensi-heading ta-heading">
+        <a href="{{ route('tentor.kursus') }}" class="tmt-back-btn" aria-label="Kembali ke daftar kursus">
             <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
-            <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+                <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+            </svg>
         </a>
-
-        <div>
-            <h1>Web Master {{ $kursus }} - Offline</h1>
-            <p>Senin, 10.30 - 11.30</p>
+        <div class="ta-heading-info">
+            <h1>Absensi Siswa</h1>
         </div>
     </div>
 
+    <section class="ta-profile-card" aria-label="Informasi kursus">
+        <div class="ta-profile-main">
+            <div>
+                <span class="ta-muted">Siswa / ID {{ $siswa['id'] }}</span>
+                <h2>{{ $siswa['nama'] }}</h2>
+                <p>{{ $siswa['kursus'] }} <span class="ta-dot">•</span> {{ $siswa['tentor'] }}</p>
+            </div>
+        </div>
+        <div class="ta-contract">
+            <span class="ta-muted">Masa kontrak</span>
+            <strong>{{ \Carbon\Carbon::parse($siswa['mulai_kontrak'])->translatedFormat('d M Y') }}</strong>
+            <span class="ta-contract-arrow">sampai</span>
+            <strong>{{ \Carbon\Carbon::parse($siswa['akhir_kontrak'])->translatedFormat('d M Y') }}</strong>
+        </div>
+    </section>
 
-    <div class="absensi-controls">
+    <section class="ta-summary-grid" aria-label="Ringkasan absensi">
+        <article class="ta-summary-card">
+            <span>Total pertemuan</span>
+            <strong>12 <small>kali</small></strong>
+            <div class="ta-summary-track"><span style="width:100%"></span></div>
+        </article>
+        <article class="ta-summary-card">
+            <span>Hadir tercatat</span>
+            <strong id="taTotalHadir">12 <small>/ 12</small></strong>
+            <div class="ta-summary-track"><span id="taProgressHadir" style="width:100%"></span></div>
+        </article>
+        <article class="ta-summary-card">
+            <span>Sisa pertemuan</span>
+            <strong id="taSisaPertemuan">0 <small>kali</small></strong>
+            <div class="ta-summary-track"><span id="taProgressSisa" style="width:0%"></span></div>
+        </article>
+    </section>
 
-        <a href="{{ route('tentor.tugas') }}" class="btn-halaman-kelas btn-mt">
-            <span>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-journal-code" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M8.646 5.646a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1 0 .708l-2 2a.5.5 0 0 1-.708-.708L10.293 8 8.646 6.354a.5.5 0 0 1 0-.708m-1.292 0a.5.5 0 0 0-.708 0l-2 2a.5.5 0 0 0 0 .708l2 2a.5.5 0 0 0 .708-.708L5.707 8l1.647-1.646a.5.5 0 0 0 0-.708"/>
-                <path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2"/>
-                <path d="M1 5v-.5a.5.5 0 0 1 1 0V5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 3v-.5a.5.5 0 0 1 1 0V8h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 3v-.5a.5.5 0 0 1 1 0v.5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1z"/>
-                </svg>
-            </span>
-             Tugas
-        </a>
-
-        <select id="pilihPertemuan" class="select-pertemuan">
-            @for ($i = 1; $i <= 12; $i++)
-                <option value="{{ $i }}"
-                    {{ $i == 3 ? 'selected' : '' }}>
-                    Pertemuan {{ $i }}
-                </option>
-            @endfor
-        </select>
-
-        <button type="button"
-                id="btnSimpanAbsensi"
-                class="btn-simpan">
-            Simpan
-        </button>
-
+    <div class="ta-section-heading">
+        <div>
+            <h2>Riwayat Pertemuan</h2>
+        </div>
+        <div class="ta-filter-wrap">
+            <select id="taFilterStatus" class="select-pertemuan ta-filter">
+                <option value="semua">Semua status</option>
+                <option value="hadir">Hadir</option>
+                <option value="sakit">Sakit</option>
+                <option value="izin">Izin</option>
+                <option value="alpa">Alpa</option>
+            </select>
+        </div>
     </div>
 
-
-    @php
-        $daftarSiswa = [
-            ['id' => 1208, 'nama' => 'Belerick Arbiter of Star', 'status' => 'hadir'],
-            ['id' => 1209, 'nama' => 'Belerick Arbiter of Star', 'status' => 'absen'],
-            ['id' => 1210, 'nama' => 'Belerick Arbiter of Star', 'status' => 'sakit'],
-        ];
-    @endphp
-
-    <div class="absensi-table-container">
-        <table class="absensi-table">
+    <div class="absensi-table-container ta-table-container">
+        <table class="absensi-table ta-table">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Nama</th>
-                    <th>Hadir</th>
-                    <th>Sakit</th>
-                    <th>Izin</th>
-                    <th>Absen</th>
-                    <th>Kehadiran</th>
+                    <th>Pertemuan</th>
+                    <th>Tanggal</th>
+                    <th>Waktu</th>
+                    <th>Jadwal</th>
+                    <th>Status Kehadiran</th>
+                    <th>Aksi</th>
                 </tr>
             </thead>
-
-            <tbody>
-                @foreach ($daftarSiswa as $siswa)
-                    <tr data-siswa-id="{{ $siswa['id'] }}">
-                        <td>{{ $siswa['id'] }}</td>
-                        <td class="nama-siswa">{{ $siswa['nama'] }}</td>
-
-                        @foreach (['hadir', 'sakit', 'izin', 'absen'] as $status)
-                            <td>
-                                <label class="radio-absensi">
-                                    <input
-                                        type="radio"
-                                        name="absensi[{{ $siswa['id'] }}]"
-                                        value="{{ $status }}"
-                                        {{ $siswa['status'] === $status ? 'checked' : '' }}
-                                    >
-                                    <span></span>
-                                </label>
-                            </td>
-                        @endforeach
-
-                        <td class="jumlah-kehadiran">0/12</td>
+            <tbody id="taAttendanceBody">
+                @foreach ($daftarPertemuan as $pertemuan)
+                    <tr data-meeting="{{ $pertemuan['ke'] }}"
+                        data-date="{{ $pertemuan['tanggal'] }}"
+                        data-status="{{ $pertemuan['status'] }}">
+                        <td><span class="ta-meeting-number">{{ str_pad($pertemuan['ke'], 2, '0', STR_PAD_LEFT) }}</span></td>
+                        <td>
+                            <strong>{{ \Carbon\Carbon::parse($pertemuan['tanggal'])->translatedFormat('d M Y') }}</strong>
+                            <small class="ta-cell-sub">{{ $pertemuan['hari'] }}</small>
+                        </td>
+                        <td>{{ $pertemuan['jam'] }}</td>
+                        <td><span class="ta-schedule-pill">{{ $pertemuan['jadwal'] }}</span></td>
+                        <td><span class="ta-status-pill ta-status-{{ $pertemuan['status'] }}" data-status-label>{{ ucfirst($pertemuan['status']) }}</span></td>
+                        <td>
+                            <button type="button" class="ta-edit-status" data-edit-meeting="{{ $pertemuan['ke'] }}">
+                                Ubah status
+                            </button>
+                        </td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
     </div>
 
-    <p id="pesanAbsensi" class="pesan-absensi" hidden></p>
+    <p id="pesanAbsensi" class="pesan-absensi" role="status" aria-live="polite" hidden></p>
+</div>
 
+<div class="ta-modal-overlay" id="taStatusModal" hidden>
+    <section class="ta-modal" role="dialog" aria-modal="true" aria-labelledby="taModalTitle">
+        <div class="tmt-upload-header">
+            <button type="button" class="tmt-back-btn" id="taCloseModal" aria-label="Tutup">
+                <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
+                    <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+                </svg>
+            </button>
+            <p class="ta-eyebrow">PERTEMUAN <span id="taModalMeetingNumber">01</span></p>
+            <h2 id="taModalTitle">Ubah status kehadiran</h2>
+            <p class="ta-modal-date" id="taModalDate"></p>
+        </div>
+        <fieldset class="ta-status-options">
+            <legend>Pilih status</legend>
+            <label><input type="radio" name="taStatus" value="hadir"><span>Hadir</span></label>
+            <label><input type="radio" name="taStatus" value="sakit"><span>Sakit</span></label>
+            <label><input type="radio" name="taStatus" value="izin"><span>Izin</span></label>
+            <label><input type="radio" name="taStatus" value="alpa"><span>Alpa</span></label>
+        </fieldset>
+        <div class="ta-modal-actions">
+            <button type="button" class="ta-modal-cancel" id="taCancelModal">Batal</button>
+            <button type="button" class="ta-modal-save" id="taSaveStatus">Simpan status</button>
+        </div>
+    </section>
 </div>
 
 <script>
-    const tombolSimpan = document.getElementById('btnSimpanAbsensi');
-    const pilihPertemuan = document.getElementById('pilihPertemuan');
-    const pesanAbsensi = document.getElementById('pesanAbsensi');
+document.addEventListener('DOMContentLoaded', function () {
+    const body = document.getElementById('taAttendanceBody');
+    const filter = document.getElementById('taFilterStatus');
+    const modal = document.getElementById('taStatusModal');
+    const message = document.getElementById('pesanAbsensi');
+    const storageKey = 'demo_absensi_siswa_1208_webmaster';
+    let activeRow = null;
 
-    function hitungKehadiran() {
-        document.querySelectorAll('.absensi-table tbody tr').forEach(row => {
-            const jumlahHadir = Number(
-                row.dataset.jumlahHadir || 0
-            );
+    function readSavedStatuses() {
+        try { return JSON.parse(localStorage.getItem(storageKey) || '{}'); }
+        catch (error) { return {}; }
+    }
 
-            row.querySelector('.jumlah-kehadiran').textContent =
-                `${jumlahHadir}/12`;
+    function showMessage(text, type = 'sukses') {
+        message.hidden = false;
+        message.textContent = text;
+        message.className = 'pesan-absensi ' + type;
+    }
+
+    function updateRow(row, status) {
+        row.dataset.status = status;
+        const pill = row.querySelector('[data-status-label]');
+        pill.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+        pill.className = 'ta-status-pill ta-status-' + status;
+    }
+
+    function updateSummary() {
+        const rows = [...body.querySelectorAll('tr')];
+        const hadir = rows.filter(row => row.dataset.status === 'hadir').length;
+        const sisa = rows.filter(row => !['hadir', 'sakit', 'izin', 'alpa'].includes(row.dataset.status)).length;
+        document.getElementById('taTotalHadir').innerHTML = `${hadir} <small>/ 12</small>`;
+        document.getElementById('taSisaPertemuan').innerHTML = `${sisa} <small>kali</small>`;
+        document.getElementById('taProgressHadir').style.width = `${(hadir / 12) * 100}%`;
+        document.getElementById('taProgressSisa').style.width = `${(sisa / 12) * 100}%`;
+    }
+
+    function applyFilter() {
+        body.querySelectorAll('tr').forEach(row => {
+            row.hidden = filter.value !== 'semua' && row.dataset.status !== filter.value;
         });
     }
 
-    tombolSimpan.addEventListener('click', function () {
-        const pertemuan = pilihPertemuan.value;
-        let semuaTerisi = true;
+    function closeModal() {
+        modal.hidden = true;
+        activeRow = null;
+    }
 
-        document.querySelectorAll('.absensi-table tbody tr').forEach(row => {
-            const id = row.dataset.siswaId;
-            const pilihan = row.querySelector(
-                `input[name="absensi[${id}]"]:checked`
-            );
+    // Pulihkan perubahan demo dari browser, bila ada.
+    const saved = readSavedStatuses();
+    body.querySelectorAll('tr').forEach(row => {
+        const meeting = row.dataset.meeting;
+        if (saved[meeting]) updateRow(row, saved[meeting]);
+    });
+    updateSummary();
 
-            if (!pilihan) {
-                semuaTerisi = false;
-                return;
-            }
+    body.addEventListener('click', function (event) {
+        const button = event.target.closest('[data-edit-meeting]');
+        if (!button) return;
 
-            let riwayat = JSON.parse(
-                localStorage.getItem(`absensi_${id}`) || '{}'
-            );
+        activeRow = button.closest('tr');
+        document.getElementById('taModalMeetingNumber').textContent =
+            String(activeRow.dataset.meeting).padStart(2, '0');
+        document.getElementById('taModalDate').textContent =
+            activeRow.querySelector('td:nth-child(2) strong').textContent;
 
-            riwayat[pertemuan] = pilihan.value;
-
-            localStorage.setItem(
-                `absensi_${id}`,
-                JSON.stringify(riwayat)
-            );
-
-            const jumlahHadir = Object.values(riwayat)
-                .filter(status => status === 'hadir').length;
-
-            row.dataset.jumlahHadir = jumlahHadir;
-            row.querySelector('.jumlah-kehadiran').textContent =
-                `${jumlahHadir}/12`;
+        const currentStatus = activeRow.dataset.status;
+        modal.querySelectorAll('input[name="taStatus"]').forEach(input => {
+            input.checked = input.value === currentStatus;
         });
+        modal.hidden = false;
+    });
 
-        pesanAbsensi.hidden = false;
-
-        if (!semuaTerisi) {
-            pesanAbsensi.textContent =
-                'Pilih status absensi untuk setiap siswa terlebih dahulu.';
-            pesanAbsensi.className = 'pesan-absensi error';
+    document.getElementById('taSaveStatus').addEventListener('click', function () {
+        if (!activeRow) return;
+        const selected = modal.querySelector('input[name="taStatus"]:checked');
+        if (!selected) {
+            showMessage('Pilih status kehadiran terlebih dahulu.', 'error');
             return;
         }
 
-        hitungKehadiran();
+        const meeting = activeRow.dataset.meeting;
+        updateRow(activeRow, selected.value);
+        const statuses = readSavedStatuses();
+        statuses[meeting] = selected.value;
+        localStorage.setItem(storageKey, JSON.stringify(statuses));
 
-        pesanAbsensi.textContent =
-            `Absensi pertemuan ${pertemuan} tersimpan di browser.`;
-        pesanAbsensi.className = 'pesan-absensi sukses';
+        updateSummary();
+        applyFilter();
+        closeModal();
+        showMessage(`Status pertemuan ${meeting} berhasil diperbarui di browser.`);
     });
 
-    document.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('.absensi-table tbody tr').forEach(row => {
-            const id = row.dataset.siswaId;
-            const riwayat = JSON.parse(
-                localStorage.getItem(`absensi_${id}`) || '{}'
-            );
-
-            row.dataset.jumlahHadir = Object.values(riwayat)
-                .filter(status => status === 'hadir').length;
-
-            const pertemuan = pilihPertemuan.value;
-
-            if (riwayat[pertemuan]) {
-                const radio = row.querySelector(
-                    `input[value="${riwayat[pertemuan]}"]`
-                );
-
-                if (radio) radio.checked = true;
-            }
-
-            row.querySelector('.jumlah-kehadiran').textContent =
-                `${row.dataset.jumlahHadir}/12`;
-        });
+    document.getElementById('taCloseModal').addEventListener('click', closeModal);
+    document.getElementById('taCancelModal').addEventListener('click', closeModal);
+    modal.addEventListener('click', event => {
+        if (event.target === modal) closeModal();
     });
-
-    pilihPertemuan.addEventListener('change', function () {
-        const pertemuan = this.value;
-
-        document.querySelectorAll('.absensi-table tbody tr').forEach(row => {
-            const riwayat = JSON.parse(
-                localStorage.getItem(`absensi_${row.dataset.siswaId}`) || '{}'
-            );
-
-            row.querySelectorAll('input[type="radio"]').forEach(radio => {
-                radio.checked = riwayat[pertemuan] === radio.value;
-            });
-        });
-
-        pesanAbsensi.hidden = true;
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && !modal.hidden) closeModal();
     });
+    filter.addEventListener('change', applyFilter);
+});
 </script>
 @endsection
