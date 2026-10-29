@@ -915,8 +915,6 @@
     background-size: 16px;
     cursor: pointer;
 }
-.o-search-wrap .o-search:focus,
-.o-announcement-toolbar .o-filter:focus { border-color: var(--orange); box-shadow: 0 0 0 3px rgba(242, 118, 64, .12); }
 
 .o-search-wrap svg {
     position: absolute;
@@ -960,7 +958,7 @@
 .o-announcement-card h2 { margin-bottom: 10px; color: var(--teal); font-size: 19px; line-height: 1.4; font-weight: 800; overflow-wrap: anywhere; }
 .o-announcement-card p { color: #626e68; font-size: 14px; line-height: 1.8; white-space: pre-line; overflow-wrap: anywhere; }
 
-.o-announcement-actions { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 22px; padding-top: 17px; border-top: 1px solid #f0e5d4; }
+.o-announcement-actions { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 10px; padding-top: 8px; }
 
 .o-action-delete { background: #fff0e7; color: #c65c31; }
 .o-action-delete:hover { background: var(--orange); color: #fff; }

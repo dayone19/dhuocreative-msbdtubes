@@ -9,7 +9,6 @@
         'nama' => 'Siswa A',
         'kursus' => 'Web Master',
         'mode' => 'Online',
-        'tentor' => 'Tentor A',
         'mulai_kontrak' => '2026-10-05',
         'akhir_kontrak' => '2026-12-05',
     ];
@@ -19,14 +18,7 @@
         ['ke' => 2,  'tanggal' => '2026-10-07', 'hari' => 'Rabu',  'jam' => '16.00–17.30', 'status' => 'hadir', 'jadwal' => 'Jadwal tetap'],
         ['ke' => 3,  'tanggal' => '2026-10-09', 'hari' => 'Jumat', 'jam' => '16.00–17.30', 'status' => 'hadir', 'jadwal' => 'Jadwal tetap'],
         ['ke' => 4,  'tanggal' => '2026-10-12', 'hari' => 'Senin', 'jam' => '16.00–17.30', 'status' => 'hadir', 'jadwal' => 'Jadwal tetap'],
-        ['ke' => 5,  'tanggal' => '2026-10-14', 'hari' => 'Rabu',  'jam' => '16.00–17.30', 'status' => 'hadir', 'jadwal' => 'Jadwal tetap'],
-        ['ke' => 6,  'tanggal' => '2026-10-16', 'hari' => 'Jumat', 'jam' => '16.00–17.30', 'status' => 'hadir', 'jadwal' => 'Jadwal tetap'],
-        ['ke' => 7,  'tanggal' => '2026-10-19', 'hari' => 'Senin', 'jam' => '16.00–17.30', 'status' => 'hadir', 'jadwal' => 'Jadwal tetap'],
-        ['ke' => 8,  'tanggal' => '2026-10-21', 'hari' => 'Rabu',  'jam' => '16.00–17.30', 'status' => 'hadir', 'jadwal' => 'Jadwal tetap'],
-        ['ke' => 9,  'tanggal' => '2026-10-23', 'hari' => 'Jumat', 'jam' => '16.00–17.30', 'status' => 'hadir', 'jadwal' => 'Jadwal tetap'],
-        ['ke' => 10, 'tanggal' => '2026-10-26', 'hari' => 'Senin', 'jam' => '16.00–17.30', 'status' => 'hadir', 'jadwal' => 'Jadwal tetap'],
-        ['ke' => 11, 'tanggal' => '2026-10-28', 'hari' => 'Rabu',  'jam' => '16.00–17.30', 'status' => 'hadir', 'jadwal' => 'Jadwal tetap'],
-        ['ke' => 12, 'tanggal' => '2026-10-30', 'hari' => 'Jumat', 'jam' => '16.00–17.30', 'status' => 'hadir', 'jadwal' => 'Jadwal tetap'],
+        ['ke' => 5,  'tanggal' => '2026-10-14', 'hari' => 'Rabu',  'jam' => '16.00–17.30', 'status' => 'hadir', 'jadwal' => 'Jadwal ganti'],
     ];
 @endphp
 
@@ -34,7 +26,7 @@
     <div class="absensi-heading ta-heading">
         <a href="{{ route('tentor.kursus') }}" class="tmt-back-btn" aria-label="Kembali ke daftar kursus">
             <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
-                <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+            <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
             </svg>
         </a>
         <div class="ta-heading-info">
@@ -45,9 +37,9 @@
     <section class="ta-profile-card" aria-label="Informasi kursus">
         <div class="ta-profile-main">
             <div>
-                <span class="ta-muted">Siswa / ID {{ $siswa['id'] }}</span>
+                <span class="ta-muted">ID {{ $siswa['id'] }}</span>
                 <h2>{{ $siswa['nama'] }}</h2>
-                <p>{{ $siswa['kursus'] }} <span class="ta-dot">•</span> {{ $siswa['tentor'] }}</p>
+                <p>{{ $siswa['kursus'] }}</p>
             </div>
         </div>
         <div class="ta-contract">
@@ -131,16 +123,17 @@
 </div>
 
 <div class="ta-modal-overlay" id="taStatusModal" hidden>
-    <section class="ta-modal" role="dialog" aria-modal="true" aria-labelledby="taModalTitle">
-        <div class="tmt-upload-header">
+    <section class="ta-modal" role="dialog" aria-modal="true" aria-labelledby="taModalTitle" aria-describedby="taModalDate">
+        <div class="ta-modal-header">
             <button type="button" class="tmt-back-btn" id="taCloseModal" aria-label="Tutup">
                 <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
-                    <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+                <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
                 </svg>
             </button>
-            <p class="ta-eyebrow">PERTEMUAN <span id="taModalMeetingNumber">01</span></p>
-            <h2 id="taModalTitle">Ubah status kehadiran</h2>
-            <p class="ta-modal-date" id="taModalDate"></p>
+            <div>
+                <h2 id="taModalTitle">Pertemuan <span id="taModalMeetingNumber">1</span></h2>
+                <p class="ta-modal-date" id="taModalDate"></p>
+            </div>
         </div>
         <fieldset class="ta-status-options">
             <legend>Pilih status</legend>
@@ -201,6 +194,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function closeModal() {
         modal.hidden = true;
+        document.body.style.overflow = '';
         activeRow = null;
     }
 
@@ -218,7 +212,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         activeRow = button.closest('tr');
         document.getElementById('taModalMeetingNumber').textContent =
-            String(activeRow.dataset.meeting).padStart(2, '0');
+            String(activeRow.dataset.meeting);
         document.getElementById('taModalDate').textContent =
             activeRow.querySelector('td:nth-child(2) strong').textContent;
 
@@ -227,6 +221,9 @@ document.addEventListener('DOMContentLoaded', function () {
             input.checked = input.value === currentStatus;
         });
         modal.hidden = false;
+        document.body.style.overflow = 'hidden';
+        const firstChecked = modal.querySelector('input[name="taStatus"]:checked');
+        if (firstChecked) firstChecked.focus();
     });
 
     document.getElementById('taSaveStatus').addEventListener('click', function () {

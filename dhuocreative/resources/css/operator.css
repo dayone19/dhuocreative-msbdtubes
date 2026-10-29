@@ -19,7 +19,7 @@
 .o-mint-theme .schedule-type { font-size: 17px; }
 .o-mint-theme .schedule-tentor { font-size: 17px; }
 .o-mint-theme .schedule-time { font-size: 17px; }
-.o-mint-theme .progress { width: 125px; height: 11px; overflow: hidden; background: #f3d99b; border-radius: 20px; }
+.o-mint-theme .progress { width: 125px; height: 11px; overflow: hidden; background: #f2e7d4; border-radius: 20px; }
 .o-mint-theme .progress-fill { height: 100%; background: linear-gradient(90deg, var(--amber), var(--orange)); border-radius: 20px; }
 
 @media (max-width: 768px) {
@@ -43,14 +43,14 @@
 .o-summary {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
+    gap: 18px;
     max-width: 950px;
     margin-bottom: 46px;
 }
 .o-summary-card {
     height: 180px;
-    width: 195px;
-    padding: 20px 16px;
+    width: 200px;
+    padding: 20px 14px;
     background: #fcf4e5;
     border-radius: 20px;
     display: flex;
@@ -448,7 +448,6 @@
 
 .o-announcement-toolbar { display: grid; grid-template-columns: minmax(0, 1fr) 220px; gap: 14px; margin-bottom: 24px; }
 .o-search-wrap { position: relative; width: 100%; }
-
 .o-search-wrap .o-search,
 .o-announcement-toolbar .o-filter {
     width: 100%;
@@ -473,8 +472,6 @@
     background-size: 16px;
     cursor: pointer;
 }
-.o-search-wrap .o-search:focus,
-.o-announcement-toolbar .o-filter:focus { border-color: var(--orange); box-shadow: 0 0 0 3px rgba(242, 118, 64, .12); }
 
 .o-search-wrap svg {
     position: absolute;
@@ -491,7 +488,6 @@
 }
 
 .o-announcement-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
-
 .o-announcement-card {
     min-width: 0;
     padding: 24px;
@@ -500,7 +496,6 @@
     background: var(--ivory);
     box-shadow: 0 5px 16px rgba(38, 108, 101, .04);
 }
-
 .o-announcement-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 17px; }
 .o-announcement-category {
     min-height: 29px;
@@ -518,7 +513,7 @@
 .o-announcement-card h2 { margin-bottom: 10px; color: var(--teal); font-size: 19px; line-height: 1.4; font-weight: 800; overflow-wrap: anywhere; }
 .o-announcement-card p { color: #626e68; font-size: 14px; line-height: 1.8; white-space: pre-line; overflow-wrap: anywhere; }
 
-.o-announcement-actions { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 22px; padding-top: 17px; border-top: 1px solid #f0e5d4; }
+.o-announcement-actions { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 10px; padding-top: 8px; }
 
 .o-action-delete { background: #fff0e7; color: #c65c31; }
 .o-action-delete:hover { background: var(--orange); color: #fff; }
@@ -620,12 +615,12 @@
 
 
 /* CSS tambahan: dashboard laporan dan halaman rekap absensi */
-.o-report-section{margin-top:34px;padding:20px;border:1px solid #cfe0dd;border-radius:25px;background:#e3efed}
+.o-report-section{margin-top:34px;padding:20px;border:1px solid #ffb83f;border-radius:25px;background:#ffb83f}
 .o-report-heading{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:20px}
-.o-report-heading h2{margin:0 0 6px;color:#286c65;font-size:20px}
+.o-report-heading h2{margin:0 0 6px;color:#286c65;font-size:20px; font-weight:800;}
 .o-report-heading p,.o-report-preview-note{margin:0;color:#65736d;font-size:14px;line-height:1.6}
 .o-report-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
-.o-report-card{display:flex;flex-direction:column;gap:15px;min-width:0;padding:22px;border:1px solid #f2e6d4;border-radius:22px;background:#fffaf0}
+.o-report-card{display:flex;flex-direction:column;gap:15px;min-width:0;padding:22px;border:1px solid #f2e6d4;border-radius:22px;background:#fffdf8}
 .o-report-icon{display:grid;place-items:center;width:70px;height:45px;border-radius:25px;background:#ffdc59;color:#286c65;font-size:24px;font-weight:bolder}
 .o-report-copy h3{margin:0 0 8px;color:#286c65;font-size:15px}
 .o-report-copy p{margin:0;color:#65736d;font-size:13px;line-height:1.7}

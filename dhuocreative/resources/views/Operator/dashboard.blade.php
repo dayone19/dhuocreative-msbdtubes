@@ -143,7 +143,7 @@ function unduhLaporan(jenis) {
 
     if (jenis === 'absensi') {
         namaFile = `Laporan_Absensi_Privat_${bulanInput}.csv`;
-        csvContent += "LAPORAN REKAP BULANAN ABSENSI SESI PRIVAT\n";
+        csvContent += "LAPORAN REKAP BULANAN ABSENSI\n";
         csvContent += `Bulan: ${bulanInput}\n\n`;
         csvContent += "No,Nama Siswa,Kursus,Jenis Kelas,Tentor,Total Sesi Bulanan,Hadir,Izin/Sakit,Alpa,Persentase Kehadiran\n";
         csvContent += '1,"Siswa A","Web Master","Online","Tentor C",12,11,1,0,"91.7%"\n';
@@ -151,7 +151,7 @@ function unduhLaporan(jenis) {
         csvContent += '3,"Siswa C","Web Master","Offline Rumah","Tentor B",12,10,1,1,"83.3%"\n';
     } else {
         namaFile = `Laporan_Siswa_Kursus_Privat_${bulanInput}.csv`;
-        csvContent += "LAPORAN REKAP SISWA & KURSUS PRIVAT\n";
+        csvContent += "LAPORAN REKAP SISWA & KURSUS\n";
         csvContent += `Bulan: ${bulanInput}\n\n`;
         csvContent += "No,Nama Kursus,Jumlah Siswa Privat,Siswa Baru Bulan Ini,Kelas Terbanyak,Status Kursus\n";
         csvContent += '1,"Web Master",14,3,"Online (8 Siswa)",Aktif\n';
@@ -177,8 +177,8 @@ function cetakLaporan(jenis) {
     }
 
     const judul = jenis === 'absensi' 
-        ? 'Laporan Rekap Absensi & Sesi Privat Bulanan' 
-        : 'Laporan Rekap Distribusi Siswa & Kursus Privat';
+        ? 'Laporan Rekap Absensi Bulanan' 
+        : 'Laporan Rekap Distribusi Siswa & Kursus';
         
     const printWindow = window.open('', '', 'width=950,height=650');
 
@@ -192,17 +192,18 @@ function cetakLaporan(jenis) {
                     <th>Kursus</th>
                     <th>Jenis Kelas</th>
                     <th>Tentor</th>
-                    <th>Total Sesi</th>
+                    <th>Total Pertemuan</th>
                     <th>Hadir</th>
-                    <th>Izin/Sakit</th>
+                    <th>Izin</th>
+                    <th>Sakit</th>
                     <th>Alpa</th>
                     <th>Kehadiran</th>
                 </tr>
             </thead>
             <tbody>
-                <tr><td>1</td><td>Siswa A</td><td>Web Master</td><td>Online</td><td>Tentor C</td><td>12</td><td>11</td><td>1</td><td>0</td><td>91.7%</td></tr>
-                <tr><td>2</td><td>Siswa B</td><td>MS Office</td><td>Offline</td><td>Tentor D</td><td>8</td><td>8</td><td>0</td><td>0</td><td>100%</td></tr>
-                <tr><td>3</td><td>Siswa C</td><td>Web Master</td><td>Offline Rumah</td><td>Tentor B</td><td>12</td><td>10</td><td>1</td><td>1</td><td>83.3%</td></tr>
+                <tr><td>1</td><td>Siswa A</td><td>Web Master</td><td>Online</td><td>Tentor C</td><td>12</td><td>11</td><td>1</td><td>0</td><td>0</td><td>91.7%</td></tr>
+                <tr><td>2</td><td>Siswa B</td><td>MS Office</td><td>Offline</td><td>Tentor D</td><td>8</td><td>8</td><td>0</td><td>0</td><td>0</td><td>100%</td></tr>
+                <tr><td>3</td><td>Siswa C</td><td>Web Master</td><td>Offline Rumah</td><td>Tentor B</td><td>12</td><td>10</td><td>1</td><td>0</td><td>1</td><td>83.3%</td></tr>
             </tbody>
         `;
     } else {
@@ -244,7 +245,7 @@ function cetakLaporan(jenis) {
             <p><strong>Periode Bulan:</strong> ${bulanInput}</p>
             <table>${isiTabel}</table>
             <div class="footer">
-                <p>Dicetak otomatis oleh Sistem Operator Bimbel Privat pada: ${new Date().toLocaleDateString('id-ID')}</p>
+                <p>Dicetak pada: ${new Date().toLocaleDateString('id-ID')}</p>
             </div>
         </body>
         </html>
