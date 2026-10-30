@@ -140,6 +140,9 @@ Route::middleware(['auth', 'prevent.back'])->prefix('siswa')->name('siswa.')->gr
     Route::get('/absensi', function () {
         return view('siswa.absensi');
     })->name('absensi');
+    Route::get('/pengumuman', function () {
+        return view('siswa.pengumuman');
+    })->name('pengumuman');
 });
 
 Route::middleware(['auth', 'prevent.back'])->prefix('admin')->name('admin.')->group(function () {

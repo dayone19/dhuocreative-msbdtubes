@@ -76,6 +76,11 @@
             <span>Sertifikat</span>
         </a>
 
+        <!-- Pengumuman -->
+        <a href="{{ route('siswa.pengumuman') }}" class="sidebar-item {{ request()->routeIs('siswa.pengumuman') ? 'active' : '' }}">
+            <span>Pengumuman</span>
+        </a>
+
     </nav>
 </aside>
 
