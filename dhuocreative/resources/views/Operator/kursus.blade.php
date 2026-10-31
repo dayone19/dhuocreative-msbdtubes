@@ -2,23 +2,9 @@
 @section('title', 'Manajemen Kursus')
 @section('content')
 <div class="o-page">
-     <div class="o-page-header">
-        <h1 class="o-page-title">Manajemen Kursus</h1>
-    </div>
-
-    <div class="o-tabs" role="tablist" aria-label="Manajemen kursus dan kelas">
-        <button type="button" class="o-tab active" data-tab="kursus">
-            Kursus
-        </button>
-
-        <button type="button" class="o-tab" data-tab="kelas">
-            Kelas
-        </button>
-    </div>
-
     <section class="o-tab-content active" id="tab-kursus">
         <div class="o-toolbar">
-            <h2>Daftar Kursus</h2>
+            <h1 class="o-page-title">Daftar Kursus</h1>
 
             <input
                 class="o-search"
@@ -33,8 +19,8 @@
                 Tambah Kursus
             </button>
         </div>
-        <div class="o-table-wrap">
-            <table class="o-table" id="tabelKursus">
+        <div class="k-table-wrap">
+            <table class="k-table" id="tabelKursus">
                 <thead>
                     <tr>
                         <th>Nama Kursus</th>
@@ -48,14 +34,14 @@
                     <tr data-status="aktif">
                         <td>Web Master</td>
                         <td>Pembuatan dan pengelolaan website</td>
-                        <td>12</td>
+                        <td>12 pertemuan</td>
                         <td><span class="o-status aktif">Aktif</span></td>
                         <td><button type="button" class="o-action" data-detail-kursus>Detail</button></td>
                     </tr>
                     <tr data-status="aktif">
                         <td>MS Office</td>
                         <td>Penggunaan aplikasi Microsoft Office</td>
-                        <td>8</td>
+                        <td>8 pertemuan</td>
                         <td><span class="o-status aktif">Aktif</span></td>
                         <td><button type="button" class="o-action" data-detail-kursus>Detail</button></td>
                     </tr>

@@ -3,7 +3,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
-use App\Http\Controllers\Tentor;
 
 // login
 Route::get('/', function () {
@@ -45,94 +44,38 @@ Route::post('/forgotPass/reset-password', [ForgotPasswordController::class, 'res
 
 // tentor
 Route::middleware(['auth', 'prevent.back'])->prefix('tentor')->name('tentor.')->group(function () {
-    Route::get('/dashboard', [Tentor\DashboardController::class, 'index'])->name('dashboard'); 
+    Route::get('/dashboard', function () {
+        return view('tentor.dashboard');
+    })->name('dashboard'); 
 
-    Route::get('/kelas', [Tentor\KelasController::class, 'index'])->name('kelas');
+    Route::get('/jadwal', function () {
+        return view('tentor.jadwal');
+    })->name('jadwal');
 
-   Route::get('/kelas/absensi/{kelas}', [Tentor\KelasController::class, 'absensi'])
-        ->whereNumber('kelas')->name('absensi');
+    Route::get('/kursus', function () {
+        return view('tentor.kursus');
+    })->name('kursus');
 
-    Route::post('/kelas/absensi/{kelas}', [Tentor\KelasController::class, 'simpanAbsensi'])
-        ->whereNumber('kelas')->name('absensi.simpan');
+    Route::get('/kursus/absensi/{kursus}', function ($kursus) {
+        return view('tentor.absensi', compact('kursus'));
+    })->name('absensi');
 
-    Route::get('/materi', [Tentor\MateriController::class, 'index'])    ->name('materi');
-    
-    Route::post('/materi', [Tentor\MateriController::class, 'simpan'])  ->name('materi.simpan');
-    
-    Route::get('/materi/{kelas}/{token}', [Tentor\MateriController::class, 'file'])
-        ->whereNumber('kelas')->name('materi.file');
+    Route::get('/tugas', function () {
+        return view('tentor.tugas');
+    })->name('tugas'); 
 
-    Route::put('/materi/{kelas}/{token}', [Tentor\MateriController::class, 'update'])
-        ->whereNumber('kelas')->name('materi.update');
-    Route::delete('/materi/{kelas}/{token}', [Tentor\MateriController::class, 'hapus'])
-        ->whereNumber('kelas')->name('materi.hapus');
+    Route::get('/nilai', function () {
+        return view('tentor.nilai');
+    })->name('nilai'); 
 
+    Route::get('/sertifikat', function () {
+        return view('tentor.sertifikat');
+    })->name('sertifikat');
 
-    Route::get('/nilai/{tugas}', [Tentor\NilaiController::class, 'show'])
-        ->whereNumber('tugas')->name('nilai');
-
-    Route::post('/nilai/{pengumpulan}', [Tentor\NilaiController::class, 'simpan'])
-        ->whereNumber('pengumpulan')->name('nilai.simpan');
-
-    Route::get('/tugas', [Tentor\TugasController::class, 'index'])->name('tugas');
-    
-    Route::post('/tugas', [Tentor\TugasController::class, 'simpan'])->name('tugas.simpan');
-    
-    Route::put('/tugas/{tugas}', [Tentor\TugasController::class, 'update'])
-        ->whereNumber('tugas')->name('tugas.update');
-    
-    Route::get('/tugas/{tugas}/file', [Tentor\TugasController::class, 'file'])
-        ->whereNumber('tugas')->name('tugas.file');
-
-    Route::get('/sertifikat', [Tentor\SertifikatController::class, 'index'])->name('sertifikat');
-
-    Route::post('/sertifikat', [Tentor\SertifikatController::class, 'simpan'])->name('sertifikat.simpan');
-
-    Route::get('/sertifikat/{sertifikat}/file', [Tentor\SertifikatController::class, 'file'])
-        ->whereNumber('sertifikat')->name('sertifikat.file');
-        
-    Route::get('/pengumuman', [Tentor\PengumumanController::class, 'index'])->name('pengumuman');
-    
-    Route::post('/pengumuman', [Tentor\PengumumanController::class, 'simpan'])->name('pengumuman.simpan');
-
-    Route::put('/pengumuman/{pengumuman}', [Tentor\PengumumanController::class, 'update'])
-        ->whereNumber('pengumuman')->name('pengumuman.update');
-
-    Route::delete('/pengumuman/{pengumuman}', [Tentor\PengumumanController::class, 'hapus'])
-        ->whereNumber('pengumuman')->name('pengumuman.hapus');
-
-    // Route::get('/kelas', function () {
-    //     return view('tentor.kelas');
-    // })->name('kelas');
-
-    // Route::get('/kelas/absensi/{kelas}', function ($kelas) {
-    //     return view('tentor.absensi', compact('kelas'));
-    // })->name('absensi');
-
-    // Route::get('/materi', function () {
-    //     return view('tentor.materi');
-    // })->name('materi');
-
-    //     Route::get('/nilai', function () {
-    //     return view('tentor.nilai');
-    // })->name('nilai');
-
-    // Route::get('/tugas', function () {
-    //     return view('tentor.tugas');
-    // })->name('tugas');  
-
-    // Route::get('/sertifikat', function () {
-    //     return view('tentor.sertifikat');
-    // })->name('sertifikat');
-
-    // Route::get('/pengumuman', function () {
-    //     return view('tentor.pengumuman');
-    // })->name('pengumuman'); 
+    Route::get('/pengumuman', function () {
+        return view('tentor.pengumuman');
+    })->name('pengumuman'); 
 });
-
-Route::get('dashboard', function () {
-    return redirect()->route('tentor.dashboard');
-})->middleware('auth')->name('dashboard');
 
 // operator
 Route::middleware(['auth', 'prevent.back'])->prefix('operator')->name('operator.')->group(function () {
@@ -143,6 +86,10 @@ Route::middleware(['auth', 'prevent.back'])->prefix('operator')->name('operator.
     Route::get('/siswa', function () {
         return view('operator.siswa');
     })->name('siswa'); 
+
+    Route::get('/tugas', function () {
+        return view('operator.tugas');
+    })->name('tugas');
 
     Route::get('/kursus', function () {
         return view('operator.kursus');
@@ -161,12 +108,16 @@ Route::middleware(['auth', 'prevent.back'])->prefix('operator')->name('operator.
     })->name('pengumuman'); 
 });
 
+
 Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     Route::post('/admin/users', [UserController::class, 'store'])
    ->name('admin.users.store');
+    // admin
+    // operator
+    // tentor
+    // siswa
 });
 
-// siswa
 Route::middleware(['auth', 'prevent.back'])->prefix('siswa')->name('siswa.')->group(function () {
     Route::get('/dashboard', function () {
         return view('siswa.dashboard');
@@ -189,4 +140,37 @@ Route::middleware(['auth', 'prevent.back'])->prefix('siswa')->name('siswa.')->gr
     Route::get('/absensi', function () {
         return view('siswa.absensi');
     })->name('absensi');
+    Route::get('/pengumuman', function () {
+        return view('siswa.pengumuman');
+    })->name('pengumuman');
+});
+
+Route::middleware(['auth', 'prevent.back'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('admin.dashboard');
+    })->name('dashboard');
+    Route::get('/manajemenAkun', function () {
+        return view('admin.manajemenAkun');
+    })->name('manajemenAkun');
+    Route::get('/dataPengguna', function () {
+        return view('admin.dataPengguna');
+    })->name('dataPengguna');
+    Route::get('/manajemenKursus', function () {
+        return view('admin.manajemenKursus');
+    })->name('manajemenKursus');
+    Route::get('/jadwalAbsensi', function () {
+        return view('admin.jadwalAbsensi');
+    })->name('jadwalAbsensi');
+    Route::get('/tugas', function () {
+        return view('admin.tugas');
+    })->name('tugas');
+    Route::get('/nilaiSertifikat', function () {
+        return view('admin.nilaiSertifikat');
+    })->name('nilaiSertifikat');
+    Route::get('/pengumuman', function () {
+        return view('admin.pengumuman');
+    })->name('pengumuman');
+    Route::get('/buatAkun', function () {
+        return view('admin.buatAkun');
+    })->name('buatAkun');
 });
