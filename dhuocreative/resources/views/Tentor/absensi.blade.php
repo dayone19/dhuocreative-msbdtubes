@@ -1,25 +1,26 @@
-@extends('layouts.Tentor')
-
+@extends('layouts.tentor')
+ 
 @section('title', 'Absensi Siswa')
-
+ 
 @section('content')
 <div class="tentor-absensi-page">
-
+ 
     <div class="absensi-heading">
         <a href="{{ route('tentor.kelas') }}" class="tmt-back-btn">
             <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
             <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+            </svg>
         </a>
-
+ 
         <div>
-            <h1>Web Master {{ $kelas }} - Offline</h1>
-            <p>Senin, 10.30 - 11.30</p>
+            <h1>{{ $kelas->nama_kelas }}</h1>
+            <p>{{ $infoJadwal }}</p>
         </div>
     </div>
-
-
+ 
+ 
     <div class="absensi-controls">
-
+ 
         <a href="{{ route('tentor.materi') }}" class="btn-halaman-kelas btn-mt">
             <span>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-journal-bookmark" viewBox="0 0 16 16">
@@ -30,7 +31,7 @@
             </span>
              Materi
         </a>
-
+ 
         <a href="{{ route('tentor.tugas') }}" class="btn-halaman-kelas btn-mt">
             <span>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-journal-code" viewBox="0 0 16 16">
@@ -41,79 +42,98 @@
             </span>
              Tugas
         </a>
-
-        <select id="pilihPertemuan" class="select-pertemuan">
-            @for ($i = 1; $i <= 12; $i++)
-                <option value="{{ $i }}"
-                    {{ $i == 3 ? 'selected' : '' }}>
-                    Pertemuan {{ $i }}
+ 
+        <select id="pilihPertemuan" name="pertemuan" form="formAbsensi" class="select-pertemuan">
+            @foreach ($daftarPertemuan as $no => $jadwalItem)
+                <option value="{{ $no }}" {{ $no == $pertemuan ? 'selected' : '' }}>
+                    Pertemuan {{ $no }}{{ $jadwalItem ? '' : ' (belum dijadwalkan)' }}
                 </option>
-            @endfor
+            @endforeach
         </select>
-
-        <button type="button"
+ 
+        <button type="submit"
+                form="formAbsensi"
                 id="btnSimpanAbsensi"
-                class="btn-simpan">
+                class="btn-simpan"
+                @disabled(!$jadwalTerpilih)>
             Simpan
         </button>
-
+ 
     </div>
-
-
-    @php
-        $daftarSiswa = [
-            ['id' => 1208, 'nama' => 'Belerick Arbiter of Star', 'status' => 'hadir'],
-            ['id' => 1209, 'nama' => 'Belerick Arbiter of Star', 'status' => 'absen'],
-            ['id' => 1210, 'nama' => 'Belerick Arbiter of Star', 'status' => 'sakit'],
-        ];
-    @endphp
-
-    <div class="absensi-table-container">
-        <table class="absensi-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nama</th>
-                    <th>Hadir</th>
-                    <th>Sakit</th>
-                    <th>Izin</th>
-                    <th>Absen</th>
-                    <th>Kehadiran</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                @foreach ($daftarSiswa as $siswa)
-                    <tr data-siswa-id="{{ $siswa['id'] }}">
-                        <td>{{ $siswa['id'] }}</td>
-                        <td class="nama-siswa">{{ $siswa['nama'] }}</td>
-
-                        @foreach (['hadir', 'sakit', 'izin', 'absen'] as $status)
-                            <td>
-                                <label class="radio-absensi">
-                                    <input
-                                        type="radio"
-                                        name="absensi[{{ $siswa['id'] }}]"
-                                        value="{{ $status }}"
-                                        {{ $siswa['status'] === $status ? 'checked' : '' }}
-                                    >
-                                    <span></span>
-                                </label>
-                            </td>
-                        @endforeach
-
-                        <td class="jumlah-kehadiran">0/12</td>
+ 
+ 
+    @if (session('sukses'))
+        <p class="pesan-absensi sukses">{{ session('sukses') }}</p>
+    @endif
+ 
+    @if ($errors->any())
+        <p class="pesan-absensi error">{{ $errors->first() }}</p>
+    @endif
+ 
+    <form id="formAbsensi" method="POST"
+          action="{{ route('tentor.absensi.simpan', ['kelas' => $kelas->id_kelas]) }}">
+        @csrf
+ 
+        <div class="absensi-table-container">
+            <table class="absensi-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nama</th>
+                        <th>Hadir</th>
+                        <th>Sakit</th>
+                        <th>Izin</th>
+                        <th>Absen</th>
+                        <th>Kehadiran</th>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-
-    <p id="pesanAbsensi" class="pesan-absensi" hidden></p>
-
+                </thead>
+ 
+                <tbody>
+                    @forelse ($daftarSiswa as $siswa)
+                        <tr>
+                            <td>{{ $siswa['id'] }}</td>
+                            <td class="nama-siswa">{{ $siswa['nama'] }}</td>
+ 
+                            {{-- 'alpha' = nilai enum di database untuk kolom "Absen" --}}
+                            @foreach (['hadir', 'sakit', 'izin', 'alpha'] as $status)
+                                <td>
+                                    <label class="radio-absensi">
+                                        <input
+                                            type="radio"
+                                            name="absensi[{{ $siswa['id'] }}]"
+                                            value="{{ $status }}"
+                                            {{ old('absensi.' . $siswa['id'], $siswa['status']) === $status ? 'checked' : '' }}
+                                        >
+                                        <span></span>
+                                    </label>
+                                </td>
+                            @endforeach
+ 
+                            <td class="jumlah-kehadiran">{{ $siswa['hadir'] }}/{{ $totalPertemuan }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7">Belum ada siswa aktif di kelas ini.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </form>
+ 
 </div>
-
+ 
 <script>
+    // ganti pertemuan -> muat ulang halaman dengan ?pertemuan=N (data diambil dari database)
+    document.getElementById('pilihPertemuan').addEventListener('change', function () {
+        const url = new URL(window.location.href);
+        url.searchParams.set('pertemuan', this.value);
+        window.location = url;
+    });
+</script>
+@endsection
+
+<!-- <script>
     const tombolSimpan = document.getElementById('btnSimpanAbsensi');
     const pilihPertemuan = document.getElementById('pilihPertemuan');
     const pesanAbsensi = document.getElementById('pesanAbsensi');
@@ -219,5 +239,4 @@
 
         pesanAbsensi.hidden = true;
     });
-</script>
-@endsection
+</script> -->

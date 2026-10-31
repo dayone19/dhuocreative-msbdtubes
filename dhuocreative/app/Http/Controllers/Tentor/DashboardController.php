@@ -25,12 +25,11 @@ class DashboardController extends Controller
             ->distinct()
             ->count('siswa_kelas.id_siswa');
 
-        // tugas sudah dikumpulkan tapi belum ada nilainya
-        // (kolom di DB bernama "stauts", enum: kumpul/terlambat/tidak_kumpul)
+        // pengumpulan sudah masuk tapi belum ada nilainya
         $tugasMenunggu = DB::table('pengumpulan_tugas')
             ->join('tugas', 'pengumpulan_tugas.id_tugas', '=', 'tugas.id_tugas')
             ->where('tugas.id_tentor', $idTentor)
-            ->whereIn('pengumpulan_tugas.stauts', ['kumpul', 'terlambat'])
+            ->whereIn('pengumpulan_tugas.status', ['kumpul', 'terlambat'])
             ->whereNotExists(function ($q) {
                 $q->select(DB::raw(1))
                   ->from('nilai')
@@ -38,7 +37,7 @@ class DashboardController extends Controller
             })
             ->count();
 
-        // jadwal hari ini
+        // jadwal hari ini + kehadiran
         $jadwalHariIni = DB::table('jadwal')
             ->join('kelas', 'jadwal.id_kelas', '=', 'kelas.id_kelas')
             ->join('kursus', 'kelas.id_kursus', '=', 'kursus.id_kursus')
@@ -47,14 +46,32 @@ class DashboardController extends Controller
             ->where('jadwal.status', '!=', 'dibatalkan')
             ->orderBy('jadwal.jam_mulai')
             ->select(
+                'jadwal.id_jadwal',
                 'kursus.nama_kursus',
-                'kelas.nama_kelas',
+                DB::raw("initcap(kelas.kelas::text) as nama_kelas"),
                 'kelas.id_kelas',
                 'jadwal.jam_mulai',
                 'jadwal.jam_selesai',
                 'jadwal.status'
             )
-            ->get();
+            ->get()
+            ->map(function ($j) {
+                $j->total_siswa = DB::table('siswa_kelas')
+                    ->where('id_kelas', $j->id_kelas)
+                    ->where('status', 'aktif')
+                    ->count();
+
+                $j->hadir = DB::table('absensi_siswa')
+                    ->where('id_jadwal', $j->id_jadwal)
+                    ->where('status', 'hadir')
+                    ->count();
+
+                $j->persen = $j->total_siswa > 0
+                    ? round($j->hadir / $j->total_siswa * 100)
+                    : 0;
+
+                return $j;
+            });
 
         return view('tentor.dashboard', compact(
             'totalKelas', 'totalSiswa', 'tugasMenunggu', 'jadwalHariIni'

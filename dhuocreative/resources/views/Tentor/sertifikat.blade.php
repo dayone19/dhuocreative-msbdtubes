@@ -1,4 +1,4 @@
-@extends('layouts.Tentor')
+@extends('layouts.tentor')
 @section('title', 'Sertifikat Siswa')
 @section('content')
 <div class="ts-page">
@@ -10,6 +10,13 @@
             <span class="ts-plus">+</span> Upload Sertifikat
         </button>
     </div>
+
+    @if (session('sukses'))
+        <p style="background:#e3f6e8;color:#1d6b35;padding:10px 14px;border-radius:10px;margin:10px 0;">{{ session('sukses') }}</p>
+    @endif
+    @if ($errors->any())
+        <p style="background:#fde8e8;color:#a12222;padding:10px 14px;border-radius:10px;margin:10px 0;">{{ $errors->first() }}</p>
+    @endif
 
     <div class="ts-toolbar">
         <label class="ts-search" for="tsSearch">
@@ -50,17 +57,15 @@
             <h2 id="tsUploadTitle">Upload Sertifikat</h2>
         </div>
         {{-- Sesuaikan action dengan route upload sertifikat di aplikasi --}}
-        <form id="tsUploadForm">
+        <form id="tsUploadForm" method="POST" action="{{ route('tentor.sertifikat.simpan') }}" enctype="multipart/form-data">
             @csrf
             <div class="ts-field">
                 <label for="tsStudent">Nama Siswa</label>
                 <select id="tsStudent" name="id_siswa" required>
                     <option value="">Pilih siswa</option>
-                    <option value="1">Andi Pratama</option>
-                    <option value="2">Siti Aulia</option>
-                    <option value="3">Budi Santoso</option>
-                    <option value="4">Nadia Putri</option>
-                    <option value="5">Rizky Ramadhan</option>
+                    @foreach ($siswa as $sw)
+                        <option value="{{ $sw->id_user }}" {{ old('id_siswa') == $sw->id_user ? 'selected' : '' }}>{{ $sw->nama }}</option>
+                    @endforeach
                 </select>
             </div>
             <div class="ts-field">
@@ -148,7 +153,7 @@
 <script>
 (() => {
     const byId = (id) => document.getElementById(id);
-
+ 
     const search = byId('tsSearch');
     const yearFilter = byId('tsYearFilter');
     const table = byId('tsTable');
@@ -158,49 +163,10 @@
     const detailModal = byId('tsDetailModal');
     const form = byId('tsUploadForm');
     const overlays = [uploadModal, detailModal];
-
-    const students = {
-        1: 'Andi Pratama',
-        2: 'Siti Aulia',
-        3: 'Budi Santoso',
-        4: 'Nadia Putri',
-        5: 'Rizky Ramadhan'
-    };
-
-    // Data contoh untuk mengetes tampilan. Belum memiliki file sungguhan.
-    const sampleCertificates = [
-        {
-            student: 'Andi Pratama',
-            exam: 'Ujian Web Master',
-            examDate: '12/08/2026',
-            uploadDate: '13/08/2026 10:30',
-            year: '2026',
-            fileName: '',
-            fileUrl: null,
-            fileType: null
-        },
-        {
-            student: 'Siti Aulia',
-            exam: 'Ujian UI/UX Design',
-            examDate: '20/07/2026',
-            uploadDate: '21/07/2026 14:15',
-            year: '2026',
-            fileName: '',
-            fileUrl: null,
-            fileType: null
-        },
-        {
-            student: 'Budi Santoso',
-            exam: 'Ujian Database',
-            examDate: '15/12/2025',
-            uploadDate: '16/12/2025 09:00',
-            year: '2025',
-            fileName: '',
-            fileUrl: null,
-            fileType: null
-        }
-    ];
-
+ 
+    // Data sertifikat dari database (disusun di SertifikatController@index)
+    const certificates = {{ \Illuminate\Support\Js::from($sertifikat) }};
+ 
     function addYearOption(year) {
         const exists = [...yearFilter.options].some(option => option.value === year);
         if (!exists) {
@@ -210,37 +176,37 @@
             yearFilter.appendChild(option);
         }
     }
-
+ 
     function addRow(data) {
         const row = document.createElement('tr');
         row.dataset.year = data.year;
-
+ 
         [data.student, data.exam, data.examDate, data.uploadDate].forEach(value => {
             const cell = document.createElement('td');
             cell.textContent = value;
             row.appendChild(cell);
         });
-
+ 
         const actionCell = document.createElement('td');
         const detailButton = document.createElement('button');
         detailButton.type = 'button';
         detailButton.className = 'ts-action';
         detailButton.textContent = 'Detail';
-
+ 
         detailButton.addEventListener('click', () => {
             byId('tsDetailStudent').textContent = data.student;
             byId('tsDetailExam').textContent = data.exam;
             byId('tsDetailExamDate').textContent = data.examDate;
             byId('tsDetailUploadDate').textContent = data.uploadDate;
-
+ 
             const preview = byId('tsCertificatePreview');
             const downloadLink = byId('tsDetailFile');
-
+ 
             preview.replaceChildren();
             downloadLink.hidden = true;
             downloadLink.removeAttribute('href');
             downloadLink.removeAttribute('download');
-
+ 
             if (data.fileUrl && data.fileType === 'application/pdf') {
                 const pdf = document.createElement('iframe');
                 pdf.src = data.fileUrl;
@@ -266,121 +232,97 @@
                     'Data contoh belum memiliki file. Klik Upload Sertifikat untuk memilih file dan mencoba preview.';
                 preview.appendChild(message);
             }
-
+ 
             if (data.fileUrl) {
                 downloadLink.href = data.fileUrl;
                 downloadLink.download = data.fileName || 'sertifikat';
                 downloadLink.hidden = false;
             }
-
+ 
             detailModal.hidden = false;
         });
-
+ 
         actionCell.appendChild(detailButton);
         row.appendChild(actionCell);
         tbody.appendChild(row);
         addYearOption(data.year);
     }
-
-    sampleCertificates.forEach(addRow);
-
+ 
+    certificates.forEach(addRow);
+ 
     function filterRows() {
         const query = search.value.toLowerCase().trim();
         const year = yearFilter.value;
         let visible = 0;
-
+ 
         table.querySelectorAll('tbody tr[data-year]').forEach(row => {
             const matches = row.textContent.toLowerCase().includes(query) &&
                 (!year || row.dataset.year === year);
             row.hidden = !matches;
             if (matches) visible++;
         });
-
+ 
         emptyMessage.hidden = visible > 0;
         emptyMessage.textContent = visible ? '' : 'Sertifikat tidak ditemukan.';
     }
-
+ 
     search.addEventListener('input', filterRows);
     yearFilter.addEventListener('change', filterRows);
-
+ 
     byId('tsOpenUpload').addEventListener('click', () => {
         form.reset();
         uploadModal.hidden = false;
     });
-
+ 
     form.addEventListener('submit', event => {
-        event.preventDefault();
-
         const studentId = byId('tsStudent').value;
         const exam = byId('tsExam').value.trim();
         const examDate = byId('tsExamDate').value;
         const file = byId('tsFile').files[0];
-
+ 
+        // cek di browser dulu; kalau ada yang salah, batalkan pengiriman. Kalau benar, form dikirim ke server.
         if (!studentId || !exam || !examDate || !file) {
+            event.preventDefault();
             alert('Lengkapi semua data terlebih dahulu.');
             return;
         }
-
+ 
         const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
         if (!allowedTypes.includes(file.type)) {
+            event.preventDefault();
             alert('Format file harus PDF, JPG, JPEG, atau PNG.');
             return;
         }
-
+ 
         if (file.size > 5 * 1024 * 1024) {
+            event.preventDefault();
             alert('Ukuran file maksimal 5 MB.');
-            return;
         }
-
-        const date = new Date(examDate + 'T00:00:00');
-        const formattedDate = date.toLocaleDateString('id-ID', {
-            day: '2-digit', month: '2-digit', year: 'numeric'
-        });
-
-        const now = new Date();
-        const formattedUpload = now.toLocaleDateString('id-ID', {
-            day: '2-digit', month: '2-digit', year: 'numeric'
-        }) + ' ' + now.toLocaleTimeString('id-ID', {
-            hour: '2-digit', minute: '2-digit', hour12: false
-        });
-
-        const data = {
-            student: students[studentId],
-            exam,
-            examDate: formattedDate,
-            uploadDate: formattedUpload,
-            year: String(date.getFullYear()),
-            fileName: file.name,
-            fileUrl: URL.createObjectURL(file),
-            fileType: file.type
-        };
-
-        addRow(data);
-        form.reset();
-        uploadModal.hidden = true;
-        filterRows();
-
-        alert('Simulasi upload berhasil! Sertifikat ditambahkan ke tabel.');
     });
-
+ 
+    // kalau server menolak form (validasi gagal), buka lagi modal upload supaya isiannya terlihat
+    @if ($errors->any())
+        uploadModal.hidden = false;
+    @endif
+ 
     document.querySelectorAll('[data-ts-close]').forEach(button => {
         button.addEventListener('click', () => {
             button.closest('.ts-overlay').hidden = true;
         });
     });
-
+ 
     overlays.forEach(overlay => {
         overlay.addEventListener('click', event => {
             if (event.target === overlay) overlay.hidden = true;
         });
     });
-
+ 
     document.addEventListener('keydown', event => {
         if (event.key === 'Escape') {
             overlays.forEach(overlay => { overlay.hidden = true; });
         }
     });
-
+ 
     filterRows();
 })();
 </script>

@@ -9,29 +9,26 @@ use Illuminate\Support\Facades\DB;
 
 class KelasController extends Controller
 {
-    // satu kursus = 12 pertemuan (sesuai dropdown di halaman absensi)
+    // satu kursus = 12 pertemuan 
     private const TOTAL_PERTEMUAN = 12;
 
-    /* ------------------------------------------------------------
-     | HALAMAN 1: /tentor/kelas
-     | Jadwal mingguan (Senin-Sabtu) + daftar kartu kelas
-     ------------------------------------------------------------ */
     public function index()
     {
         $idTentor = auth()->id();
         $hariIni  = Carbon::today();
 
-        // ---- 1. Jadwal minggu ini ----
-        $senin  = $hariIni->copy()->startOfWeek();      // Senin minggu ini
+        // 1. Jadwal minggu ini 
+        $senin  = $hariIni->copy()->startOfWeek();   
         $sabtu  = $senin->copy()->addDays(5);
 
         $jadwalMinggu = DB::table('jadwal')
             ->join('kelas', 'jadwal.id_kelas', '=', 'kelas.id_kelas')
+            ->join('kursus', 'kelas.id_kursus', '=', 'kursus.id_kursus')
             ->where('jadwal.id_tentor', $idTentor)
             ->where('jadwal.status', '!=', 'dibatalkan')
             ->whereBetween('jadwal.tanggal', [$senin->toDateString(), $sabtu->toDateString()])
             ->orderBy('jadwal.jam_mulai')
-            ->select('jadwal.tanggal', 'jadwal.jam_mulai', 'jadwal.jam_selesai', 'kelas.nama_kelas')
+            ->select('jadwal.tanggal', 'jadwal.jam_mulai', 'jadwal.jam_selesai', $this->namaKelas())
             ->get();
 
         $namaHari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
@@ -51,13 +48,14 @@ class KelasController extends Controller
         // ---- 2. Kartu kelas ----
         $semuaJadwal = DB::table('jadwal')
             ->join('kelas', 'jadwal.id_kelas', '=', 'kelas.id_kelas')
+            ->join('kursus', 'kelas.id_kursus', '=', 'kursus.id_kursus')
             ->where('jadwal.id_tentor', $idTentor)
             ->where('kelas.status', 'aktif')
             ->orderBy('jadwal.tanggal')
             ->orderBy('jadwal.jam_mulai')
-            ->select('jadwal.id_kelas', 'kelas.nama_kelas', 'jadwal.tanggal', 'jadwal.jam_mulai', 'jadwal.jam_selesai')
+            ->select('jadwal.id_kelas', $this->namaKelas(), 'jadwal.tanggal', 'jadwal.jam_mulai', 'jadwal.jam_selesai')
             ->get()
-            ->groupBy('id_kelas');          // dikelompokkan per kelas
+            ->groupBy('id_kelas');         
 
         // jumlah siswa aktif tiap kelas (1 query untuk semua kelas)
         $jumlahSiswa = DB::table('siswa_kelas')
@@ -225,7 +223,6 @@ class KelasController extends Controller
             ->with('sukses', "Absensi pertemuan {$pertemuan} berhasil disimpan.");
     }
 
-    /* ------------------------- helper ------------------------- */
 
     // Ambil kelas HANYA kalau tentor yang login memang mengajar di kelas itu
     private function kelasMilikTentor($idKelas)
@@ -239,7 +236,7 @@ class KelasController extends Controller
                   ->whereColumn('jadwal.id_kelas', 'kelas.id_kelas')
                   ->where('jadwal.id_tentor', auth()->id());
             })
-            ->select('kelas.id_kelas', 'kelas.nama_kelas', 'kursus.nama_kursus')
+            ->select('kelas.id_kelas', $this->namaKelas(), 'kursus.nama_kursus')
             ->first();
 
         abort_if(!$kelas, 404);
@@ -272,6 +269,11 @@ class KelasController extends Controller
         }
 
         return max(1, $jadwalKelas->count());
+    }
+
+    private function namaKelas()
+    {
+        return DB::raw("kursus.nama_kursus || ' - ' || kelas.id_kelas || ' - ' || initcap(kelas.kelas::text) as nama_kelas");
     }
 
     private function jam($mulai, $selesai): string

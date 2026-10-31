@@ -6,6 +6,13 @@
 <div class="tmt-page">
     <h1 class="tmt-title">Daftar Materi</h1>
 
+    @if (session('sukses'))
+        <p style="background:#e3f6e8;color:#1d6b35;padding:10px 14px;border-radius:10px;margin:10px 0;">{{ session('sukses') }}</p>
+    @endif
+    @if ($errors->any())
+        <p style="background:#fde8e8;color:#a12222;padding:10px 14px;border-radius:10px;margin:10px 0;">{{ $errors->first() }}</p>
+    @endif
+
     <div class="tmt-toolbar">
 
         <div class="tmt-search">
@@ -20,10 +27,9 @@
 
         <select id="filterKelas" class="tmt-select">
             <option value="">Kelas</option>
-            <option value="Web Master">Web Master</option>
-            <option value="Desain Grafis">Desain Grafis</option>
-            <option value="Microsoft Office">Microsoft Office</option>
-            <option value="Pemrograman Web">Pemrograman Web</option>
+            @foreach ($kelasTentor as $k)
+                <option value="{{ $k->nama_kelas }}">{{ $k->nama_kelas }}</option>
+            @endforeach
         </select>
 
         <select id="sortMateri" class="tmt-select">
@@ -52,80 +58,49 @@
             </thead>
 
             <tbody id="materiTable">
-                <tr data-kelas="Web Master"
-                    data-judul="tabel html"
-                    data-tanggal="2026-09-25"
-                    data-deskripsi="Materi ini membahas cara membuat struktur tabel dasar dengan tag table, tr, th, dan td di HTML."
-                    data-file="tabel-html.pdf">
-                    <td>Tabel HTML</td>
-                    <td>Web Master</td>
-                    <td>9/25/26</td>
-                    <td>
-                        <button class="tmt-view-btn"
-                                onclick="lihatMateri(this)">
-                            Lihat
-                        </button>
-                    </td>
-                </tr>
-
-                <tr data-kelas="Web Master"
-                    data-judul="dasar css"
-                    data-tanggal="2026-09-24"
-                    data-deskripsi="Pengenalan styling dasar menggunakan CSS selectors, warna, dan font."
-                    data-file="dasar-css.pdf">
-                    <td>Dasar CSS</td>
-                    <td>Web Master</td>
-                    <td>9/24/26</td>
-                    <td>
-                        <button class="tmt-view-btn"
-                                onclick="lihatMateri(this)">
-                            Lihat
-                        </button>
-                    </td>
-                </tr>
-
-                <tr data-kelas="Desain Grafis"
-                    data-judul="pengenalan desain grafis"
-                    data-tanggal="2026-09-23"
-                    data-deskripsi="-"
-                    data-file="dasar-dg.pdf">
-                    <td>Pengenalan Desain Grafis</td>
-                    <td>Desain Grafis</td>
-                    <td>9/23/26</td>
-                    <td>
-                        <button class="tmt-view-btn"
-                                onclick="lihatMateri(this)">
-                            Lihat
-                        </button>
-                    </td>
-                </tr>
-
-                <tr data-kelas="Microsoft Office"
-                    data-judul="dasar microsoft word"
-                    data-tanggal="2026-09-22"
-                    data-deskripsi="-"
-                    data-file="dasar-office.pdf">
-                    <td>Dasar Microsoft Word</td>
-                    <td>Microsoft Office</td>
-                    <td>9/22/26</td>
-                    <td>
-                        <button class="tmt-view-btn"
-                                onclick="lihatMateri(this)">
-                            Lihat
-                        </button>
-                    </td>
-                </tr>
+                @foreach ($materi as $item)
+                    <tr data-kelas="{{ $item['nama_kelas'] }}"
+                        data-judul="{{ mb_strtolower($item['judul']) }}"
+                        data-tanggal="{{ date('Y-m-d', strtotime($item['dibuat'])) }}"
+                        data-deskripsi="{{ $item['deskripsi'] ?: '-' }}"
+                        data-file="{{ $item['nama_file'] }}"
+                        data-url="{{ route('tentor.materi.file', ['kelas' => $item['id_kelas'], 'token' => $item['token']]) }}"
+                        data-unduh="{{ route('tentor.materi.file', ['kelas' => $item['id_kelas'], 'token' => $item['token'], 'unduh' => 1]) }}"
+                        data-judul-asli="{{ $item['judul'] }}"
+                        data-deskripsi-asli="{{ $item['deskripsi'] }}"
+                        data-id-kelas="{{ $item['id_kelas'] }}"
+                        data-url-update="{{ route('tentor.materi.update', ['kelas' => $item['id_kelas'], 'token' => $item['token']]) }}"
+                        data-url-hapus="{{ route('tentor.materi.hapus', ['kelas' => $item['id_kelas'], 'token' => $item['token']]) }}">
+                        <td>{{ $item['judul'] }}</td>
+                        <td>{{ $item['nama_kelas'] }}</td>
+                        <td>{{ date('n/j/y', strtotime($item['dibuat'])) }}</td>
+                        <td>
+                            <div class="tmt-aksi">
+                                <button class="tmt-view-btn" onclick="lihatMateri(this)">
+                                    Lihat
+                                </button>
+                                @if ($item['milik_sendiri'])
+                                    <button type="button" class="tmt-view-btn" onclick="editMateri(this.closest('tr'))">
+                                        Edit
+                                    </button>
+                                    <button type="button" class="tmt-view-btn" onclick="hapusMateri(this.closest('tr'))">
+                                        Hapus
+                                    </button>
+                                @endif
+                            </div>
+                        </td>
+                    </tr>
+                @endforeach
             </tbody>
         </table>
 
-        <div class="tmt-empty" id="materiKosong" hidden>
-            Materi tidak ditemukan.
+        <div class="tmt-empty" id="materiKosong" {{ count($materi) > 0 ? 'hidden' : '' }}>
+            {{ count($materi) > 0 ? 'Materi tidak ditemukan.' : 'Belum ada materi. Klik tombol Upload Materi untuk menambah.' }}
         </div>
     </div>
 
 </div>
 
-{{-- modal upload tgs --}}
 <div class="tmt-modal-overlay" id="modalUpload" hidden>
     <div class="tmt-upload-modal">
 
@@ -139,35 +114,39 @@
                 </svg>
             </button>
 
-            <h2>Upload<br>Materi</h2>
+            <h2 id="judulModal">Upload<br>Materi</h2>
         </div>
 
-        <form id="formUpload" class="tmt-upload-form">
+        <form id="formUpload" class="tmt-upload-form" method="POST"
+              action="{{ route('tentor.materi.simpan') }}" enctype="multipart/form-data">
+            @csrf
+            <input type="hidden" name="_method" value="PUT" id="metodeForm" disabled>
             <div class="tmt-upload-left">
                 <div class="tmt-form-group">
                     <label for="judulBaru">Judul Materi</label>
                     <input type="text"
                            id="judulBaru"
+                           name="judul"
+                           value="{{ old('judul') }}"
                            placeholder="Masukkan judul materi"
                            required>
                 </div>
 
                 <div class="tmt-form-group">
                     <label for="kelasBaru">Kelas</label>
-                    <select id="kelasBaru" required>
+                    <select id="kelasBaru" name="id_kelas" required>
                         <option value="">Pilih kelas</option>
-                        <option value="Web Master">Web Master</option>
-                        <option value="Desain Grafis">Desain Grafis</option>
-                        <option value="Microsoft Office">Microsoft Office</option>
-                        <option value="Pemrograman Web">Pemrograman Web</option>
+                        @foreach ($kelasTentor as $k)
+                            <option value="{{ $k->id_kelas }}" {{ old('id_kelas') == $k->id_kelas ? 'selected' : '' }}>{{ $k->nama_kelas }}</option>
+                        @endforeach
                     </select>
                 </div>
 
                 <div class="tmt-form-group">
                     <label for="deskripsiBaru">Deskripsi Materi (Opsional)</label>
                     <textarea id="deskripsiBaru"
-                              placeholder="Tulis deskripsi materi..."
-                              required></textarea>
+                              name="deskripsi"
+                              placeholder="Tulis deskripsi materi...">{{ old('deskripsi') }}</textarea>
                 </div>
             </div>
 
@@ -178,8 +157,8 @@
                 <label for="fileBaru" class="tmt-dropzone">
                     <input type="file"
                            id="fileBaru"
-                           accept=".pdf,.doc,.docx,.ppt,.pptx,.zip"
-                           required>
+                           name="file_materi"
+                           accept=".pdf,.doc,.docx,.ppt,.pptx,.zip">
                     <svg xmlns="http://www.w3.org/2000/svg" height="55px" viewBox="0 -960 960 960" width="55px" fill="#b29458">
                         <path d="M260-160q-91 0-155.5-63T40-377q0-78 47-139t123-78q25-92 100-149t170-57q117 0 198.5 81.5T760-520q69 8 114.5 59.5T920-340q0 75-52.5 127.5T740-160H520q-33 0-56.5-23.5T440-240v-206l-64 62-56-56 160-160 160 160-56 56-64-62v206h220q42 0 71-29t29-71q0-42-29-71t-71-29h-60v-80q0-83-58.5-141.5T480-720q-83 0-141.5 58.5T280-520h-20q-58 0-99 41t-41 99q0 58 41 99t99 41h100v80H260Zm220-280Z"/>
                     </svg>
@@ -252,25 +231,53 @@
                 <label class="tmt-file-label">
                     File Materi
                 </label>
-                <div class="tmt-file" style="pointer-events: none; background-color: #fafafa;">
-                    <span class="tmt-file-name" id="fileLihatNama">
+                <div class="tmt-file" style="background-color: #fafafa;">
+                    <a class="tmt-file-name" id="fileLihatNama" href="#" target="_blank" style="text-decoration:none;">
                         Belum ada file
-                    </span>
+                    </a>
                 </div>
 
                 <div class="tmt-upload-actions">
                     <button type="button"
                             class="tmt-cancel-btn"
-                            onclick="tutupLihat()"
-                            style="width: 100%;">
+                            onclick="tutupLihat()">
                         Tutup
                     </button>
+                    <a id="unduhLihat" href="#" class="tmt-send-btn"
+                       style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center;">
+                        Unduh
+                    </a>
                 </div>
             </div>
         </div>
 
     </div>
 </div>
+
+{{-- Tombol aksi (Lihat / Edit / Hapus) dibuat kecil dan sejajar ke samping, tidak turun ke bawah --}}
+<style>
+    .tmt-aksi {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: nowrap;          /* jangan pernah turun ke baris berikutnya */
+    }
+    .tmt-aksi .tmt-view-btn {
+        width: auto;                /* lebar mengikuti tulisan, bukan 106px */
+        min-width: 0;
+        height: 32px;
+        padding: 0 14px;
+        font-size: 13px;
+        border-radius: 16px;
+        white-space: nowrap;
+    }
+</style>
+
+<form id="formHapus" method="POST" action="" hidden>
+    @csrf
+    @method('DELETE')
+</form>
 
 <script>
 const searchMateri = document.getElementById('searchMateri');
@@ -314,10 +321,42 @@ searchMateri.addEventListener('input', filterMateri);
 filterKelas.addEventListener('change', filterMateri);
 sortMateri.addEventListener('change', filterMateri);
 
-// ... (kode filter tetap sama) ...
+const form = document.getElementById('formUpload');
+const metodeForm = document.getElementById('metodeForm');
 
 function bukaUpload() {
+    form.reset();
+    form.action = "{{ route('tentor.materi.simpan') }}";
+    metodeForm.disabled = true;
+    document.getElementById('judulModal').innerHTML = 'Upload<br>Materi';
+    document.getElementById('kelasBaru').disabled = false;
+    document.getElementById('fileBaru').required = true;
+    document.getElementById('namaFile').textContent = 'Belum ada file dipilih';
     document.getElementById('modalUpload').hidden = false;
+}
+
+function editMateri(row) {
+    form.reset();
+    form.action = row.dataset.urlUpdate;
+    metodeForm.disabled = false;
+    document.getElementById('judulModal').innerHTML = 'Edit<br>Materi';
+    document.getElementById('judulBaru').value = row.dataset.judulAsli;
+    document.getElementById('kelasBaru').value = row.dataset.idKelas;
+    document.getElementById('kelasBaru').disabled = true;
+    document.getElementById('deskripsiBaru').value = row.dataset.deskripsiAsli;
+    document.getElementById('fileBaru').required = false;
+    document.getElementById('namaFile').textContent =
+        'File saat ini: ' + row.dataset.file + ' (pilih file baru untuk mengganti)';
+    document.getElementById('modalUpload').hidden = false;
+}
+
+function hapusMateri(row) {
+    if (!confirm('Hapus materi "' + row.dataset.judulAsli + '"? Materi yang sudah dihapus tidak bisa dikembalikan.')) {
+        return;
+    }
+    const formHapus = document.getElementById('formHapus');
+    formHapus.action = row.dataset.urlHapus;
+    formHapus.submit();
 }
 
 function tutupUpload() {
@@ -336,6 +375,8 @@ function lihatMateri(button) {
     document.getElementById('kelasLihat').value = kelas;
     document.getElementById('deskripsiLihat').value = deskripsi;
     document.getElementById('fileLihatNama').textContent = namaFile;
+    document.getElementById('fileLihatNama').href = row.dataset.url;   
+    document.getElementById('unduhLihat').href = row.dataset.unduh;   
 
     document.getElementById('modalLihat').hidden = false;
 }
@@ -344,70 +385,14 @@ function tutupLihat() {
     document.getElementById('modalLihat').hidden = true;
 }
 
-// Simulasi upload di browser
-document.getElementById('formUpload').addEventListener('submit', function(e) {
-    e.preventDefault();
-
-    const judul = document.getElementById('judulBaru').value.trim();
-    const kelas = document.getElementById('kelasBaru').value;
-    const deskripsi = document.getElementById('deskripsiBaru').value.trim();
-    const file = document.getElementById('fileBaru').files[0];
-
-    if (!judul || !kelas || !file) return;
-
-    const tanggal = new Date();
-    const tanggalISO = [
-        tanggal.getFullYear(),
-        String(tanggal.getMonth() + 1).padStart(2, '0'),
-        String(tanggal.getDate()).padStart(2, '0')
-    ].join('-');
-
-    const tanggalTampil =
-        (tanggal.getMonth() + 1) + '/' +
-        tanggal.getDate() + '/' +
-        String(tanggal.getFullYear()).slice(-2);
-
-    const row = document.createElement('tr');
-    row.dataset.kelas = kelas;
-    row.dataset.judul = judul.toLowerCase();
-    row.dataset.tanggal = tanggalISO;
-    row.dataset.deskripsi = deskripsi || '-';
-    row.dataset.file = file.name; // Menyimpan nama file asli
-
-    const cells = [judul, kelas, tanggalTampil];
-
-    cells.forEach(text => {
-        const td = document.createElement('td');
-        td.textContent = text;
-        row.appendChild(td);
-    });
-
-    const action = document.createElement('td');
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = 'tmt-view-btn';
-    button.textContent = 'Lihat';
-    // Gunakan arrow function yang mengirimkan (this)
-    button.addEventListener('click', function() {
-        lihatMateri(this);
-    });
-    action.appendChild(button);
-    row.appendChild(action);
-
-    materiTable.prepend(row);
-
-    filterKelas.value = '';
-    sortMateri.value = 'terbaru';
-    searchMateri.value = '';
-
-    filterMateri();
-    tutupUpload();
-    this.reset();
-    
-    // Reset teks nama file upload
-    document.getElementById('namaFile').textContent = 'Belum ada file dipilih';
-
-    alert('Materi ditambahkan untuk pratinjau.');
+document.getElementById('fileBaru').addEventListener('change', function () {
+    document.getElementById('namaFile').textContent =
+        this.files[0] ? this.files[0].name : 'Belum ada file dipilih';
 });
+
+@if ($errors->any() && old('_method') !== 'PUT')
+    document.getElementById('fileBaru').required = true;
+    document.getElementById('modalUpload').hidden = false;
+@endif
 </script>
 @endsection

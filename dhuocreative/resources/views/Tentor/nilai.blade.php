@@ -1,4 +1,4 @@
-@extends('layouts.Tentor')
+@extends('layouts.tentor')
 
 @section('title', 'Tugas & Nilai')
 
@@ -6,16 +6,24 @@
 <div class="tn-page">
 
     <div class="tn-heading">
-        <a href="{{ route('tentor.kelas') }}" class="tmt-back-btn" aria-label="Kembali">
+        <a href="{{ route('tentor.tugas') }}" class="tmt-back-btn" aria-label="Kembali">
             <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
             <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+            </svg>
         </a>
 
         <div class="tn-heading-info">
-            <h1>Pembuatan tabel jadwal di html</h1>
-            <p>Web Master 103</p>
+            <h1>{{ $tugas->judul}}</h1>
+            <p>{{ $tugas->nama_kelas}}</p>
         </div>
     </div>
+
+    @if (session('sukses'))
+        <p style="background:#e3f6e8;color:#1d6b35;padding:10px 14px;border-radius:10px;margin:10px 0;">{{ session('sukses') }}</p>
+    @endif
+    @if ($errors->any())
+        <p style="background:#fde8e8;color:#a12222;padding:10px 14px;border-radius:10px;margin:10px 0;">{{ $errors->first() }}</p>
+    @endif
 
     <div class="tn-toolbar">
         <div class="tn-search">
@@ -32,46 +40,6 @@
             </svg>
         </div>
     </div>
-
-    @php
-        $daftarNilai = [
-            [
-                'id' => 1,
-                'nama' => 'Belerick Arbiter of Star',
-                'file' => 'Tugas1.html',
-                'tanggal' => '9/25/26',
-                'nilai' => 94
-            ],
-            [
-                'id' => 2,
-                'nama' => 'Belerick Arbiter of Star',
-                'file' => 'Tugas1.html',
-                'tanggal' => '9/25/26',
-                'nilai' => 94
-            ],
-            [
-                'id' => 3,
-                'nama' => 'Belerick Arbiter of Star',
-                'file' => 'Tugas1.html',
-                'tanggal' => '9/25/26',
-                'nilai' => 94
-            ],
-            [
-                'id' => 4,
-                'nama' => 'Belerick Arbiter of Star',
-                'file' => 'Tugas1.html',
-                'tanggal' => '9/25/26',
-                'nilai' => 94
-            ],
-            [
-                'id' => 5,
-                'nama' => 'Belerick Arbiter of Star',
-                'file' => 'Tugas1.html',
-                'tanggal' => '9/25/26',
-                'nilai' => 94
-            ],
-        ];
-    @endphp
 
     <div class="tn-table-container">
         <table class="tn-table">
@@ -105,14 +73,15 @@
 
                         <td class="tn-nilai-action-cell">
                             <span class="tn-nilai">
-                                {{ $siswa['nilai'] }}
+                                {{ $siswa['nilai'] ?? '-' }}
                             </span>
                             <button type="button"
                                     class="tn-edit-btn"
                                     aria-label="Edit nilai"
                                     onclick="bukaEditNilai(this)"
                                     data-nama="{{ $siswa['nama'] }}"
-                                    data-nilai="{{ $siswa['nilai'] }}">
+                                    data-nilai="{{ $siswa['nilai'] }}"
+                                    data-url="{{ $siswa['url']}}">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
                                 <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
                                 <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
@@ -121,6 +90,11 @@
                         </td>
                     </tr>
                 @endforeach
+                @if (count($daftarNilai) === 0)
+                    <tr>
+                        <td colspan="4" class="tn-empty">Belum ada siswa yang mengumpulkan tugas ini.</td>
+                    </tr>
+                @endif
 
                 <tr id="tnTidakAda" hidden>
                     <td colspan="4" class="tn-empty">
@@ -143,13 +117,16 @@
             <h2>Edit Nilai Siswa</h2>
         </div>
 
-        <form id="formEditNilai">
+        <form id="formEditNilai" method="POST" action="">
+            @csrf
             <label for="namaNilai">Nama Siswa</label>
             <input type="text" id="namaNilai" readonly>
 
             <label for="inputNilai">Nilai</label>
             <input type="number"
                    id="inputNilai"
+                   name="nilai"
+                   step="0.01"
                    min="0"
                    max="100"
                    required>
@@ -212,6 +189,9 @@
         document.getElementById('inputNilai').value =
             tombol.dataset.nilai;
 
+        
+        document.getElementById('formEditNilai').action = tombol.dataset.url;
+
         document.getElementById('modalEditNilai').hidden = false;
     }
 
@@ -221,26 +201,16 @@
     }
 
     document.getElementById('formEditNilai')
-        .addEventListener('submit', function (event) {
+    .addEventListener('submit', function (event) {
+        const inputNilai = document.getElementById('inputNilai');
+        const nilai = Number(inputNilai.value);
+
+        // hanya batalkan kalau tidak valid; kalau valid, form dikirim ke server
+        if (inputNilai.value === '' || nilai < 0 || nilai > 100) {
             event.preventDefault();
-
-            const inputNilai = document.getElementById('inputNilai');
-            const nilai = Number(inputNilai.value);
-
-            if (nilai < 0 || nilai > 100 || inputNilai.value === '') {
-                alert('Nilai harus berada di antara 0 sampai 100.');
-                return;
-            }
-
-            if (!barisAktif) return;
-
-            barisAktif.querySelector('.tn-nilai').textContent = nilai;
-
-            const tombolEdit = barisAktif.querySelector('.tn-edit-btn');
-            tombolEdit.dataset.nilai = nilai;
-
-            tutupEditNilai();
-        });
+            alert('Nilai harus berada di antara 0 sampai 100.');
+        }
+    });
 
     // TUTUP MODAL DENGAN KLIK AREA LUAR
     document.querySelectorAll('.tn-overlay').forEach(function (overlay) {
