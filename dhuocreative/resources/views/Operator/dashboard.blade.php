@@ -6,9 +6,9 @@
 
 @php
     $ringkasan = [
-        ['judul' => 'Jadwal Hari Ini',   'angka' => 4,  'satuan' => 'Sesi Privat', 'lebar' => 195],
-        ['judul' => 'Total Siswa Aktif', 'angka' => 22, 'satuan' => 'Siswa',       'lebar' => 205],
-        ['judul' => 'Total Kelas Privat','angka' => 7,  'satuan' => 'Jenis Kelas',  'lebar' => 195],
+        ['judul' => 'Jadwal Hari Ini',   'angka' => 8,  'satuan' => 'Kelas', 'lebar' => 195],
+        ['judul' => 'Total Siswa Aktif', 'angka' => 15, 'satuan' => 'Siswa',       'lebar' => 205],
+        ['judul' => 'Total Kursus Siswa Aktif','angka' => 17,  'satuan' => 'Kursus',  'lebar' => 195],
         ['judul' => 'Total Tentor',      'angka' => 6,  'satuan' => 'Tentor',      'lebar' => 195],
     ];
 

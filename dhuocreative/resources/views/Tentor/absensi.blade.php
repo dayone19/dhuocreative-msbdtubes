@@ -8,7 +8,7 @@
         'id' => 1208,
         'nama' => 'Siswa A',
         'kursus' => 'Web Master',
-        'mode' => 'Online',
+        'kelas' => 'Online',
         'mulai_kontrak' => '2026-10-05',
         'akhir_kontrak' => '2026-12-05',
     ];
@@ -39,7 +39,7 @@
             <div>
                 <span class="ta-muted">ID {{ $siswa['id'] }}</span>
                 <h2>{{ $siswa['nama'] }}</h2>
-                <p>{{ $siswa['kursus'] }}</p>
+                <p>{{ $siswa['kursus'] }} <span>•</span> {{ $siswa['kelas'] }}</p>
             </div>
         </div>
         <div class="ta-contract">

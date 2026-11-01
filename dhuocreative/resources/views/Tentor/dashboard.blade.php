@@ -7,12 +7,12 @@
     <section class="summary">
 
         <div class="summary-card">
-            <h3>Kelas Saya</h3>
+            <h3>Kursus Saya</h3>
 
             <div class="summary-bottom">
                 <div class="summary-number">
                     4
-                    <span>Kelas</span>
+                    <span>Kursus</span>
                 </div>
                 <button class="arrow-button">
                     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-caret-right-fill" viewBox="0 0 16 16">
@@ -23,11 +23,11 @@
         </div>
 
         <div class="summary-card">
-            <h3>Jumlah Siswa</h3>
+            <h3>Total Siswa Saya</h3>
 
             <div class="summary-bottom">
                 <div class="summary-number">
-                    22
+                    12
                     <span>Siswa</span>
                 </div>
             </div>
@@ -67,8 +67,8 @@
                 Siswa B
             </div>
 
-            <div class="schedule-tentor">
-                Tentor C
+            <div class="schedule-class">
+                Offline
             </div>
 
             <div class="schedule-time">
@@ -98,8 +98,8 @@
                 Siswa A
             </div>
 
-            <div class="schedule-tentor">
-                Tentor C
+            <div class="schedule-class">
+                Online
             </div>
 
             <div class="schedule-time">
