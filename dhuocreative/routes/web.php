@@ -125,9 +125,6 @@ Route::middleware(['auth', 'prevent.back'])->prefix('siswa')->name('siswa.')->gr
     Route::get('/kursus', function () {
         return view('siswa.kursus');
     })->name('kursus');
-    Route::get('/aktivitas', function () {
-        return view('siswa.aktivitas');
-    })->name('aktivitas');
     Route::get('/sertifikat', function () {
         return view('siswa.sertifikat');
     })->name('sertifikat');

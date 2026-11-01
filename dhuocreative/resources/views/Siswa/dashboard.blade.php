@@ -118,17 +118,21 @@
         <div class="sd-panel sd-announcement">
 
             <div class="sd-panel-title">
-                <h2>Pengumuman</h2>
+                <h2>Pengumuman Hari Ini</h2>
             </div>
 
             <div class="sd-announcement-item">
                 <span class="sd-dot"></span>
 
                 <div>
-                    <strong>Pengumpulan tugas minggu ini</strong>
+                    <strong>Pengingat Pembayaran</strong>
 
                     <small>
-                        Deadline: 10 Oktober 2026
+                        Mohon periksa status pembayaran kursus melalui
+                        bagian administrasi. Jika sudah membayar,
+                        abaikan pengingat ini. 
+                        <br>
+                        <div class="sd-color-operator">Dibuat oleh: Rina (Operator)</div>
                     </small>
                 </div>
             </div>

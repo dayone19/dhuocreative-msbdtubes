@@ -54,7 +54,7 @@
 
         <a href="{{ route('admin.manajemenKursus') }}" class="sidebar-item {{ request()->routeIs('admin.manajemenKursus') ? 'active' : '' }}">
             <span>
-                Manajemen Kursus
+                Kursus
             </span>
         </a>
 
