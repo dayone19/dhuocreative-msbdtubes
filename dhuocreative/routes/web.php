@@ -48,17 +48,17 @@ Route::middleware(['auth', 'prevent.back'])->prefix('tentor')->name('tentor.')->
         return view('tentor.dashboard');
     })->name('dashboard'); 
 
-    Route::get('/kelas', function () {
-        return view('tentor.kelas');
-    })->name('kelas');
+    Route::get('/jadwal', function () {
+        return view('tentor.jadwal');
+    })->name('jadwal');
 
-    Route::get('/kelas/absensi/{kelas}', function ($kelas) {
-        return view('tentor.absensi', compact('kelas'));
+    Route::get('/kursus', function () {
+        return view('tentor.kursus');
+    })->name('kursus');
+
+    Route::get('/kursus/absensi/{kursus}', function ($kursus) {
+        return view('tentor.absensi', compact('kursus'));
     })->name('absensi');
-
-    Route::get('/materi', function () {
-        return view('tentor.materi');
-    })->name('materi');
 
     Route::get('/tugas', function () {
         return view('tentor.tugas');
@@ -87,6 +87,10 @@ Route::middleware(['auth', 'prevent.back'])->prefix('operator')->name('operator.
         return view('operator.siswa');
     })->name('siswa'); 
 
+    Route::get('/tugas', function () {
+        return view('operator.tugas');
+    })->name('tugas');
+
     Route::get('/kursus', function () {
         return view('operator.kursus');
     })->name('kursus'); 
@@ -99,11 +103,86 @@ Route::middleware(['auth', 'prevent.back'])->prefix('operator')->name('operator.
         return view('operator.absensi');
     })->name('absensi'); 
 
+    Route::get('/absensiSiswa', function () {
+        return view('operator.absensiSiswa');
+    })->name('absensiSiswa'); 
+
     Route::get('/pengumuman', function () {
         return view('operator.pengumuman');
     })->name('pengumuman'); 
 });
 
+Route::middleware(['auth', 'prevent.back'])->prefix('siswa')->name('siswa.')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('siswa.dashboard');
+    })->name('dashboard');
+
+    Route::get('/kursus', function () {
+        return view('siswa.kursus');
+    })->name('kursus');
+
+    Route::get('/aktivitas', function () {
+        return view('siswa.aktivitas');
+    })->name('aktivitas');
+
+    Route::get('/sertifikat', function () {
+        return view('siswa.sertifikat');
+    })->name('sertifikat');
+
+    Route::get('/pengumpulanTugas', function () {
+        return view('siswa.pengumpulanTugas');
+    })->name('pengumpulanTugas');
+
+    Route::get('/nilai', function () {
+        return view('siswa.nilai');
+    })->name('nilai');
+
+    Route::get('/absensi', function () {
+        return view('siswa.absensi');
+    })->name('absensi');
+
+    Route::get('/pengumuman', function () {
+        return view('siswa.pengumuman');
+    })->name('pengumuman');
+});
+
+Route::middleware(['auth', 'prevent.back'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('admin.dashboard');
+    })->name('dashboard');
+
+    Route::get('/manajemenAkun', function () {
+        return view('admin.manajemenAkun');
+    })->name('manajemenAkun');
+
+    Route::get('/dataPengguna', function () {
+        return view('admin.dataPengguna');
+    })->name('dataPengguna');
+
+    Route::get('/manajemenKursus', function () {
+        return view('admin.manajemenKursus');
+    })->name('manajemenKursus');
+
+    Route::get('/jadwalAbsensi', function () {
+        return view('admin.jadwalAbsensi');
+    })->name('jadwalAbsensi');
+
+    Route::get('/tugas', function () {
+        return view('admin.tugas');
+    })->name('tugas');
+
+    Route::get('/nilaiSertifikat', function () {
+        return view('admin.nilaiSertifikat');
+    })->name('nilaiSertifikat');
+
+    Route::get('/pengumuman', function () {
+        return view('admin.pengumuman');
+    })->name('pengumuman');
+    
+    Route::get('/buatAkun', function () {
+        return view('admin.buatAkun');
+    })->name('buatAkun');
+});
 
 Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     Route::post('/admin/users', [UserController::class, 'store'])
@@ -112,28 +191,4 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     // operator
     // tentor
     // siswa
-});
-
-Route::middleware(['auth', 'prevent.back'])->prefix('siswa')->name('siswa.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('siswa.dashboard');
-    })->name('dashboard');
-    Route::get('/kursus', function () {
-        return view('siswa.kursus');
-    })->name('kursus');
-    Route::get('/aktivitas', function () {
-        return view('siswa.aktivitas');
-    })->name('aktivitas');
-    Route::get('/sertifikat', function () {
-        return view('siswa.sertifikat');
-    })->name('sertifikat');
-    Route::get('/pengumpulanTugas', function () {
-        return view('siswa.pengumpulanTugas');
-    })->name('pengumpulanTugas');
-    Route::get('/nilai', function () {
-        return view('siswa.nilai');
-    })->name('nilai');
-    Route::get('/absensi', function () {
-        return view('siswa.absensi');
-    })->name('absensi');
 });

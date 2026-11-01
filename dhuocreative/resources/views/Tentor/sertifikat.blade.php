@@ -26,8 +26,8 @@
             <thead>
                 <tr>
                     <th>Nama Siswa</th>
-                    <th>Nama Ujian</th>
-                    <th>Tanggal Ujian</th>
+                    <th>Nama Projek</th>
+                    <th>Tanggal Pengumpulan</th>
                     <th>Tanggal Upload</th>
                     <th>Aksi</th>
                 </tr>
@@ -38,7 +38,7 @@
     <p class="ts-empty-message" id="tsEmptyMessage" hidden>Sertifikat tidak ditemukan.</p>
 </div>
 
-{{-- Modal upload --}}
+{{-- Modal Upload --}}
 <div class="ts-overlay" id="tsUploadModal" hidden>
     <section class="ts-modal" role="dialog" aria-modal="true" aria-labelledby="tsUploadTitle">
         <div class="ts-modal-header">
@@ -49,12 +49,11 @@
             </button>
             <h2 id="tsUploadTitle">Upload Sertifikat</h2>
         </div>
-        {{-- Sesuaikan action dengan route upload sertifikat di aplikasi --}}
         <form id="tsUploadForm">
             @csrf
             <div class="ts-field">
                 <label for="tsStudent">Nama Siswa</label>
-                <select id="tsStudent" name="id_siswa" required>
+                <select class="ts-nameUp" id="tsStudent" name="id_siswa" required>
                     <option value="">Pilih siswa</option>
                     <option value="1">Andi Pratama</option>
                     <option value="2">Siti Aulia</option>
@@ -64,11 +63,11 @@
                 </select>
             </div>
             <div class="ts-field">
-                <label for="tsExam">Nama Ujian</label>
+                <label for="tsExam">Nama Project</label>
                 <input id="tsExam" name="nama_ujian" type="text" maxlength="150" required placeholder="Contoh: Ujian Web Master">
             </div>
             <div class="ts-field">
-                <label for="tsExamDate">Tanggal Ujian</label>
+                <label for="tsExamDate">Tanggal Pengumpulan</label>
                 <input id="tsExamDate" name="tanggal_ujian" type="date" required>
             </div>
             <div class="ts-field">
@@ -79,24 +78,19 @@
                         <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#5f7f7b">
                             <path d="M260-160q-91 0-155.5-63T40-377q0-78 47-139t123-78q25-92 100-149t170-57q117 0 198.5 81.5T760-520q69 8 114.5 59.5T920-340q0 75-52.5 127.5T740-160H520q-33 0-56.5-23.5T440-240v-206l-64 62-56-56 160-160 160 160-56 56-64-62v206h220q42 0 71-29t29-71q0-42-29-71t-71-29h-60v-80q0-83-58.5-141.5T480-720q-83 0-141.5 58.5T280-520h-20q-58 0-99 41t-41 99q0 58 41 99t99 41h100v80H260Zm220-280Z"/>
                         </svg>
-                       <small>Klik untuk mengunggah</small>
+                        <small class="ts-selected-file" id="tsFileName">Belum ada file dipilih</small>
                     </span>
                 </label>
                 <small>Format yang didukung: PDF, JPG, JPEG, atau PNG.</small>
             </div>
-            <button class="ts-btn ts-btn-primary ts-btn-full" type="submit">Simpan Sertifikat</button>
+            <button class="ts-btn ts-btn-primary ts-btn-full" type="submit">Upload Sertifikat</button>
         </form>
     </section>
 </div>
 
-
-{{-- Modal detail sertifikat --}}
+{{-- Modal Detail Sertifikat --}}
 <div class="ts-overlay" id="tsDetailModal" hidden>
-    <section class="ts-modal ts-detail-modal"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="tsDetailTitle">
-
+    <section class="ts-modal ts-detail-modal" role="dialog" aria-modal="true" aria-labelledby="tsDetailTitle">
         <div class="ts-modal-header">
             <button type="button" class="t-modal-close" data-ts-close aria-label="Tutup">
                 <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
@@ -112,11 +106,11 @@
                 <dd id="tsDetailStudent">-</dd>
             </div>
             <div>
-                <dt>Nama Ujian</dt>
+                <dt>Nama Projek</dt>
                 <dd id="tsDetailExam">-</dd>
             </div>
             <div>
-                <dt>Tanggal Ujian</dt>
+                <dt>Tanggal Pengumpulan</dt>
                 <dd id="tsDetailExamDate">-</dd>
             </div>
             <div>
@@ -127,23 +121,70 @@
 
         <div class="ts-preview-section">
             <h3>Preview Sertifikat</h3>
-
-            <div id="tsCertificatePreview"
-                class="ts-certificate-preview">
+            <div id="tsCertificatePreview" class="ts-certificate-preview">
                 <p>Preview sertifikat akan ditampilkan di sini.</p>
             </div>
         </div>
 
-        <a class="ts-btn ts-btn-primary ts-btn-full"
-            id="tsDetailFile"
-            href="#"
-            download
-            hidden>
+        <div class="ts-detail-actions">
+            <button type="button" class="ts-btn ts-btn-primary ts-btn-full" id="tsEditButton">Edit Sertifikat</button>
+        </div>
+
+        <a class="ts-btn ts-btn-primary ts-btn-full" id="tsDetailFile" href="#" download hidden>
             Download Sertifikat
         </a>
     </section>
 </div>
 
+{{-- Modal Edit Sertifikat (Menggunakan template/gaya yang sama dengan Upload) --}}
+<div class="ts-overlay" id="tsEditModal" hidden>
+    <section class="ts-modal" role="dialog" aria-modal="true" aria-labelledby="tsEditTitle">
+        <div class="ts-modal-header">
+            <button type="button" class="t-modal-close" data-ts-close aria-label="Tutup">
+                <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
+                <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+                </svg>
+            </button>
+            <h2 id="tsEditTitle">Edit Sertifikat</h2>
+        </div>
+        <form id="tsEditForm">
+            @csrf
+            <div class="ts-field">
+                <label for="tsEditStudent">Nama Siswa</label>
+                <select class="ts-nameUp" id="tsEditStudent" name="id_siswa" required disabled>
+                    <option value="">Pilih siswa</option>
+                    <option value="1">Andi Pratama</option>
+                    <option value="2">Siti Aulia</option>
+                    <option value="3">Budi Santoso</option>
+                    <option value="4">Nadia Putri</option>
+                    <option value="5">Rizky Ramadhan</option>
+                </select>
+            </div>
+            <div class="ts-field">
+                <label for="tsEditExam">Nama Project</label>
+                <input id="tsEditExam" name="nama_ujian" type="text" maxlength="150" required placeholder="Contoh: Ujian Web Master">
+            </div>
+            <div class="ts-field">
+                <label for="tsEditDate">Tanggal Pengumpulan</label>
+                <input id="tsEditDate" name="tanggal_ujian" type="date" required>
+            </div>
+            <div class="ts-field">
+                <label for="tsEditFile">File Sertifikat (Opsional)</label>
+                <label class="ts-dropzone">
+                    <span class="ts-file-instruction">
+                        <input id="tsEditFile" name="file_sertifikat" type="file" accept=".pdf,.jpg,.jpeg,.png">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#5f7f7b">
+                            <path d="M260-160q-91 0-155.5-63T40-377q0-78 47-139t123-78q25-92 100-149t170-57q117 0 198.5 81.5T760-520q69 8 114.5 59.5T920-340q0 75-52.5 127.5T740-160H520q-33 0-56.5-23.5T440-240v-206l-64 62-56-56 160-160 160 160-56 56-64-62v206h220q42 0 71-29t29-71q0-42-29-71t-71-29h-60v-80q0-83-58.5-141.5T480-720q-83 0-141.5 58.5T280-520h-20q-58 0-99 41t-41 99q0 58 41 99t99 41h100v80H260Zm220-280Z"/>
+                        </svg>
+                        <small class="ts-selected-file" id="tsEditFileName">Pilih file baru jika ingin mengganti</small>
+                    </span>
+                </label>
+                <small>Format yang didukung: PDF, JPG, JPEG, atau PNG.</small>
+            </div>
+            <button class="ts-btn ts-btn-primary ts-btn-full" type="submit">Simpan Perubahan</button>
+        </form>
+    </section>
+</div>
 
 <script>
 (() => {
@@ -156,8 +197,10 @@
     const emptyMessage = byId('tsEmptyMessage');
     const uploadModal = byId('tsUploadModal');
     const detailModal = byId('tsDetailModal');
+    const editModal = byId('tsEditModal');
     const form = byId('tsUploadForm');
-    const overlays = [uploadModal, detailModal];
+    const editForm = byId('tsEditForm');
+    const overlays = [uploadModal, detailModal, editModal];
 
     const students = {
         1: 'Andi Pratama',
@@ -167,12 +210,13 @@
         5: 'Rizky Ramadhan'
     };
 
-    // Data contoh untuk mengetes tampilan. Belum memiliki file sungguhan.
     const sampleCertificates = [
         {
+            studentId: '1',
             student: 'Andi Pratama',
             exam: 'Ujian Web Master',
             examDate: '12/08/2026',
+            dateISO: '2026-08-12',
             uploadDate: '13/08/2026 10:30',
             year: '2026',
             fileName: '',
@@ -180,9 +224,11 @@
             fileType: null
         },
         {
+            studentId: '2',
             student: 'Siti Aulia',
             exam: 'Ujian UI/UX Design',
             examDate: '20/07/2026',
+            dateISO: '2026-07-20',
             uploadDate: '21/07/2026 14:15',
             year: '2026',
             fileName: '',
@@ -190,9 +236,11 @@
             fileType: null
         },
         {
+            studentId: '3',
             student: 'Budi Santoso',
             exam: 'Ujian Database',
             examDate: '15/12/2025',
+            dateISO: '2025-12-15',
             uploadDate: '16/12/2025 09:00',
             year: '2025',
             fileName: '',
@@ -214,6 +262,7 @@
     function addRow(data) {
         const row = document.createElement('tr');
         row.dataset.year = data.year;
+        row._certificateData = data;
 
         [data.student, data.exam, data.examDate, data.uploadDate].forEach(value => {
             const cell = document.createElement('td');
@@ -249,10 +298,7 @@
                 pdf.style.height = '480px';
                 pdf.style.border = '0';
                 preview.appendChild(pdf);
-            } else if (
-                data.fileUrl &&
-                ['image/jpeg', 'image/png'].includes(data.fileType)
-            ) {
+            } else if (data.fileUrl && ['image/jpeg', 'image/png'].includes(data.fileType)) {
                 const img = document.createElement('img');
                 img.src = data.fileUrl;
                 img.alt = 'Preview Sertifikat';
@@ -262,8 +308,7 @@
                 preview.appendChild(img);
             } else {
                 const message = document.createElement('p');
-                message.textContent =
-                    'Data contoh belum memiliki file. Klik Upload Sertifikat untuk memilih file dan mencoba preview.';
+                message.textContent = 'Data contoh belum memiliki file. Klik Upload Sertifikat untuk memilih file dan mencoba preview.';
                 preview.appendChild(message);
             }
 
@@ -273,6 +318,7 @@
                 downloadLink.hidden = false;
             }
 
+            detailModal._activeRow = row;
             detailModal.hidden = false;
         });
 
@@ -306,6 +352,79 @@
     byId('tsOpenUpload').addEventListener('click', () => {
         form.reset();
         uploadModal.hidden = false;
+    });
+
+    byId('tsFile').addEventListener('change', () => {
+        byId('tsFileName').textContent = byId('tsFile').files[0]?.name || 'Belum ada file dipilih';
+    });
+
+    byId('tsEditFile').addEventListener('change', () => {
+        byId('tsEditFileName').textContent = byId('tsEditFile').files[0]?.name || 'Pilih file baru jika ingin mengganti';
+    });
+
+    // Tombol Edit di Modal Detail -> Membuka Modal Edit
+    byId('tsEditButton').addEventListener('click', () => {
+        const row = detailModal._activeRow;
+        if (!row) return;
+        const data = row._certificateData;
+
+        // Masukkan data lama ke form edit
+        byId('tsEditStudent').value = data.studentId || '';
+        byId('tsEditExam').value = data.exam;
+        byId('tsEditDate').value = data.dateISO || '';
+        byId('tsEditFile').value = '';
+        byId('tsEditFileName').textContent = data.fileName ? `File saat ini: ${data.fileName}` : 'Pilih file baru jika ingin mengganti';
+
+        detailModal.hidden = true; // Tutup modal detail
+        editModal.hidden = false;  // Buka modal edit
+    });
+
+    // Submit Form Edit
+    editForm.addEventListener('submit', event => {
+        event.preventDefault();
+        const row = detailModal._activeRow;
+        if (!row) return;
+        const data = row._certificateData;
+
+        const exam = byId('tsEditExam').value.trim();
+        const dateISO = byId('tsEditDate').value;
+        const replacement = byId('tsEditFile').files[0];
+
+        if (!exam || !dateISO) {
+            alert('Nama projek dan tanggal pengumpulan wajib diisi.');
+            return;
+        }
+
+        if (replacement) {
+            if (!['application/pdf', 'image/jpeg', 'image/png'].includes(replacement.type)) {
+                alert('Format file harus PDF, JPG, JPEG, atau PNG.');
+                return;
+            }
+            if (replacement.size > 5 * 1024 * 1024) {
+                alert('Ukuran file maksimal 5 MB.');
+                return;
+            }
+            if (data.fileUrl && data.fileUrl.startsWith('blob:')) URL.revokeObjectURL(data.fileUrl);
+            data.fileName = replacement.name;
+            data.fileUrl = URL.createObjectURL(replacement);
+            data.fileType = replacement.type;
+        }
+
+        data.exam = exam;
+        data.dateISO = dateISO;
+        const d = new Date(dateISO + 'T00:00:00');
+        data.examDate = d.toLocaleDateString('id-ID', {day:'2-digit', month:'2-digit', year:'numeric'});
+        data.year = String(d.getFullYear());
+
+        // Update tampilan tabel
+        row.dataset.year = data.year;
+        row.cells[1].textContent = data.exam;
+        row.cells[2].textContent = data.examDate;
+
+        editModal.hidden = true;
+        addYearOption(data.year);
+        filterRows();
+        alert('Perubahan sertifikat berhasil disimpan.');
     });
 
     form.addEventListener('submit', event => {
@@ -345,9 +464,11 @@
         });
 
         const data = {
+            studentId,
             student: students[studentId],
             exam,
             examDate: formattedDate,
+            dateISO: examDate,
             uploadDate: formattedUpload,
             year: String(date.getFullYear()),
             fileName: file.name,
@@ -357,6 +478,7 @@
 
         addRow(data);
         form.reset();
+        byId('tsFileName').textContent = 'Belum ada file dipilih';
         uploadModal.hidden = true;
         filterRows();
 

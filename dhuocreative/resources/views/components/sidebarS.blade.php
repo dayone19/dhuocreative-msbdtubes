@@ -44,7 +44,25 @@
         <!-- Kursus Saya -->
         <a href="{{ route('siswa.kursus') }}" class="sidebar-item {{ request()->routeIs('siswa.kursus') ? 'active' : '' }}">
             <span>
-                Kursus Saya
+                Kursus
+            </span>
+        </a>
+
+        <a href="{{ route('siswa.absensi') }}" class="sidebar-item {{ request()->routeIs('siswa.absensi') ? 'active' : '' }}">
+            <span>
+                Presensi Kelas
+            </span>
+        </a>
+
+        <a href="{{ route('siswa.pengumpulanTugas') }}" class="sidebar-item {{ request()->routeIs('siswa.pengumpulanTugas') ? 'active' : '' }}">
+            <span>
+                Tugas
+            </span>
+        </a>
+
+        <a href="{{ route('siswa.nilai') }}" class="sidebar-item {{ request()->routeIs('siswa.nilai') ? 'active' : '' }}">
+            <span>
+                Nilai
             </span>
         </a>
 
@@ -58,13 +76,10 @@
             <span>Sertifikat</span>
         </a>
 
-        <!-- Logout -->
-        <form action="{{ route('logout') }}" method="POST">
-            @csrf
-            <button type="submit" class="sidebar-item">
-                Logout
-            </button>
-        </form>
+        <!-- Pengumuman -->
+        <a href="{{ route('siswa.pengumuman') }}" class="sidebar-item {{ request()->routeIs('siswa.pengumuman') ? 'active' : '' }}">
+            <span>Pengumuman</span>
+        </a>
 
     </nav>
 </aside>
