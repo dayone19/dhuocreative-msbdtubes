@@ -56,6 +56,10 @@
             <span>Absensi</span>
         </a>
 
+        <a href="{{ route('operator.sertifikat') }}" class="sidebar-item {{ request()->routeIs('operator.sertifikat') ? 'active' : '' }}">
+            <span>Sertifikat</span>
+        </a>
+
         <a href="{{ route('operator.pengumuman') }}" class="sidebar-item {{ request()->routeIs('operator.pengumuman') ? 'active' : '' }}">
             <span>Pengumuman</span>
         </a>

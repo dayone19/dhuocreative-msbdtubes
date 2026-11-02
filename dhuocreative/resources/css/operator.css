@@ -221,9 +221,9 @@
 .k-table th:nth-child(5) {width: 12%; border-radius: 0 22px 22px 0;}
 
 .j-table th:nth-child(1) { width: 12%; border-radius: 22px 0 0 22px; }
-.j-table th:nth-child(2) { width: 12%; }
-.j-table th:nth-child(3) { width: 11%; }
-.j-table th:nth-child(4) { width: 11%; }
+.j-table th:nth-child(2) { width: 10%; }
+.j-table th:nth-child(3) { width: 12%; }
+.j-table th:nth-child(4) { width: 12%; }
 .j-table th:nth-child(5) { width: 11%; }
 .j-table th:nth-child(6) { width: 11%; }
 .j-table th:nth-child(7) { width: 13%; }
@@ -247,18 +247,19 @@
     font-weight:700; 
     white-space:nowrap; 
 }
-.o-status.kmpl {
-    background: #dcefe3;
-    color: #286c65;
-}
-.o-status.tlt {
-    background: #f27640;
-    color: #ffdc59;
-}
-.o-status.tdk {
-    background: #ffe2d2;
-    color: #c65c31;
-}
+/* status tugas, terkumpul, terlambat, tidak kumpul */
+.o-status.kmpl {background: #dcefe3;color: #286c65;}
+.o-status.tlt {background: #f27640;color: #ffdc59;}
+.o-status.tdk {background: #ffe2d2;color: #c65c31;}
+/* status jadwal, terjadwal, selesai, dibatalkan */
+.o-status.terjadwal { background:#fff0c2; color:#8a6500; }
+.o-status.selesai { background:#dcefe3; color:#286c65; }
+.o-status.dibatalkan { background:#ffe2d2; color:#c65c31; }
+/* status pengajuan, menunggu, disetujui, ditolak */
+.o-status.menunggu { background:#fff0c2; color:#8a6500; }
+.o-status.aktif { background:#dcefe3; color:#286c65; }
+.o-status.nonaktif { background:#ffe2d2; color:#c65c31; }
+
 .o-action { 
     padding:9px 17px; 
     border:0; 

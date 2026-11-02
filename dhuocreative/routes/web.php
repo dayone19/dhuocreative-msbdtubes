@@ -107,6 +107,10 @@ Route::middleware(['auth', 'prevent.back'])->prefix('operator')->name('operator.
         return view('operator.absensiSiswa');
     })->name('absensiSiswa'); 
 
+    Route::get('/sertifikat', function () {
+        return view('operator.sertifikat');
+    })->name('sertifikat');
+
     Route::get('/pengumuman', function () {
         return view('operator.pengumuman');
     })->name('pengumuman'); 

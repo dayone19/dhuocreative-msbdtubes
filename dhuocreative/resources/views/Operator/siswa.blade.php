@@ -89,55 +89,60 @@
         </div>
 
         <form id="formSiswa">
-            <div class="o-form-group">
-                <label for="namaSiswa">Nama Siswa</label>
-                <input id="namaSiswa" maxlength="100" required placeholder="Masukkan nama siswa">
-            </div>
-            <div class="o-form-group">
-                <label for="telpSiswa">No. Telp</label>
-                <input id="telpSiswa" maxlength="12" required placeholder="Masukkan nomor telepon">
-            </div>
-            <div class="o-form-group">
-                <label for="kursusSiswa">Nama Kursus</label>
-                <select id="kursusSiswa" required>
-                    <option value="">Pilih kursus</option>
-                    <option>Web Master</option>
-                    <option>MS Office</option>
-                </select>
-            </div>
-            <div class="o-form-group">
-                <label for="kelasSiswa">Kelas</label>
-                <select id="kelasSiswa" required>
-                    <option value="">Pilih kelas</option>
-                    <option>Offline</option>
-                    <option>Offline Rumah</option>
-                    <option>Online</option>
-                </select>
-            </div>
-            <div class="o-form-group">
-                <label id="hariLabel">Hari Pembelajaran (1 minggu, maks. 3 kali pertemuan)</label>
-                <div class="o-day-picker" id="hariPicker" role="group" aria-labelledby="hariLabel">
-                    <label><input type="checkbox" value="Senin">Senin</label>
-                    <label><input type="checkbox" value="Selasa">Selasa</label>
-                    <label><input type="checkbox" value="Rabu">Rabu</label>
-                    <label><input type="checkbox" value="Kamis">Kamis</label>
-                    <label><input type="checkbox" value="Jumat">Jumat</label>
-                    <label><input type="checkbox" value="Sabtu">Sabtu</label>
+            <div id="fieldDataMaster">
+                <div class="o-form-group">
+                    <label for="namaSiswa">Nama Siswa</label>
+                    <input id="namaSiswa" maxlength="100" required placeholder="Masukkan nama siswa">
                 </div>
-                <span class="o-hari-hint" id="hariCount" aria-live="polite">0/3 hari dipilih</span>
+                <div class="o-form-group">
+                    <label for="telpSiswa">No. Telp</label>
+                    <input id="telpSiswa" maxlength="12" required placeholder="Masukkan nomor telepon">
+                </div>
             </div>
-            <div class="o-form-group">
-                <label for="tanggalDaftar">Tanggal Daftar</label>
-                <input id="tanggalDaftar" type="date" required>
+
+            <div id="fieldDataKursus">
+                <div class="o-form-group">
+                    <label for="kursusSiswa">Nama Kursus</label>
+                    <select id="kursusSiswa" required>
+                        <option value="">Pilih kursus</option>
+                        <option>Web Master</option>
+                        <option>MS Office</option>
+                    </select>
+                </div>
+                <div class="o-form-group">
+                    <label for="kelasSiswa">Jenis Kelas</label>
+                    <select id="kelasSiswa" required>
+                        <option value="">Pilih kelas</option>
+                        <option>Offline</option>
+                        <option>Offline Rumah</option>
+                        <option>Online</option>
+                    </select>
+                </div>
+                <div class="o-form-group">
+                    <label id="hariLabel">Hari Pembelajaran (1 minggu, maks. 3 kali pertemuan)</label>
+                    <div class="o-day-picker" id="hariPicker" role="group" aria-labelledby="hariLabel">
+                        <label><input type="checkbox" value="Senin">Senin</label>
+                        <label><input type="checkbox" value="Selasa">Selasa</label>
+                        <label><input type="checkbox" value="Rabu">Rabu</label>
+                        <label><input type="checkbox" value="Kamis">Kamis</label>
+                        <label><input type="checkbox" value="Jumat">Jumat</label>
+                        <label><input type="checkbox" value="Sabtu">Sabtu</label>
+                    </div>
+                    <span class="o-hari-hint" id="hariCount" aria-live="polite">0/3 hari dipilih</span>
+                </div>
+                <div class="o-form-group">
+                    <label for="tanggalDaftar">Tanggal Daftar</label>
+                    <input id="tanggalDaftar" type="date" required>
+                </div>
+                <div class="o-form-group">
+                    <label for="statusSiswa">Status Pendaftaran</label>
+                    <select id="statusSiswa" required>
+                        <option value="aktif">Aktif</option>
+                        <option value="nonaktif">Nonaktif</option>
+                    </select>
+                </div>
             </div>
-            <div class="o-form-group">
-                <label for="statusSiswa">Status Pendaftaran</label>
-                <select id="statusSiswa" required>
-                    <option value="aktif">Aktif</option>
-                    <option value="nonaktif">Nonaktif</option>
-                </select>
-            </div>
-            <button type="submit" class="o-btn o-btn-orange o-btn-full">Simpan Pendaftaran</button>
+            <button type="submit" class="o-btn o-btn-orange o-btn-full" id="submitSiswa">Simpan Pendaftaran</button>
         </form>
     </div>
 </div>
@@ -154,20 +159,21 @@
             <h2>Detail Pendaftaran</h2>
         </div>
 
-        <div class="o-detail-list">
+        <p class="o-course-title">Data Siswa</p>
+        <div class="o-detail-list" id="detailDataMaster">
             <div><span>ID Siswa</span><strong>S-001</strong></div>
-            <div><span>Nama Siswa</span><strong>Siswa A</strong></div>
-            <div><span>No. Telp</span><strong>08123456789</strong></div>
+            <div><span>Nama Siswa</span><strong id="detailNama">Siswa A</strong></div>
+            <div><span>No. Telp</span><strong id="detailTelp">08123456789</strong></div>
             <div><span>Tanggal Daftar</span><strong>12 Jan 2026</strong></div>
             <div><span>Status</span><strong>Aktif</strong></div>
         </div>
+        <button type="button" class="o-action" id="editDataMaster" style="margin: 10px 0 18px;">Edit Data Siswa</button>
 
         <p class="o-course-title">Daftar Kursus</p>
         <div class="o-course-list">
             <div class="o-course-item">
                 <div class="o-course-head">
                     <strong>Web Master - Online</strong>
-                    <button type="button" class="o-action o-action-sm" data-edit>Edit</button>
                 </div>
                 <div class="o-course-row"><span>Hari</span><strong>Senin, Rabu, Jumat</strong></div>
                 <div class="o-course-row"><span>Tentor</span><strong>Tentor C</strong></div>
@@ -176,7 +182,6 @@
             <div class="o-course-item">
                 <div class="o-course-head">
                     <strong>MS Office - Offline</strong>
-                    <button type="button" class="o-action o-action-sm" data-edit>Edit</button>
                 </div>
                 <div class="o-course-row"><span>Hari</span><strong>Selasa</strong></div>
                 <div class="o-course-row"><span>Tentor</span><strong>Tentor E</strong></div>
@@ -190,34 +195,85 @@
 <script>
 (()=>{
 const $=s=>document.querySelector(s),all=s=>[...document.querySelectorAll(s)];
-const modal=$('#modalSiswa'),detail=$('#modalDetailSiswa');
+const modal=$('#modalSiswa'),detail=$('#modalDetailSiswa'),form=$('#formSiswa');
+const masterFields=$('#fieldDataMaster'),courseFields=$('#fieldDataKursus');
+let formMode='new', returnToDetail=false;
 
-// buka / tutup modal
-$('#btnTambahSiswa').onclick=()=>modal.hidden=false;
-$('#tambahKursusSiswa').onclick=()=>{detail.hidden=true;modal.hidden=false};
-all('[data-detail]').forEach(b=>b.onclick=()=>detail.hidden=false);
-all('[data-edit]').forEach(b=>b.onclick=()=>{detail.hidden=true;modal.hidden=false});
-all('[data-close]').forEach(b=>b.onclick=()=>b.closest('.o-modal').hidden=true);
-$('#formSiswa').onsubmit=e=>{e.preventDefault();modal.hidden=true};
+function setGroup(group, show){
+    group.hidden=!show;
+    group.querySelectorAll('input, select, textarea').forEach(el=>{
+        el.disabled=!show;
+    });
+}
+function openForm(mode){
+    formMode=mode;
+    returnToDetail=mode==='add-course'||mode==='edit-master';
+    setGroup(masterFields, mode==='new'||mode==='edit-master');
+    setGroup(courseFields, mode==='new'||mode==='add-course');
+    $('#namaSiswa').required=mode==='new'||mode==='edit-master';
+    $('#telpSiswa').required=mode==='new'||mode==='edit-master';
+    $('#kursusSiswa').required=mode==='new'||mode==='add-course';
+    $('#kelasSiswa').required=mode==='new'||mode==='add-course';
+    $('#tanggalDaftar').required=mode==='new'||mode==='add-course';
+    $('#statusSiswa').required=mode==='new'||mode==='add-course';
 
-// hari pembelajaran: maksimal 3 per minggu
+    $('#namaSiswa').value=$('#detailNama').textContent.trim();
+    $('#telpSiswa').value=$('#detailTelp').textContent.trim();
+
+    const titles={
+        'new':'Pendaftaran Siswa',
+        'edit-master':'Edit Data Siswa',
+        'add-course':'Tambah Kursus Siswa'
+    };
+    $('#modalSiswa h2').textContent=titles[mode];
+    $('#submitSiswa').textContent=mode==='edit-master'?'Simpan Perubahan':
+        mode==='add-course'?'Tambah Kursus':'Simpan Pendaftaran';
+    detail.hidden=true;
+    modal.hidden=false;
+}
+$('#btnTambahSiswa').onclick=()=>openForm('new');
+$('#editDataMaster').onclick=()=>openForm('edit-master');
+$('#tambahKursusSiswa').onclick=()=>openForm('add-course');
+
+all('[data-detail]').forEach(b=>b.onclick=()=>{
+    const row=b.closest('tr');
+    $('#detailNama').textContent=row.children[1].textContent.trim();
+    detail.hidden=false;
+});
+all('[data-close]').forEach(b=>b.onclick=()=>{
+    const parent=b.closest('.o-modal');
+    parent.hidden=true;
+    if(parent===modal&&returnToDetail) detail.hidden=false;
+});
+form.onsubmit=e=>{
+    e.preventDefault();
+    if(formMode==='edit-master'){
+        $('#detailNama').textContent=$('#namaSiswa').value.trim();
+        $('#detailTelp').textContent=$('#telpSiswa').value.trim();
+    }
+    modal.hidden=true;
+    if(returnToDetail) detail.hidden=false;
+};
+
 const days=all('#hariPicker input');
 days.forEach(d=>d.onchange=()=>{
-  const n=days.filter(x=>x.checked).length;
-  days.forEach(x=>x.disabled=!x.checked&&n>=3);
-  $('#hariCount').textContent=n+'/3 hari dipilih';
+    const n=days.filter(x=>x.checked).length;
+    days.forEach(x=>x.disabled=!x.checked&&n>=3);
+    $('#hariCount').textContent=n+'/3 hari dipilih';
 });
 
-// cari + filter status
 function filter(){
-  const q=$('#cariSiswa').value.toLowerCase(),st=$('#filterStatus').value;let n=0;
-  all('#tabelSiswa tbody tr').forEach(r=>{
-    const ok=r.textContent.toLowerCase().includes(q)&&(!st||r.dataset.status===st);
-    r.hidden=!ok;if(ok)n++;
-  });
-  $('#kosongSiswa').hidden=n>0;
+    const q=$('#cariSiswa').value.toLowerCase(),st=$('#filterStatus').value;
+    let n=0;
+    all('#tabelSiswa tbody tr').forEach(r=>{
+        const ok=r.textContent.toLowerCase().includes(q)&&(!st||r.dataset.status===st);
+        r.hidden=!ok;
+        if(ok)n++;
+    });
+    $('#kosongSiswa').hidden=n>0;
 }
-$('#cariSiswa').oninput=filter;$('#filterStatus').onchange=filter;
+$('#cariSiswa').oninput=filter;
+$('#filterStatus').onchange=filter;
 })();
 </script>
 @endsection

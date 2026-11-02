@@ -12,9 +12,6 @@
 <div class="o-page">
     <div class="o-page-header">
         <h1 class="o-page-title">Manajemen Jadwal</h1>
-        <button type="button" class="o-btn o-btn-orange" id="btnTambahJadwal">
-            <span class="o-plus">+</span>
-            Tambah Jadwal</button>
     </div>
 
     <!-- Ringkasan 1 minggu (contoh: minggu 26–31 Okt 2026) -->
@@ -75,7 +72,7 @@
             <thead>
                 <tr>
                     <th>Nama Kursus</th>
-                    <th>Kelas</th>
+                    <th>Jenis Kelas</th>
                     <th>Tentor</th>
                     <th>Siswa</th>
                     <th>Tanggal</th>
@@ -173,68 +170,7 @@
     </div>
 </div>
 
-<!-- Modal tambah / edit jadwal -->
-<div class="o-modal" id="modalJadwal" hidden>
-    <div class="o-modal-box o-modal-wide">
-        <div class="o-modal-header">
-            <button type="button" class="o-modal-close" data-close aria-label="Tutup">
-                <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
-                <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
-                </svg>
-            </button>
-            <h2>Tambah Jadwal</h2>
-        </div>
-
-        <form id="formJadwal">
-            <div class="o-form-grid">
-                <div class="o-form-group">
-                    <label for="jadwalSiswa">Nama Siswa</label>
-                    <select id="jadwalSiswa" required>
-                        <option value="">Pilih siswa</option>
-                        <option>Siswa A</option>
-                        <option>Siswa B</option>
-                    </select>
-                </div>
-                <div class="o-form-group">
-                    <label for="jadwalKursus">Kursus - Kelas</label>
-                    <!-- isinya hanya kursus yang didaftarkan siswa tsb; kelas ikut pendaftaran -->
-                    <select id="jadwalKursus" required>
-                        <option value="">Pilih kursus</option>
-                        <option>Web Master - Online</option>
-                        <option>MS Office - Offline</option>
-                    </select>
-                </div>
-                <div class="o-form-group o-form-full">
-                    <label for="jadwalTentor">Nama Tentor</label>
-                    <input id="jadwalTentor" maxlength="100" required placeholder="Masukkan nama tentor">
-                </div>
-                <div class="o-form-group">
-                    <label for="jadwalTanggal">Tanggal</label>
-                    <input id="jadwalTanggal" type="date" required>
-                </div>
-                <div class="o-form-group">
-                    <label for="jadwalStatus">Status</label>
-                    <select id="jadwalStatus" required>
-                        <option value="terjadwal">Terjadwal</option>
-                        <option value="selesai">Selesai</option>
-                        <option value="dibatalkan">Dibatalkan</option>
-                    </select>
-                </div>
-                <div class="o-form-group">
-                    <label for="jadwalMulai">Jam Mulai</label>
-                    <input id="jadwalMulai" type="time" required>
-                </div>
-                <div class="o-form-group">
-                    <label for="jadwalSelesai">Jam Selesai</label>
-                    <input id="jadwalSelesai" type="time" required>
-                </div>
-            </div>
-            <button class="o-btn o-btn-orange o-btn-submit" type="submit">Simpan Jadwal</button>
-        </form>
-    </div>
-</div>
-
-<!-- Modal detail jadwal -->
+<!-- Modal detail jadwal (Tombol edit di dalamnya diarahkan agar tidak error, atau cukup lihat detail) -->
 <div class="o-modal" id="modalDetailJadwal" hidden>
     <div class="o-modal-box">
         <div class="o-modal-header">
@@ -253,14 +189,13 @@
             <div><span>Jam</span><strong id="detailJam">-</strong></div>
             <div><span>Status</span><strong id="detailStatus">-</strong></div>
         </div>
-        <button type="button" class="o-btn o-btn-orange o-btn-full" id="editDetailJadwal">Edit Jadwal</button>
     </div>
 </div>
 
 <script>
 (()=>{
 const $=s=>document.querySelector(s),all=s=>[...document.querySelectorAll(s)];
-const modal=$('#modalJadwal'),detail=$('#modalDetailJadwal'),cap=s=>s[0].toUpperCase()+s.slice(1);
+const detail=$('#modalDetailJadwal'),cap=s=>s[0].toUpperCase()+s.slice(1);
 let selected=null;
 
 // badge status (enum: terjadwal | selesai | dibatalkan)
@@ -269,12 +204,10 @@ function setStatus(tr,st){
   const b=tr.cells[7].querySelector('span');b.className='o-status '+st;b.textContent=cap(st);
 }
 
-// buka / tutup modal
-$('#btnTambahJadwal').onclick=()=>{$('#formJadwal').reset();selected=null;modal.hidden=false};
+// Tutup modal
 all('[data-close]').forEach(b=>b.onclick=()=>b.closest('.o-modal').hidden=true);
-$('#formJadwal').onsubmit=e=>{e.preventDefault();modal.hidden=true};
 
-// detail + edit
+// detail jadwal
 $('#tabelJadwal').onclick=e=>{
   const b=e.target.closest('[data-detail]');if(!b)return;
   selected=b.closest('tr');const c=selected.cells;
@@ -285,17 +218,6 @@ $('#tabelJadwal').onclick=e=>{
   $('#detailJam').textContent=c[5].textContent+'–'+c[6].textContent;
   $('#detailStatus').textContent=cap(selected.dataset.status);
   detail.hidden=false;
-};
-$('#editDetailJadwal').onclick=()=>{
-  const c=selected.cells;
-  $('#jadwalSiswa').value=c[3].textContent;
-  $('#jadwalKursus').value=c[0].textContent+' - '+c[1].textContent;
-  $('#jadwalTentor').value=c[2].textContent;
-  $('#jadwalTanggal').value=c[4].textContent;
-  $('#jadwalMulai').value=c[5].textContent;
-  $('#jadwalSelesai').value=c[6].textContent;
-  $('#jadwalStatus').value=selected.dataset.status;
-  detail.hidden=true;modal.hidden=false;
 };
 
 // persetujuan: setuju -> jadwal lama "dibatalkan" + baris baru "terjadwal" (hanya untuk pertemuan itu)

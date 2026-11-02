@@ -42,36 +42,38 @@
 
     <div class="tmt-table-container">
         <table class="tmt-table">
-            <thead>
-                <tr>
-                    <th>Judul Tugas</th>
-                    <th>Kursus</th>
-                    <th>Siswa</th>
-                    <th>Tanggal<br>Upload</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
+          <thead>
+              <tr>
+                <th>Judul Tugas</th>
+                <th>Kursus</th>
+                <th>Siswa</th>
+                <th>Tanggal<br>Upload</th>
+                <th>Aksi</th>
+              </tr>
+          </thead>
 
-            <tbody id="tugasTable">
+          <tbody id="tugasTable">
 
-                <tr data-kelas="Web Master"
-                    data-judul="membuat tabel html"
-                    data-tanggal="2026-09-25"
-                    data-deadline="2026-09-30T23:59"
-                    data-status-pengumpulan="terlambat"
-                    data-jenis="tugas"
-                    data-deskripsi="-">
-                    <td>Membuat tabel html</td>
-                    <td>Web Master</td>
-                    <td>Siswa A</td>
-                    <td>9/25/26</td>
-                    <td class="tmt-action-group">
-                        <button type="button" class="tmt-view-btn" onclick="bukaDetail(this)">Detail</button>
-                        <button type="button" class="tmt-view-btn" onclick="lihatTugas(this)">Lihat</button>
-                    </td>
-                </tr>
+            <tr data-kelas="Web Master"
+                data-judul="membuat tabel html"
+                data-tanggal="2026-09-25"
+                data-deadline="2026-09-30T23:59"
+                data-status-pengumpulan="terlambat"
+                data-jenis="tugas"
+                data-deskripsi="-"
+                data-file-nama="Tugas1_SiswaA.html"
+                data-file-url="#">
+                <td>Membuat tabel html</td>
+                <td>Web Master</td>
+                <td>Siswa A</td>
+                <td>9/25/26</td>
+                <td class="tmt-action-group">
+                    <button type="button" class="tmt-view-btn" onclick="bukaDetail(this)">Detail</button>
+                    <button type="button" class="tmt-view-btn" onclick="lihatTugas(this)">Lihat</button>
+                </td>
+            </tr>
 
-            </tbody>
+          </tbody>
         </table>
 
         <div class="tmt-empty" id="tugasKosong" hidden>
@@ -285,10 +287,18 @@
                     <textarea id="lihatDeskripsi" readonly placeholder="-"></textarea>
                 </div>
 
+                {{-- Tempat File Tugas Siswa yang Di-upload --}}
+                <div class="tmt-form-group">
+                    <label>File Tugas Siswa</label>
+                    <div id="containerFileSiswa">
+                        <span style="color: #666; font-style: italic;">Siswa belum mengunggah file.</span>
+                    </div>
+                </div>
+
                 <div class="tmt-form-group">
                     <label for="lihatNilai">Nilai</label>
                     <input type="number" id="lihatNilai" min="0" max="100" step="1"
-                           placeholder="Masukkan nilai (0-100)" required>
+                          placeholder="Masukkan nilai (0-100)" required>
                 </div>
 
                 <div class="tmt-upload-actions">
@@ -362,6 +372,17 @@ function lihatTugas(btn) {
     const siswa = row.children[2].textContent.trim();
     const jenis = row.dataset.jenis || 'tugas';
     const deskripsi = row.dataset.deskripsi || '-';
+    
+    // Ambil data file dari baris tabel
+    const namaFile = row.dataset.fileNama;
+    const urlFile = row.dataset.fileUrl;
+    const containerFile = document.getElementById('containerFileSiswa');
+
+    if (namaFile && urlFile) {
+        containerFile.innerHTML = `<a href="${urlFile}" class="tmt-file-pill" download="${namaFile}" target="_blank">${namaFile}</a>`;
+    } else {
+        containerFile.innerHTML = `<span style="color: #666; font-style: italic;">Siswa belum mengunggah file.</span>`;
+    }
 
     document.getElementById('lihatNamaTugas').value = judul;
     document.getElementById('lihatJenisTugas').value = jenis;
@@ -403,6 +424,8 @@ function buatBarisTugas(data) {
     row.dataset.statusPengumpulan = 'tidak kumpul';
     row.dataset.jenis = data.jenis;
     row.dataset.deskripsi = data.deskripsi || '-';
+    row.dataset.fileNama = '';
+    row.dataset.fileUrl = '';
 
     [data.judul, data.kursus, data.siswa, data.tanggalTampil].forEach(text => {
         const td = document.createElement('td');
@@ -496,7 +519,6 @@ function tutupDetail() {
     batalEditMode();
 }
 
-// tombol panah kembali: saat edit -> keluar dari edit, saat detail -> tutup
 function kembaliDetail() {
     if (detailBox.classList.contains('is-editing')) {
         batalEditMode();
@@ -518,7 +540,6 @@ function aktifkanEditMode() {
 }
 
 function batalEditMode() {
-    // kembalikan isi ke data terakhir yang tersimpan
     if (currentEditingRow) isiDetail(currentEditingRow);
 
     detailTextFields.forEach(id => document.getElementById(id).setAttribute('readonly', true));
@@ -529,7 +550,6 @@ function batalEditMode() {
     document.getElementById('actionDetail').hidden = false;
     document.getElementById('actionEdit').hidden = true;
 }
-
 
 // Handler Submit Form Edit
 document.getElementById('formEditTugas').addEventListener('submit', function(e) {
@@ -544,24 +564,20 @@ document.getElementById('formEditTugas').addEventListener('submit', function(e) 
     const deskripsiBaru = document.getElementById('detailDeskripsi').value;
     const deadlineBaru = document.getElementById('detailDeadline').value;
 
-    // Update kolom di tabel
     currentEditingRow.children[0].textContent = judulBaru;
     currentEditingRow.children[1].textContent = kursusBaru;
     currentEditingRow.children[2].textContent = siswaBaru;
 
-    // Update dataset row
     currentEditingRow.dataset.judul = judulBaru.toLowerCase();
     currentEditingRow.dataset.kelas = kursusBaru;
     currentEditingRow.dataset.jenis = jenisBaru;
     currentEditingRow.dataset.deskripsi = deskripsiBaru;
     currentEditingRow.dataset.deadline = deadlineBaru;
 
-
     alert('Data tugas berhasil diperbarui!');
-    batalEditMode(); // muat ulang tampilan dari data yang baru disimpan
+    batalEditMode();
     tutupDetail();
-    filterTugas(); // Refresh filter tabel
+    filterTugas();
 });
-
 </script>
 @endsection
