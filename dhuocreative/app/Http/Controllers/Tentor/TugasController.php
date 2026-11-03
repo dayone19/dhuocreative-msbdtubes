@@ -3,11 +3,9 @@
 namespace App\Http\Controllers\Tentor;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class TugasController extends Controller
 {
@@ -18,161 +16,178 @@ class TugasController extends Controller
         $tugas = DB::table('tugas')
             ->join('kelas', 'tugas.id_kelas', '=', 'kelas.id_kelas')
             ->join('kursus', 'kelas.id_kursus', '=', 'kursus.id_kursus')
-            ->where('tugas.id_tentor', $idTentor)
-            ->orderByDesc('tugas.created_at')
+            ->join('users', 'kelas.id_siswa', '=', 'users.id_user')          
+            ->leftJoin('pengumpulan_tugas', function ($j) {
+                $j->on('pengumpulan_tugas.id_tugas', '=', 'tugas.id_tugas')
+                  ->on('pengumpulan_tugas.id_siswa', '=', 'kelas.id_siswa');
+            })
+            ->leftJoin('nilai', 'nilai.id_pengumpulan', '=', 'pengumpulan_tugas.id_pengumpulan')
+            ->where('tugas.id_tentor', $idTentor)             
+            ->orderByDesc('tugas.created_at')                
             ->select(
                 'tugas.id_tugas',
-                'tugas.id_kelas', 
-                'tugas.judul', 
-                'tugas.deskripsi',
-                'tugas.file_tugas',
-                'tugas.deadline',
+                'tugas.judul',
                 'tugas.tipe',
+                'tugas.deskripsi',
+                'tugas.deadline',
                 'tugas.created_at',
-                $this->namaKelas()
+                'kursus.nama_kursus',
+                'users.nama as nama_siswa',
+                'pengumpulan_tugas.id_pengumpulan',
+                'pengumpulan_tugas.status as status_pengumpulan',
+                'nilai.nilai'
             )
             ->get();
 
-            $kelasTentor = $this->kelasTentor($idTentor);
+        $kelasTentor = $this->kelasTentor($idTentor);
 
-            return view('tentor.tugas', compact('tugas', 'kelasTentor'));
+        $kursusTentor = $kelasTentor->unique('id_kursus')->values();
+
+        $namaKursus = $kelasTentor->pluck('nama_kursus')->merge($tugas->pluck('nama_kursus'))->unique()->values();
+        $namaSiswa  = $kelasTentor->pluck('nama_siswa')->merge($tugas->pluck('nama_siswa'))->unique()->values();
+
+        return view('tentor.tugas', compact('tugas', 'kelasTentor', 'kursusTentor', 'namaKursus', 'namaSiswa'));
     }
 
     public function simpan(Request $request)
     {
-        $request->validate(
-            $this->aturan(true),
-            $this->pesan()
-        );
+        $request->validate([
+            'judul'     => 'required|string|max:150',
+            'tipe'      => 'required|in:tugas,projek',          
+            'id_kelas'  => 'required|integer',
+            'deadline'  => 'required|date',
+            'deskripsi' => 'required|string',
+        ], $this->pesan());
 
-        $this->pastikanKelasMilikTentor((int) $request->id_kelas);
+        $idKelas = (int) $request->id_kelas;
+        abort_unless($this->kelasTentor(auth()->id())->pluck('id_kelas')->contains($idKelas), 403);
 
-        $file = $request->file('file_tugas');
-        $namaSimpan = $this->simpanFile($file);
-
-        DB::transaction(function () use ($request, $namaSimpan) {
+        DB::transaction(function () use ($request, $idKelas) {
             DB::table('tugas')->insert([
                 'id_tugas'   => (int) DB::table('tugas')->max('id_tugas') + 1,
-                'id_kelas'   => (int) $request->id_kelas,
+                'id_kelas'   => $idKelas,
                 'id_tentor'  => auth()->id(),
                 'judul'      => $request->judul,
                 'deskripsi'  => $request->deskripsi,
-                'deadline'   =>Carbon::parse($request->deadline),
-                'file_tugas' => $namaSimpan,
+                'deadline'   => Carbon::parse($request->deadline),
+                'file_tugas' => '',
                 'tipe'       => $request->tipe,
                 'created_at' => now(),
-                'update_at'  => now(),
+                'update_at'  => now(),                          
             ]);
         });
 
-        return redirect()->route('tentor.tugas')->with('sukses', 'Tugas berhasil dibuat');
+        return redirect()->route('tentor.tugas')->with('sukses', 'Tugas berhasil dibuat.');
     }
 
-     public function update(Request $request, $idTugas)
+    public function update(Request $request, $idTugas)
     {
-        $tugas = $this->tugasMilikTentor($idTugas);
- 
-        $request->validate(
-            $this->aturan(false),  
-            $this->pesan()
-        );
- 
-        $this->pastikanKelasMilikTentor((int) $request->id_kelas);
- 
-        $data = [
-            'id_kelas'  => (int) $request->id_kelas,
+        $this->tugasMilikTentor($idTugas);
+
+        $request->validate([
+            'judul'     => 'required|string|max:150',
+            'tipe'      => 'required|in:tugas,projek',
+            'deadline'  => 'required|date',
+            'deskripsi' => 'required|string',
+        ], $this->pesan());
+
+        DB::table('tugas')->where('id_tugas', $idTugas)->update([
             'judul'     => $request->judul,
-            'deskripsi' => $request->deskripsi,
-            'deadline'  => Carbon::parse($request->deadline),
             'tipe'      => $request->tipe,
+            'deadline'  => Carbon::parse($request->deadline),
+            'deskripsi' => $request->deskripsi,
             'update_at' => now(),
-        ];
- 
-        if ($request->hasFile('file_tugas')) {
-            $data['file_tugas'] = $this->simpanFile($request->file('file_tugas'));
-            Storage::disk('public')->delete("tugas/{$tugas->file_tugas}");
-        }
- 
-        DB::table('tugas')->where('id_tugas', $idTugas)->update($data);
- 
+        ]);
+
         return redirect()->route('tentor.tugas')->with('sukses', 'Tugas berhasil diperbarui.');
     }
 
-    public function file($idTugas)
+    public function simpanNilai(Request $request, $idTugas)
     {
-        $tugas = $this->tugasMilikTentor($idTugas);
-        $path  = "tugas/{$tugas->file_tugas}";
- 
-        abort_unless(Storage::disk('public')->exists($path), 404);
- 
-        return Storage::disk('public')->response($path, $this->namaTampil($tugas->file_tugas));
+        $tugas = DB::table('tugas')
+            ->join('kelas', 'tugas.id_kelas', '=', 'kelas.id_kelas')
+            ->where('tugas.id_tugas', $idTugas)
+            ->where('tugas.id_tentor', auth()->id())
+            ->select('tugas.id_tugas', 'kelas.id_siswa')
+            ->first();
+
+        abort_if(!$tugas, 404);
+
+        $request->validate([
+            'nilai' => 'required|numeric|between:0,100',
+        ], [
+            'nilai.required' => 'Nilai wajib diisi.',
+            'nilai.numeric'  => 'Nilai harus berupa angka.',
+            'nilai.between'  => 'Nilai harus berada di antara 0 sampai 100.',
+        ]);
+
+        $pengumpulan = DB::table('pengumpulan_tugas')
+            ->where('id_tugas', $tugas->id_tugas)
+            ->where('id_siswa', $tugas->id_siswa)
+            ->whereIn('status', ['kumpul', 'terlambat'])
+            ->orderByDesc('waktu_pengumpulan')
+            ->first();
+
+        if (!$pengumpulan) {
+            return redirect()->route('tentor.tugas')
+                ->withErrors(['nilai' => 'Siswa belum mengumpulkan tugas ini, jadi belum bisa dinilai.']);
+        }
+
+        DB::transaction(function () use ($request, $pengumpulan) {
+            $sudahAda = DB::table('nilai')->where('id_pengumpulan', $pengumpulan->id_pengumpulan)->exists();
+
+            if ($sudahAda) {
+                DB::table('nilai')
+                    ->where('id_pengumpulan', $pengumpulan->id_pengumpulan)
+                    ->update([
+                        'nilai'         => $request->nilai,
+                        'id_tentor'     => auth()->id(),
+                        'tanggal_nilai' => now(),
+                    ]);
+            } else {
+                DB::table('nilai')->insert([
+                    'id_nilai'       => (int) DB::table('nilai')->max('id_nilai') + 1,
+                    'id_pengumpulan' => $pengumpulan->id_pengumpulan,
+                    'id_tentor'      => auth()->id(),
+                    'nilai'          => $request->nilai,
+                    'tanggal_nilai'  => now(),
+                ]);
+            }
+        });
+
+        return redirect()->route('tentor.tugas')->with('sukses', 'Nilai berhasil disimpan.');
     }
 
-    private function aturan(bool $fileWajib): array
-    {
-        return [
-            'judul'      => 'required|string|max:150',
-            'id_kelas'   => 'required|integer',
-            'tipe'       => 'required|in:tugas,projek',        
-            'deskripsi'  => 'required|string',
-            'deadline'   => 'required|date',
-            'file_tugas' => ($fileWajib ? 'required' : 'nullable') . '|file|mimes:pdf,doc,docx,ppt,pptx,zip|max:51200',
-        ];
-    }
- 
     private function pesan(): array
     {
         return [
-            'judul.required'      => 'Judul tugas wajib diisi.',
-            'id_kelas.required'   => 'Pilih kelas terlebih dahulu.',
-            'tipe.required'       => 'Pilih tipe tugas.',
-            'deskripsi.required'  => 'Deskripsi tugas wajib diisi.',
-            'deadline.required'   => 'Deadline wajib diisi.',
-            'deadline.date'       => 'Format deadline tidak valid.',
-            'file_tugas.required' => 'File pendukung wajib dipilih.',
-            'file_tugas.mimes'    => 'File harus berjenis pdf, doc, docx, ppt, pptx, atau zip.',
-            'file_tugas.max'      => 'Ukuran file maksimal 50 MB.',
+            'judul.required'     => 'Judul tugas wajib diisi.',
+            'tipe.required'      => 'Pilih jenis tugas.',
+            'tipe.in'            => 'Jenis tugas tidak valid.',
+            'id_kelas.required'  => 'Pilih kursus dan siswa terlebih dahulu.',
+            'deadline.required'  => 'Deadline wajib diisi.',
+            'deadline.date'      => 'Format deadline tidak valid.',
+            'deskripsi.required' => 'Deskripsi tugas wajib diisi.',
         ];
     }
- 
-    private function simpanFile($file): string
-    {
-        $nama = time() . '_' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME))
-              . '.' . strtolower($file->getClientOriginalExtension());
- 
-        $file->storeAs('tugas', $nama, 'public');
- 
-        return $nama;
-    }
 
-    private function namaTampil(string $namaSimpan): string
-    {
-        return preg_replace('/^\d+_/', '', $namaSimpan);
-    }
- 
     private function tugasMilikTentor($idTugas)
     {
         $tugas = DB::table('tugas')
             ->where('id_tugas', $idTugas)
             ->where('id_tentor', auth()->id())
             ->first();
- 
+
         abort_if(!$tugas, 404);
- 
+
         return $tugas;
     }
- 
-    private function pastikanKelasMilikTentor(int $idKelas): void
-    {
-        $boleh = $this->kelasTentor(auth()->id())->pluck('id_kelas')->all();
- 
-        abort_unless(in_array($idKelas, $boleh), 403);
-    }
- 
+
     private function kelasTentor($idTentor)
     {
         return DB::table('kelas')
             ->join('kursus', 'kelas.id_kursus', '=', 'kursus.id_kursus')
+            ->join('users', 'kelas.id_siswa', '=', 'users.id_user')
             ->where('kelas.status', 'aktif')
             ->whereExists(function ($q) use ($idTentor) {
                 $q->select(DB::raw(1))
@@ -180,14 +195,14 @@ class TugasController extends Controller
                   ->whereColumn('jadwal.id_kelas', 'kelas.id_kelas')
                   ->where('jadwal.id_tentor', $idTentor);
             })
-            ->orderBy('kelas.id_kelas')
-            ->select('kelas.id_kelas', $this->namaKelas())
+            ->orderBy('kursus.nama_kursus')
+            ->orderBy('users.nama')
+            ->select(
+                'kelas.id_kelas',
+                'kursus.id_kursus',
+                'kursus.nama_kursus',
+                'users.nama as nama_siswa'
+            )
             ->get();
     }
- 
-    private function namaKelas()
-    {
-        return DB::raw("kursus.nama_kursus || ' - ' || kelas.id_kelas || ' - ' || initcap(kelas.kelas::text) as nama_kelas");
-    }
 }
-
