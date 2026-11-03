@@ -6,10 +6,10 @@
 
 @php
     $ringkasan = [
-        ['judul' => 'Jadwal Hari Ini',   'angka' => 4,  'satuan' => 'Sesi Privat', 'lebar' => 195],
-        ['judul' => 'Total Siswa Aktif', 'angka' => 22, 'satuan' => 'Siswa',       'lebar' => 205],
-        ['judul' => 'Total Kelas Privat','angka' => 7,  'satuan' => 'Jenis Kelas',  'lebar' => 195],
-        ['judul' => 'Total Tentor',      'angka' => 6,  'satuan' => 'Tentor',      'lebar' => 195],
+        ['judul' => 'Jadwal Hari Ini',   'angka' => 8,  'satuan' => 'Kelas', 'lebar' => 195, 'arrow' => true],
+        ['judul' => 'Total Siswa Aktif', 'angka' => 15, 'satuan' => 'Siswa',       'lebar' => 205, 'arrow' => true],
+        ['judul' => 'Total Kelas Kursus Aktif','angka' => 17,  'satuan' => 'Kursus',  'lebar' => 195, 'arrow' => false],
+        ['judul' => 'Total Tentor',      'angka' => 6,  'satuan' => 'Tentor',      'lebar' => 195, 'arrow' => false],
     ];
 
     $jadwalHariIni = [
@@ -33,11 +33,13 @@
                         {{ $item['angka'] }}
                         <span>{{ $item['satuan'] }}</span>
                     </div>
-                    <button type="button" class="arrow-button" aria-label="Lihat {{ $item['judul'] }}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-caret-right-fill" viewBox="0 0 16 16">
-                            <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
-                        </svg>
-                    </button>
+                    @if ($item['arrow'])
+                        <button type="button" class="arrow-button" aria-label="Lihat {{ $item['judul'] }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-caret-right-fill" viewBox="0 0 16 16">
+                                <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
+                            </svg>
+                        </button>
+                    @endif
                 </div>
             </div>
         @endforeach

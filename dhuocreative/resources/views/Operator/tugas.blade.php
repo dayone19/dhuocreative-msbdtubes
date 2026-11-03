@@ -58,7 +58,7 @@
                     data-deskripsi="Membuat struktur tabel HTML lengkap dengan CSS styling sederhana."
                     data-file="Tugas1_SiswaA.html"
                     data-nilai="85"
-                    data-status-pengumpulan="Tepat Waktu">
+                    data-status-pengumpulan="Terkumpul">
                     <td>Membuat Tabel HTML</td>
                     <td>Web Master</td>
                     <td>Tentor C</td>

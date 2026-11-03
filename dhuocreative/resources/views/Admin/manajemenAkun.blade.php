@@ -3,9 +3,9 @@
 @section('content')
 <div class="akun-page">
     <div class="akun-header">
-        <button type="button" class="t-btn t-btn-orange akun-btn-buat">
+        <a href="{{ route('admin.buatAkun') }}" class="t-btn t-btn-orange akun-btn-buat">
             <span class="t-plus">+</span> Buat Akun
-        </button>
+        </a>
     </div>
 
     <div class="akun-toolbar">

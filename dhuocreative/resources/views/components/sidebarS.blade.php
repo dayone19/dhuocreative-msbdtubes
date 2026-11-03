@@ -66,11 +66,6 @@
             </span>
         </a>
 
-        <!-- Aktivitas Belajar -->
-        <a href="{{ route('siswa.aktivitas') }}" class="sidebar-item {{ request()->routeIs('siswa.aktivitas') ? 'active' : '' }}">
-            <span>Aktivitas Belajar</span>
-        </a>
-
         <!-- Sertifikat -->
         <a href="{{ route('siswa.sertifikat') }}" class="sidebar-item {{ request()->routeIs('siswa.sertifikat') ? 'active' : '' }}">
             <span>Sertifikat</span>
