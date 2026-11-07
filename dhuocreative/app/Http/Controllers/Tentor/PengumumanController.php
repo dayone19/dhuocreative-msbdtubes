@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class PengumumanController extends Controller
 {
+    /** Semua pengumuman (dari admin, operator, dan tentor), terbaru di atas */
     public function index()
     {
         $pengumuman = DB::table('pengumuman')
@@ -21,81 +22,78 @@ class PengumumanController extends Controller
                 'pengumuman.isi',
                 'pengumuman.tanggal',
                 'users.nama',
-                'users.role'
+                DB::raw('users.role::text as role')
             )
             ->get();
 
         return view('tentor.pengumuman', compact('pengumuman'));
     }
 
+    /** POST: buat pengumuman baru atas nama user yang login */
     public function simpan(Request $request)
     {
-        $request->validate($this->aturan(), $this->pesan());
+        $data = $this->validasi($request);
 
-        DB::transaction(function () use ($request) {
+        DB::transaction(function () use ($data) {
+            // id_pengumuman tidak auto-increment -> kunci tabel supaya id tidak kembar
+            DB::statement('LOCK TABLE pengumuman IN SHARE ROW EXCLUSIVE MODE');
+
             DB::table('pengumuman')->insert([
-                 'id_pengumuman' => (int) DB::table('pengumuman')->max('id_pengumuman') + 1,
-                'id_user'       => auth()->id(),     
-                'judul'         => $request->judul,
-                'isi'           => $request->isi,
-                'tanggal'       => $request->tanggal,
+                'id_pengumuman' => (int) DB::table('pengumuman')->max('id_pengumuman') + 1,
+                'id_user'       => auth()->id(),
+                'judul'         => $data['judul'],
+                'isi'           => $data['isi'],
+                'tanggal'       => $data['tanggal'],
             ]);
         });
 
-        return redirect()->route('tentor.pengumuman')->with('sukses', 'pengumuman berhasil dibuat.');
+        return redirect()->route('tentor.pengumuman')->with('sukses', 'Pengumuman berhasil dibuat.');
     }
 
+    /** PUT: ubah pengumuman, hanya oleh pembuatnya */
     public function update(Request $request, $idPengumuman)
     {
-        $this->pengumumanMilikSendiri($idPengumuman);
- 
-        $request->validate($this->aturan(), $this->pesan());
- 
-        DB::table('pengumuman')
+        $data = $this->validasi($request);
+
+        $diubah = DB::table('pengumuman')
             ->where('id_pengumuman', $idPengumuman)
+            ->where('id_user', auth()->id())
             ->update([
-                'judul'   => $request->judul,
-                'isi'     => $request->isi,
-                'tanggal' => $request->tanggal,
+                'judul'   => $data['judul'],
+                'isi'     => $data['isi'],
+                'tanggal' => $data['tanggal'],
             ]);
- 
+
+        abort_if($diubah === 0, 404); // bukan miliknya / tidak ada
+
         return redirect()->route('tentor.pengumuman')->with('sukses', 'Pengumuman berhasil diperbarui.');
     }
 
+    /** DELETE: hapus pengumuman, hanya oleh pembuatnya */
     public function hapus($idPengumuman)
     {
-          $this->pengumumanMilikSendiri($idPengumuman);
- 
-        DB::table('pengumuman')->where('id_pengumuman', $idPengumuman)->delete();
- 
+        $dihapus = DB::table('pengumuman')
+            ->where('id_pengumuman', $idPengumuman)
+            ->where('id_user', auth()->id())
+            ->delete();
+
+        abort_if($dihapus === 0, 404);
+
         return redirect()->route('tentor.pengumuman')->with('sukses', 'Pengumuman berhasil dihapus.');
     }
-  
-    private function aturan(): array
+
+    private function validasi(Request $request): array
     {
-        return [
+        return $request->validate([
             'judul'   => 'required|string|max:150',
             'isi'     => 'required|string',
             'tanggal' => 'required|date',
-        ];
-    }
-
-    private function pesan(): array
-    {
-        return [
-            'judul.required'   => 'Judul pengumuman wajib diisi.',
+        ], [
+            'judul.required'   => 'Judul wajib diisi.',
+            'judul.max'        => 'Judul maksimal 150 karakter.',
             'isi.required'     => 'Isi pengumuman wajib diisi.',
             'tanggal.required' => 'Tanggal wajib diisi.',
-        ];
-    }
-
-    private function pengumumanMilikSendiri($idPengumuman)
-    {
-        $pengumuman = DB::table('pengumuman')->where('id_pengumuman', $idPengumuman)->first();
-
-        abort_if(!$pengumuman, 404);
-        abort_unless((int) $pengumuman->id_user === (int) auth()->id(), 403);
-
-        return $pengumuman;
+            'tanggal.date'     => 'Format tanggal tidak valid.',
+        ]);
     }
 }

@@ -168,11 +168,11 @@ class SertifikatController extends Controller
 
     private function siswaTentor($idTentor)
     {
-        return DB::table("siswa_kelas")
-            ->join('users', 'siswa_kelas.id_siswa', '=', 'users.id_user')
-            ->join('jadwal', 'jadwal.id_kelas', '=', 'siswa_kelas.id_kelas')
+        return DB::table('kelas')
+            ->join('users', 'kelas.id_siswa', '=', 'users.id_user')
+            ->join('jadwal', 'jadwal.id_kelas', '=', 'kelas.id_kelas')
             ->where('jadwal.id_tentor', $idTentor)
-            ->where('siswa_kelas.status', 'aktif')
+            ->where('kelas.status', 'aktif')
             ->distinct()
             ->orderBy('users.nama')
             ->select('users.id_user', 'users.nama')

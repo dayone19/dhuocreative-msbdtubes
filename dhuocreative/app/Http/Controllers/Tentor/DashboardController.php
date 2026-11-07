@@ -11,26 +11,27 @@ class DashboardController extends Controller
     {
         $idTentor = auth()->id(); // = id_user
 
-        // jumlah kelas unik yang diajar tentor
-        $totalKelas = DB::table('jadwal')
-            ->where('id_tentor', $idTentor)
-            ->distinct()
-            ->count('id_kelas');
+        $kelasTentor = function () use ($idTentor) {
+            return DB::table('kelas')
+                ->where('kelas.status', 'aktif')
+                ->whereExists(function ($q) use ($idTentor) {
+                    $q->select(DB::raw(1))
+                      ->from('jadwal')
+                      ->whereColumn('jadwal.id_kelas', 'kelas.id_kelas')
+                      ->where('jadwal.id_tentor', $idTentor);
+                });
+        };
 
-        // jumlah siswa aktif unik di kelas-kelas tentor
-        $totalSiswa = DB::table('siswa_kelas')
-            ->join('jadwal', 'siswa_kelas.id_kelas', '=', 'jadwal.id_kelas')
-            ->where('jadwal.id_tentor', $idTentor)
-            ->where('siswa_kelas.status', 'aktif')
-            ->distinct()
-            ->count('siswa_kelas.id_siswa');
+        $totalKelas = $kelasTentor()->count();
 
-        // pengumpulan sudah masuk tapi belum ada nilainya
-        // NOTE: kolom di DB sebelumnya typo "stauts" -> jalankan RENAME dulu (lihat pengajuan_jadwal.sql)
+        $totalSiswa = $kelasTentor()->distinct()->count('kelas.id_siswa');
+
         $tugasMenunggu = DB::table('pengumpulan_tugas')
             ->join('tugas', 'pengumpulan_tugas.id_tugas', '=', 'tugas.id_tugas')
+            ->join('kelas', 'tugas.id_kelas', '=', 'kelas.id_kelas')
+            ->whereColumn('pengumpulan_tugas.id_siswa', 'kelas.id_siswa')
             ->where('tugas.id_tentor', $idTentor)
-            ->whereIn('pengumpulan_tugas.status', ['kumpul', 'terlambat'])
+            ->whereIn('pengumpulan_tugas.status', ['terkumpul', 'terlambat'])
             ->whereNotExists(function ($q) {
                 $q->select(DB::raw(1))
                   ->from('nilai')
@@ -52,36 +53,39 @@ class DashboardController extends Controller
                 'kelas.id_kelas',
                 'kursus.nama_kursus',
                 'siswa.nama as nama_siswa',
-                DB::raw("initcap(kelas.kelas::text) as nama_kelas"),
+                DB::raw("initcap(kelas.kelas::text) as nama_kelas"),   
                 'jadwal.jam_mulai',
-                'jadwal.jam_selesai',
-                'jadwal.status'
+                'jadwal.jam_selesai'
             )
             ->get();
 
-        // hitung kehadiran sekali jalan (hindari query per baris)
-        $siswaPerKelas = DB::table('siswa_kelas')
-            ->whereIn('id_kelas', $rows->pluck('id_kelas')->unique())
-            ->where('status', 'aktif')
+        $idKelasHariIni = $rows->pluck('id_kelas')->unique();
+
+        $totalPertemuan = DB::table('jadwal')
+            ->whereIn('id_kelas', $idKelasHariIni)
+            ->where('id_tentor', $idTentor)
+            ->where('status', '!=', 'dibatalkan')
             ->selectRaw('id_kelas, count(*) as total')
             ->groupBy('id_kelas')
             ->pluck('total', 'id_kelas');
 
-        $hadirPerJadwal = DB::table('absensi_siswa')
-            ->whereIn('id_jadwal', $rows->pluck('id_jadwal'))
-            ->where('status', 'hadir')
-            ->selectRaw('id_jadwal, count(*) as total')
-            ->groupBy('id_jadwal')
-            ->pluck('total', 'id_jadwal');
+        $hadirPerKelas = DB::table('absensi_siswa as a')
+            ->join('jadwal as j', 'a.id_jadwal', '=', 'j.id_jadwal')
+            ->join('kelas as k', 'j.id_kelas', '=', 'k.id_kelas')
+            ->whereIn('j.id_kelas', $idKelasHariIni)
+            ->where('j.id_tentor', $idTentor)
+            ->whereColumn('a.id_siswa', 'k.id_siswa')
+            ->where('a.status', 'hadir')
+            ->selectRaw('j.id_kelas, count(*) as total')
+            ->groupBy('j.id_kelas')
+            ->pluck('total', 'id_kelas');
 
-        $jadwalHariIni = $rows->map(function ($j) use ($siswaPerKelas, $hadirPerJadwal) {
-            $j->total_siswa = (int) ($siswaPerKelas[$j->id_kelas] ?? 0);
-            $j->hadir       = (int) ($hadirPerJadwal[$j->id_jadwal] ?? 0);
-            $j->persen      = $j->total_siswa > 0
-                ? round($j->hadir / $j->total_siswa * 100)
-                : 0;
-            $j->jam         = str_replace(':', '.', substr($j->jam_mulai, 0, 5))
-                . ' - ' . str_replace(':', '.', substr($j->jam_selesai, 0, 5));
+        $jadwalHariIni = $rows->map(function ($j) use ($totalPertemuan, $hadirPerKelas) {
+            $j->total  = (int) ($totalPertemuan[$j->id_kelas] ?? 0);
+            $j->hadir  = (int) ($hadirPerKelas[$j->id_kelas] ?? 0);
+            $j->persen = $j->total > 0 ? round($j->hadir / $j->total * 100) : 0;
+            $j->jam    = str_replace(':', '.', substr($j->jam_mulai, 0, 5))
+                       . ' - ' . str_replace(':', '.', substr($j->jam_selesai, 0, 5));
             return $j;
         });
 

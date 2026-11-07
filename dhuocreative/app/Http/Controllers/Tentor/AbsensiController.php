@@ -9,15 +9,11 @@ use Illuminate\Support\Facades\DB;
 
 class AbsensiController extends Controller
 {
-    /**
-     * Halaman absensi satu kelas.
-     * $kursus = id_kelas (nama parameter dipertahankan supaya link di halaman Kursus tidak berubah).
-     */
+
     public function show($kursus)
     {
         $idTentor = auth()->id();
 
-        // kelas harus ada DAN punya jadwal atas nama tentor ini
         $kelas = DB::table('kelas')
             ->join('kursus', 'kelas.id_kursus', '=', 'kursus.id_kursus')
             ->join('users as siswa', 'kelas.id_siswa', '=', 'siswa.id_user')
@@ -38,7 +34,6 @@ class AbsensiController extends Controller
 
         abort_if(!$kelas, 404);
 
-        // satu pertemuan = satu jadwal (yang tidak dibatalkan), plus status absensi siswa kelas ini
         $rows = DB::table('jadwal')
             ->leftJoin('absensi_siswa as a', function ($j) use ($kelas) {
                 $j->on('a.id_jadwal', '=', 'jadwal.id_jadwal')
@@ -71,7 +66,6 @@ class AbsensiController extends Controller
                 'hari'         => $tgl->translatedFormat('l'),
                 'jam'          => $r->mulai . '–' . $r->selesai,
                 'status_jadwal'=> ucfirst($r->status_jadwal),
-                // DB pakai 'alpha', tampilan/CSS pakai 'alpa'; belum diisi = 'belum'
                 'status'       => $r->status_absen === null ? 'belum' : ($r->status_absen === 'alpha' ? 'alpa' : $r->status_absen),
                 'bisa_diubah'  => $r->tanggal <= $hariIni,
             ];
@@ -88,7 +82,7 @@ class AbsensiController extends Controller
             'kursus'        => $kelas->kursus,
             'mode'          => $kelas->mode,
             'mulai_kontrak' => $mulai ?: $rows->first()->tanggal ?? null,
-            'akhir_kontrak' => $rows->last()->tanggal ?? null, // = jadwal terakhir
+            'akhir_kontrak' => $rows->last()->tanggal ?? null, 
         ];
 
         $total = $daftarPertemuan->count();
@@ -98,7 +92,6 @@ class AbsensiController extends Controller
         return view('tentor.absensi', compact('siswa', 'daftarPertemuan', 'total', 'hadir', 'sisa'));
     }
 
-    /** POST: simpan / ubah status kehadiran satu pertemuan */
     public function updateStatus(Request $request, $jadwal)
     {
         $data = $request->validate([
@@ -109,7 +102,7 @@ class AbsensiController extends Controller
         $row = DB::table('jadwal')
             ->join('kelas', 'jadwal.id_kelas', '=', 'kelas.id_kelas')
             ->where('jadwal.id_jadwal', $jadwal)
-            ->where('jadwal.id_tentor', auth()->id())   // hanya jadwal milik tentor ini
+            ->where('jadwal.id_tentor', auth()->id())   
             ->select('jadwal.id_jadwal', 'jadwal.tanggal', DB::raw('jadwal.status::text as status'), 'kelas.id_siswa')
             ->first();
 
@@ -122,9 +115,6 @@ class AbsensiController extends Controller
             return response()->json(['message' => 'Pertemuan ini belum berlangsung.'], 422);
         }
 
-        // Tabel absensi_siswa tidak punya auto-increment di id_absensi dan tidak punya
-        // UNIQUE (id_jadwal, id_siswa), jadi update-atau-insert dilakukan manual di dalam
-        // transaksi. Tabel dikunci sebentar supaya tidak ada id kembar / absensi ganda.
         DB::transaction(function () use ($row, $statusDb) {
             DB::statement('LOCK TABLE absensi_siswa IN SHARE ROW EXCLUSIVE MODE');
 

@@ -7,6 +7,10 @@ use App\Http\Controllers\Tentor\DashboardController as TentorDashboardController
 use App\Http\Controllers\Tentor\KursusController as TentorKursusController;
 use App\Http\Controllers\Tentor\AbsensiController as TentorAbsensiController;
 use App\Http\Controllers\Tentor\SertifikatController as TentorSertifikatController;
+use App\Http\Controllers\Tentor\TugasController as TentorTugasController;
+use App\Http\Controllers\Tentor\PengumumanController as TentorPengumumanController;
+use App\Http\Controllers\Tentor\JadwalController as TentorJadwalController;
+
 
 // login
 Route::get('/', function () {
@@ -50,9 +54,9 @@ Route::post('/forgotPass/reset-password', [ForgotPasswordController::class, 'res
 Route::middleware(['auth', 'prevent.back'])->prefix('tentor')->name('tentor.')->group(function () {
     Route::get('/dashboard', [TentorDashboardController::class, 'index'])->name('dashboard'); 
 
-    Route::get('/jadwal', function () {
-        return view('tentor.jadwal');
-    })->name('jadwal');
+    Route::get('/jadwal', [TentorJadwalController::class, 'index'])->name('jadwal');
+   
+    Route::post('/jadwal/ajukan', [TentorJadwalController::class, 'ajukan'])->name('jadwal.ajukan');
 
     Route::get('/kursus', [TentorKursusController::class, 'index'])
     ->name('kursus');
@@ -72,8 +76,14 @@ Route::middleware(['auth', 'prevent.back'])->prefix('tentor')->name('tentor.')->
     Route::put('/tugas/{tugas}', [App\Http\Controllers\Tentor\TugasController::class, 'update'])
         ->whereNumber('tugas')->name('tugas.update');
 
-    Route::post('/tugas/{tugas}/nilai', [App\Http\Controllers\Tentor\TugasController::class, 'simpanNilai'])
-        ->whereNumber('tugas')->name('tugas.nilai');
+    Route::post('/tugas/pengumpulan/{pengumpulan}/nilai',
+    [TentorTugasController::class, 'nilai'])
+    ->whereNumber('pengumpulan')
+    ->name('tugas.nilai');
+
+    Route::get('/tugas/pengumpulan/{pengumpulan}/file', [TentorTugasController::class, 'fileJawaban'])
+    ->whereNumber('pengumpulan')
+    ->name('tugas.file');
 
     Route::get('/sertifikat', [TentorSertifikatController::class, 'index'])->name('sertifikat');
 
@@ -84,6 +94,16 @@ Route::middleware(['auth', 'prevent.back'])->prefix('tentor')->name('tentor.')->
 
     Route::get('/sertifikat/file/{sertifikat}', [TentorSertifikatController::class, 'file'])
         ->whereNumber('sertifikat')->name('sertifikat.file');
+
+    Route::get('/pengumuman', [TentorPengumumanController::class, 'index'])->name('pengumuman');
+   
+    Route::post('/pengumuman', [TentorPengumumanController::class, 'simpan'])->name('pengumuman.simpan');
+   
+    Route::put('/pengumuman/{pengumuman}', [TentorPengumumanController::class, 'update'])
+        ->whereNumber('pengumuman')->name('pengumuman.update');
+   
+    Route::delete('/pengumuman/{pengumuman}', [TentorPengumumanController::class, 'hapus'])
+        ->whereNumber('pengumuman')->name('pengumuman.hapus');
 
     // Route::get('/kursus/absensi/{kursus}', function ($kursus) {
     //     return view('tentor.absensi', compact('kursus'));
@@ -101,9 +121,9 @@ Route::middleware(['auth', 'prevent.back'])->prefix('tentor')->name('tentor.')->
     //     return view('tentor.sertifikat');
     // })->name('sertifikat');
 
-    Route::get('/pengumuman', function () {
-        return view('tentor.pengumuman');
-    })->name('pengumuman'); 
+    // Route::get('/pengumuman', function () {
+    //     return view('tentor.pengumuman');
+    // })->name('pengumuman'); 
 });
 
 // operator

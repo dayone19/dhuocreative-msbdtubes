@@ -79,13 +79,10 @@
             <h2>Ubah Jadwal</h2>
         </div>
         <form id="formAjukan">
+            @csrf
             <div class="t-form-group">
                 <label for="id_kelas">Kursus</label>
-                <select id="id_kelas" required>
-                    <option value="Web Master|online|Alya Putri">Web Master · online (Alya Putri)</option>
-                    <option value="Web Master|offline rumah|Rafi Pratama">Web Master · offline rumah (Rafi Pratama)</option>
-                    <option value="MS Office|offline|Nadia Safitri">MS Office · offline (Nadia Safitri)</option>
-                </select>
+                <select id="id_kelas" disabled></select>
             </div>
 
             <div class="t-form-group">
@@ -116,19 +113,9 @@
 <script>
 const offsetDate = n => { const d = new Date(); d.setHours(12,0,0,0); d.setDate(d.getDate()+n); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
 
-let jadwal = [
- {kursus:'Web Master',kelas:'online',siswa:'Alya Putri',tanggal:offsetDate(0),mulai:'09:00',selesai:'10:30',status:'terjadwal'},
- {kursus:'Web Master',kelas:'offline rumah',siswa:'Rafi Pratama',tanggal:offsetDate(1),mulai:'13:00',selesai:'14:30',status:'terjadwal'},
- {kursus:'MS Office',kelas:'offline',siswa:'Nadia Safitri',tanggal:offsetDate(2),mulai:'10:00',selesai:'11:30',status:'terjadwal'},
- {kursus:'Web Master',kelas:'online',siswa:'—',tanggal:offsetDate(-2),mulai:'15:00',selesai:'16:30',status:'selesai'},
- {kursus:'MS Office',kelas:'offline',siswa:'—',tanggal:offsetDate(4),mulai:'08:30',selesai:'10:00',status:'dibatalkan'}
-];
-
-let pengajuan = [
- {kursus:'Web Master',siswa:'Alya Putri',tanggal:offsetDate(3),mulai:'09:00',selesai:'10:30',status:'menunggu',ket:'Menunggu verifikasi operator'},
- {kursus:'MS Office',siswa:'Nadia Safitri',tanggal:offsetDate(5),mulai:'13:00',selesai:'14:00',status:'ditolak',ket:'Jadwal bentrok dengan kelas lain'}
-];
-
+// data dari database (JadwalController@index)
+let jadwal    = @json($jadwal);
+let pengajuan = @json($pengajuan);
 let jadwalDipilihUntukDiubah = null;
 
 const el = id => document.getElementById(id);
@@ -186,8 +173,7 @@ function bukaModalUbah(index){
     submit.textContent='Kirim Permintaan Perubahan';
     
     const j=jadwalDipilihUntukDiubah;
-    const option=[...el('id_kelas').options].find(o=>o.value.startsWith(j.kursus+'|'+j.kelas+'|'));
-    if(option)el('id_kelas').value=option.value;
+    el('id_kelas').replaceChildren(new Option(`${j.kursus} · ${j.kelas} (${j.siswa})`,j.id_kelas,true,true));
     el('tanggal').value=j.tanggal; 
     el('jam_mulai').value=j.mulai; 
     el('jam_selesai').value=j.selesai;
@@ -204,19 +190,42 @@ document.querySelectorAll('.t-modal').forEach(m=>m.addEventListener('click',e=>{
 ['cariJadwal','filterTanggal','filterStatus'].forEach(id=>el(id).addEventListener(id==='cariJadwal'?'input':'change',renderJadwal));
 
 el('tanggal').min=offsetDate(0);
-el('formAjukan').addEventListener('submit',e=>{
+el('formAjukan').addEventListener('submit',async e=>{
     e.preventDefault();
-    const [kursus,kelas,siswa]=el('id_kelas').value.split('|'),tanggal=el('tanggal').value,mulai=el('jam_mulai').value,selesai=el('jam_selesai').value;
-    if(tanggal<offsetDate(0)){toast('Pilih tanggal hari ini atau setelahnya.');return}
-    if(selesai<=mulai){toast('Jam selesai harus setelah jam mulai.');return}
     const lama=jadwalDipilihUntukDiubah;
-    pengajuan.unshift({kursus,siswa,lamaTanggal:lama?.tanggal||'',lamaMulai:lama?.mulai||'',lamaSelesai:lama?.selesai||'',tanggal,mulai,selesai,status:'menunggu',ket:el('catatan').value.trim()||'Menunggu verifikasi operator'});
-    renderPengajuan();
-    el('modalAjukan').hidden=true;
-    el('formAjukan').reset();
-    el('tanggal').min=offsetDate(0);
-    jadwalDipilihUntukDiubah=null;
-    toast('Permintaan perubahan jadwal dikirim (demo frontend saja).');
+    if(!lama){toast('Pilih jadwal yang ingin diubah dari tabel.');return}
+    const payload={
+        id_kelas:Number(lama.id_kelas),
+        id_jadwal_lama:lama.id_jadwal,
+        tanggal:el('tanggal').value,
+        jam_mulai:el('jam_mulai').value,
+        jam_selesai:el('jam_selesai').value,
+        catatan:el('catatan').value.trim()||null
+    };
+    if(payload.tanggal<offsetDate(0)){toast('Pilih tanggal hari ini atau setelahnya.');return}
+    if(payload.jam_selesai<=payload.jam_mulai){toast('Jam selesai harus setelah jam mulai.');return}
+
+    const tombol=el('formAjukan').querySelector('[type=submit]');
+    tombol.disabled=true;
+    try{
+        const res=await fetch("{{ route('tentor.jadwal.ajukan') }}",{
+            method:'POST',
+            headers:{'Content-Type':'application/json','Accept':'application/json','X-CSRF-TOKEN':el('formAjukan').querySelector('[name=_token]').value},
+            body:JSON.stringify(payload)
+        });
+        const body=await res.json().catch(()=>({}));
+        if(!res.ok){
+            const pesanPertama=body.errors?Object.values(body.errors)[0][0]:null;
+            toast(pesanPertama||body.message||'Gagal mengirim permintaan.');
+            return;
+        }
+        toast(body.message);
+        setTimeout(()=>location.reload(),900); // muat ulang supaya tabel pengajuan ikut terbaru
+    }catch(err){
+        toast('Tidak bisa terhubung ke server.');
+    }finally{
+        tombol.disabled=false;
+    }
 });
 
 renderMingguan();
