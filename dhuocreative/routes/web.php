@@ -167,6 +167,14 @@ Route::middleware(['auth', 'prevent.back'])->prefix('admin')->name('admin.')->gr
         return view('admin.jadwalAbsensi');
     })->name('jadwalAbsensi');
 
+    Route::get('/riwayatAbsen', function () {
+        return view('admin.riwayatAbsen');
+    })->name('riwayatAbsen');
+
+    Route::get('/riwayatPresensi', function () {
+        return view('admin.riwayatPresensi');
+    })->name('riwayatPresensi');
+
     Route::get('/tugas', function () {
         return view('admin.tugas');
     })->name('tugas');
