@@ -6,10 +6,6 @@
 <div class="t-page tj-page">
  <div class="t-page-header">
     <h1 class="t-page-title">Jadwal Saya</h1>
-    <button type="button" class="t-btn t-btn-orange" id="btnAjukan">
-        <span class="t-plus">+</span> 
-        Ajukan Jadwal
-    </button>
  </div>
  <div class="jadwal-mingguan" id="jadwalMingguan"></div>
  <div class="tj-section-head">
@@ -69,18 +65,18 @@
  </div>
 </div>
 
- <div class="t-modal" id="modalAjukan" hidden>
+<!-- Modal Ajukan Jadwal Baru sudah dihapus, namun modal ini tetap dipakai untuk Ubah Jadwal -->
+<div class="t-modal" id="modalAjukan" hidden>
     <div class="t-modal-box">
         <div class="t-modal-heading">
             <button type="button"
                     class="tmt-back-btn"
-                    data-tutup aria-label="Kembali"
-                    aria-label="Kembali">
+                    data-tutup aria-label="Kembali">
                 <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
                 <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
                 </svg>
             </button>
-            <h2>Ajukan Jadwal Baru</h2>
+            <h2>Ubah Jadwal</h2>
         </div>
         <form id="formAjukan">
             <div class="t-form-group">
@@ -110,7 +106,7 @@
                 <label for="catatan">Catatan (opsional)</label>
                 <textarea id="catatan" rows="3" placeholder="Contoh: sudah disepakati dengan siswa"></textarea>
             </div>
-            <button type="submit" class="t-btn t-btn-orange t-btn-full">Kirim Pengajuan</button>
+            <button type="submit" class="t-btn t-btn-orange t-btn-full">Kirim Permintaan Perubahan</button>
         </form>
     </div>
 </div>
@@ -132,6 +128,8 @@ let pengajuan = [
  {kursus:'Web Master',siswa:'Alya Putri',tanggal:offsetDate(3),mulai:'09:00',selesai:'10:30',status:'menunggu',ket:'Menunggu verifikasi operator'},
  {kursus:'MS Office',siswa:'Nadia Safitri',tanggal:offsetDate(5),mulai:'13:00',selesai:'14:00',status:'ditolak',ket:'Jadwal bentrok dengan kelas lain'}
 ];
+
+let jadwalDipilihUntukDiubah = null;
 
 const el = id => document.getElementById(id);
 const safe = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -180,23 +178,27 @@ function toast(msg){
     setTimeout(()=>el('pesanDemo').hidden=true,2800);
 }
 
-function bukaModalAjukan(index=null){
-    jadwalDipilihUntukDiubah = index===null ? null : jadwal[index];
+function bukaModalUbah(index){
+    jadwalDipilihUntukDiubah = jadwal[index];
     el('formAjukan').reset();
-    el('modalAjukan').querySelector('h2').textContent=jadwalDipilihUntukDiubah?'Ajukan Perubahan Jadwal':'Ajukan Jadwal Baru';
+    el('modalAjukan').querySelector('h2').textContent='Ajukan Perubahan Jadwal';
     const submit=el('formAjukan').querySelector('[type=submit]');
-    submit.textContent=jadwalDipilihUntukDiubah?'Kirim Permintaan Perubahan':'Kirim Pengajuan';
-    if(jadwalDipilihUntukDiubah){
-        const j=jadwalDipilihUntukDiubah;
-        const option=[...el('id_kelas').options].find(o=>o.value.startsWith(j.kursus+'|'+j.kelas+'|'));
-        if(option)el('id_kelas').value=option.value;
-        el('tanggal').value=j.tanggal; el('jam_mulai').value=j.mulai; el('jam_selesai').value=j.selesai;
-        el('catatan').value='Permintaan perubahan dari jadwal '+formatTanggal(j.tanggal)+'.';
-    } else { el('tanggal').value=''; el('jam_mulai').value='09:00'; el('jam_selesai').value='10:30'; }
-    el('tanggal').min=offsetDate(0); el('modalAjukan').hidden=false;
+    submit.textContent='Kirim Permintaan Perubahan';
+    
+    const j=jadwalDipilihUntukDiubah;
+    const option=[...el('id_kelas').options].find(o=>o.value.startsWith(j.kursus+'|'+j.kelas+'|'));
+    if(option)el('id_kelas').value=option.value;
+    el('tanggal').value=j.tanggal; 
+    el('jam_mulai').value=j.mulai; 
+    el('jam_selesai').value=j.selesai;
+    el('catatan').value='Permintaan perubahan dari jadwal '+formatTanggal(j.tanggal)+'.';
+    
+    el('tanggal').min=offsetDate(0); 
+    el('modalAjukan').hidden=false;
 }
-el('btnAjukan').addEventListener('click',()=>bukaModalAjukan());
-el('jadwalBody').addEventListener('click',e=>{const b=e.target.closest('[data-ubah-jadwal]');if(b)bukaModalAjukan(Number(b.dataset.ubahJadwal));});
+
+// Event listener tombol "Ajukan Jadwal" utama sudah dihapus di sini
+el('jadwalBody').addEventListener('click',e=>{const b=e.target.closest('[data-ubah-jadwal]');if(b)bukaModalUbah(Number(b.dataset.ubahJadwal));});
 document.querySelectorAll('[data-tutup]').forEach(b=>b.addEventListener('click',()=>b.closest('.t-modal').hidden=true));
 document.querySelectorAll('.t-modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.hidden=true}));
 ['cariJadwal','filterTanggal','filterStatus'].forEach(id=>el(id).addEventListener(id==='cariJadwal'?'input':'change',renderJadwal));
@@ -214,7 +216,7 @@ el('formAjukan').addEventListener('submit',e=>{
     el('formAjukan').reset();
     el('tanggal').min=offsetDate(0);
     jadwalDipilihUntukDiubah=null;
-    toast(lama?'Permintaan perubahan jadwal dikirim (demo frontend saja).':'Pengajuan ditambahkan (demo frontend saja).');
+    toast('Permintaan perubahan jadwal dikirim (demo frontend saja).');
 });
 
 renderMingguan();

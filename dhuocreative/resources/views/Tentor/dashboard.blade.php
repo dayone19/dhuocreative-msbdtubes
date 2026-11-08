@@ -7,7 +7,7 @@
     <section class="summary">
 
         <div class="summary-card">
-            <h3>Kursus Saya</h3>
+            <h3>Kelas Kursus Saya</h3>
 
             <div class="summary-bottom">
                 <div class="summary-number">

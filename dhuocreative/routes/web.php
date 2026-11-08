@@ -107,6 +107,10 @@ Route::middleware(['auth', 'prevent.back'])->prefix('operator')->name('operator.
         return view('operator.absensiSiswa');
     })->name('absensiSiswa'); 
 
+    Route::get('/sertifikat', function () {
+        return view('operator.sertifikat');
+    })->name('sertifikat');
+
     Route::get('/pengumuman', function () {
         return view('operator.pengumuman');
     })->name('pengumuman'); 
@@ -120,10 +124,6 @@ Route::middleware(['auth', 'prevent.back'])->prefix('siswa')->name('siswa.')->gr
     Route::get('/kursus', function () {
         return view('siswa.kursus');
     })->name('kursus');
-
-    Route::get('/aktivitas', function () {
-        return view('siswa.aktivitas');
-    })->name('aktivitas');
 
     Route::get('/sertifikat', function () {
         return view('siswa.sertifikat');
@@ -166,6 +166,14 @@ Route::middleware(['auth', 'prevent.back'])->prefix('admin')->name('admin.')->gr
     Route::get('/jadwalAbsensi', function () {
         return view('admin.jadwalAbsensi');
     })->name('jadwalAbsensi');
+
+    Route::get('/riwayatAbsen', function () {
+        return view('admin.riwayatAbsen');
+    })->name('riwayatAbsen');
+
+    Route::get('/riwayatPresensi', function () {
+        return view('admin.riwayatPresensi');
+    })->name('riwayatPresensi');
 
     Route::get('/tugas', function () {
         return view('admin.tugas');

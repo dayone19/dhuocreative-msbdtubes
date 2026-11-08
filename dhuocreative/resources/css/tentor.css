@@ -40,18 +40,26 @@ body {
 *::-webkit-scrollbar-track {background: white;}
 *::-webkit-scrollbar-thumb {background: var(--orange);border-radius: 10px;}
 *::-webkit-scrollbar-corner {background: white;}
-.ts-modal::-webkit-scrollbar {width: 6px;height: 5px;}
-.ts-modal::-webkit-scrollbar-track, .ts-modal::-webkit-scrollbar-track-piece,
-.ts-modal::-webkit-scrollbar-corner {background: transparent !important;}
-.ts-modal::-webkit-scrollbar-thumb {background: var(--orange);border-radius: 10px;}
-.t-modal::-webkit-scrollbar {width: 6px;height: 5px;}
-.t-modal::-webkit-scrollbar-track,.t-modal::-webkit-scrollbar-track-piece,
-.t-modal::-webkit-scrollbar-corner {background: transparent !important;}
-.t-modal::-webkit-scrollbar-thumb {background: var(--orange);border-radius: 10px;}
-.t-modal-box::-webkit-scrollbar {width: 6px;height: 5px;}
-.t-modal-box::-webkit-scrollbar-track,.t-modal-box::-webkit-scrollbar-track-piece,
-.t-modal-box::-webkit-scrollbar-corner {background: transparent !important;}
-.t-modal-box::-webkit-scrollbar-thumb {background: var(--orange);border-radius: 10px;}
+.t-modal, .t-modal-box, .ts-modal, .tmt-upload-modal {
+  scrollbar-width: thin;
+  scrollbar-color: var(--orange) white;
+}
+.t-modal::-webkit-scrollbar,
+.t-modal-box::-webkit-scrollbar {
+  width: 6px !important;
+  height: 5px !important;
+}
+.t-modal::-webkit-scrollbar-track,
+.t-modal::-webkit-scrollbar-track-piece,
+.t-modal-box::-webkit-scrollbar-track,
+.t-modal-box::-webkit-scrollbar-track-piece {
+  background: transparent !important;
+}
+.t-modal::-webkit-scrollbar-thumb,
+.t-modal-box::-webkit-scrollbar-thumb {
+  background: var(--orange) !important;
+  border-radius: 10px !important;
+}
 
 
 /* css dashboard */
@@ -339,6 +347,8 @@ body {
     background: var(--ivory);
     box-shadow: 0 15px 50px rgba(0, 0, 0, .13);
     color: var(--gold);
+    scrollbar-width: thin;
+    scrollbar-color: var(--orange) transparent;
 }
 .tmt-upload-header { display: flex; align-items: center; gap: 22px; margin-bottom: 36px; }
 .tmt-upload-header h2 { color: var(--gold); font-size: 23px; font-weight: 800; line-height: 25px; }
@@ -541,6 +551,20 @@ body {
     resize: none;
 }
 
+.tmt-file-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border: 2px solid var(--gold-dk);
+    border-radius: 12px;
+    background: white;
+    color: var(--gold-dk);
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+}
+.tmt-file-pill:hover {background: var(--cream);}
 /* baca aja */
 .tmt-modal-wide .tmt-form-group :is(input, select):disabled,
 .tmt-modal-wide .tmt-form-group :is(input, textarea)[readonly] {

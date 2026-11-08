@@ -54,13 +54,19 @@
 
         <a href="{{ route('admin.manajemenKursus') }}" class="sidebar-item {{ request()->routeIs('admin.manajemenKursus') ? 'active' : '' }}">
             <span>
-                Manajemen Kursus
+                Kursus
             </span>
         </a>
 
         <a href="{{ route('admin.jadwalAbsensi') }}" class="sidebar-item {{ request()->routeIs('admin.jadwalAbsensi') ? 'active' : '' }}">
             <span>
-                Jadwal & Absensi
+                Jadwal
+            </span>
+        </a>
+
+        <a href="{{ route('admin.riwayatAbsen') }}" class="sidebar-item {{ request()->routeIs('admin.riwayatAbsen') ? 'active' : '' }}">
+            <span>
+                Riwayat Absensi
             </span>
         </a>
 
