@@ -22,7 +22,6 @@ class LoginController extends Controller
             'email'   => 'required|email',
             'password' => 'required',
             'role'    => 'required'
-
         ]);
 
         // cari akun dari email
@@ -42,7 +41,8 @@ class LoginController extends Controller
             return back()
                 ->withErrors([
                     'email' => "Akun kamu tidak aktif.",
-                ]);
+                ])
+                ->withInput($request->only('email', 'role'));
         }
 
         // cek role

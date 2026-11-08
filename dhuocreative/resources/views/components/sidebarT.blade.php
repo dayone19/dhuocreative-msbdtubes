@@ -9,14 +9,14 @@
         </button>
 
         <div class="profile-name">
-            {{ Auth::user()->name ?? 'Tentor A' }}
+            {{ Auth::user()->nama ?? 'Tentor A' }}
         </div>
 
         <!-- Popup profil -->
         <div class="profile-popup" id="profilePopup" role="menu">
             <div class="popup-row">
                 <span class="popup-label">Nama</span>
-                <span class="popup-value">{{ Auth::user()->name ?? 'Tentor A' }}</span>
+                <span class="popup-value">{{ Auth::user()->nama ?? 'Tentor A' }}</span>
             </div>
             <div class="popup-row">
                 <span class="popup-label">Email</span>
