@@ -324,6 +324,7 @@ body {
     .tmt-search { grid-column: 1 / -1; }
     .tmt-upload-btn { grid-column: auto; }
     .tmt-table { min-width: 620px; }
+    .tmt-view-btn { width: 90px; height: 40px; font-size:13px; }
 }
 @media (max-width: 600px) {
     .tmt-title { font-size: 25px; }
@@ -333,7 +334,7 @@ body {
     .tmt-upload-btn { grid-column: 1 / -1; justify-self: start; min-width: 150px; }
     .tmt-table th { font-size: 15px; }
     .tmt-table td { font-size: 14px; }
-    .tmt-view-btn { width: 85px; height: 42px; }
+    .tmt-view-btn { width: 90px; height: 40px; font-size:13px; }
     .tmt-modal { padding: 22px; }
 }
 
@@ -544,8 +545,8 @@ body {
     background-size: 20px;
 }
 .tmt-upload-modal.tmt-modal-wide .tmt-form-group textarea {
-    height: 150px;
-    min-height: 120px;
+    height: 90px;
+    min-height: 90px;
     padding: 14px 24px;
     border-radius: 26px;
     resize: none;
@@ -1574,31 +1575,24 @@ body {
 .ts-certificate-preview img { display: block; }
 
 
-/* Tombol sekunder */
 .ts-btn-secondary {
     background: var(--cream);
     color: var(--teal);
     border: 1px solid var(--mint-line);
 }
-
 .ts-btn-secondary:hover {
     background: var(--mint-line);
 }
-
-/* Tombol aksi modal Edit */
 .ts-edit-actions {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 12px;
     margin-top: 22px;
 }
-
 .ts-edit-actions .ts-btn {
     width: 100%;
     margin-top: 0;
 }
-
-/* Area pilihan file */
 .ts-edit-dropzone {
     min-height: 86px;
     height: auto;
@@ -1645,7 +1639,6 @@ body {
         grid-template-columns: 1fr;
     }
 }
-
 @media (max-width: 800px) {
     .ts-header { align-items: flex-start; flex-direction: column; }
     .ts-toolbar { grid-template-columns: minmax(0, 1fr) 160px; }
@@ -1658,7 +1651,6 @@ body {
     .ts-detail-list > div { flex-direction: column; gap: 5px; }
     .ts-detail-list dd { text-align: left; }
 }
-/* FIX: modal Lihat Tugas hanya menampilkan nilai, bukan dropdown */
 #modalLihat.tmt-modal-overlay .tmt-upload-modal.tmt-modal-wide .tmt-form-group input[readonly] {
     background: var(--olive) !important;
     background-image: none !important;
@@ -1668,8 +1660,6 @@ body {
     color: #fff;
     -webkit-text-fill-color: #fff;
 }
-
-/* Samakan ikon panah filter Kelas dan Terbaru */
 .tmt-toolbar select.tmt-select {
     appearance: none;
     -webkit-appearance: none;
@@ -1681,7 +1671,6 @@ body {
     background-position: right 18px center;
     background-size: 16px;
 }
-
 @media (max-width: 600px) {
     .tmt-toolbar select.tmt-select {
         padding-right: 38px;
@@ -1691,7 +1680,6 @@ body {
 }
 
 
-/* FIX FINAL: modal Detail tidak menampilkan ikon dropdown/kalender saat mode baca */
 #modalDetail:not([hidden]) .tmt-form-group input[readonly],
 #modalDetail:not([hidden]) .tmt-form-group select:disabled {
     background-image: none !important;

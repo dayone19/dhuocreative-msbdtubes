@@ -838,10 +838,11 @@
 
 @media (max-width: 900px) {
     .tt-search { min-height: 50px; }
-    .tt-table { min-width: 620px; }
+    .tt-table { min-width: 780px; }
 }
 @media (max-width: 600px) {
     .tt-select { font-size: 14px; }
+    .tt-table thead { width: 100%; }
     .tt-table th { font-size: 14px; }
     .tt-table td { font-size: 14px; }
     .tt-view-btn { width: 85px; height: 42px; }

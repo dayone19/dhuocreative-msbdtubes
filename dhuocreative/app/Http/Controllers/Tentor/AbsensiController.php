@@ -71,9 +71,9 @@ class AbsensiController extends Controller
             ];
         });
 
-        $mulai = DB::table('siswa_kelas')
+        $mulai = DB::table('siswa_kursus')
             ->where('id_siswa', $kelas->id)
-            ->where('id_kelas', $kelas->id_kelas)
+            ->where('id_kursus', $kelas->id_kelas)
             ->value('tanggal_daftar');
 
         $siswa = [

@@ -58,6 +58,7 @@
                     data-deskripsi="Membuat struktur tabel HTML lengkap dengan CSS styling sederhana."
                     data-file="Tugas1_SiswaA.html"
                     data-nilai="85"
+                    data-feedback="Hasil baik, tingkatkan lagi!"
                     data-status-pengumpulan="Terkumpul">
                     <td>Membuat Tabel HTML</td>
                     <td>Web Master</td>
@@ -76,6 +77,7 @@
                     data-deskripsi="Membuat halaman portofolio pribadi menggunakan HTML & CSS."
                     data-file="-"
                     data-nilai="-"
+                    data-feedback="-"
                     data-status-pengumpulan="Belum Mengumpulkan">
                     <td>Projek Portofolio</td>
                     <td>Web Master</td>
@@ -144,6 +146,10 @@
                 <span>Nilai Akhir</span>
                 <strong id="detNilai" style="font-size:18px;">-</strong>
             </div>
+            <div>
+                <span>Feedback</span>
+                <strong id="detFeedback">-</strong>
+            </div>
         </div>
     </div>
 </div>
@@ -207,6 +213,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const nilai = row.dataset.nilai;
         el('detNilai').textContent = (nilai && nilai !== '-') ? `${nilai} / 100` : 'Belum Dinilai';
+
+        const feedback = row.dataset.feedback;
+        el('detFeedback').textContent = feedback || 'Belum ada feedback.';
 
         modalDetail.hidden = false;
     };

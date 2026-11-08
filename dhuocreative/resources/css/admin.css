@@ -609,7 +609,7 @@ body {
 .o-table tbody tr:last-child td { border-bottom:0; }
 .o-table tbody tr:hover { background:#fffaf0; }
 .o-table tr[hidden] { display:none; }
-.o-status { 
+.at-status { 
     display:inline-block; 
     padding:7px 11px; 
     border-radius:20px; 
@@ -617,15 +617,15 @@ body {
     font-weight:700; 
     white-space:nowrap; 
 }
-.o-status.kmpl {
+.at-status.kmpl {
     background: #dcefe3;
     color: #286c65;
 }
-.o-status.tlt {
+.at-status.tlt {
     background: #f27640;
     color: #ffdc59;
 }
-.o-status.tdk {
+.at-status.tdk {
     background: #ffe2d2;
     color: #c65c31;
 }
@@ -1812,11 +1812,11 @@ body {
 }
 
 .at-table th:nth-child(1) { width: 15%; border-radius: 22px 0 0 22px; }
-.at-table th:nth-child(2) { width: 13%; }
-.at-table th:nth-child(3) { width: 14%; }
-.at-table th:nth-child(4) { width: 14%; }
+.at-table th:nth-child(2) { width: 12%; }
+.at-table th:nth-child(3) { width: 13%; }
+.at-table th:nth-child(4) { width: 13%; }
 .at-table th:nth-child(5) { width: 13%; }
-.at-table th:nth-child(6) { width: 13%; }
+.at-table th:nth-child(6) { width: 16%; }
 .at-table th:nth-child(7) { width: 8%; }
 .at-table th:nth-child(8) { width: 10%; border-radius: 0 22px 22px 0; }
 

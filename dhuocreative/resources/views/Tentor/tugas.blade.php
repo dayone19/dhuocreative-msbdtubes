@@ -81,6 +81,7 @@
                 data-deskripsi="{{ $t['deskripsi'] }}"
                 data-id-pengumpulan="{{ $t['id_pengumpulan'] }}"
                 data-nilai="{{ $t['nilai'] }}"
+                data-feedback="{{ $t['feedback'] }}"
                 data-file-nama="{{ $t['file_nama'] }}"
                 data-file-url="{{ $t['file_url'] }}">
                 <td>{{ $t['judul'] }}</td>
@@ -324,6 +325,15 @@
                           placeholder="Masukkan nilai (0-100)" required>
                 </div>
 
+                <div class="tmt-form-group">
+                    <label for="lihatFeedback">Feedback</label>
+                    <textarea
+                        id="lihatFeedback"
+                        name="feedback"
+                        placeholder="Berikan feedback atau evaluasi untuk siswa..."
+                        rows="4"></textarea>
+                </div>
+
                 <div class="tmt-upload-actions">
                     <button type="button" class="tmt-cancel-btn" onclick="tutupLihat()">Batal</button>
                     <button type="submit" class="tmt-send-btn">Simpan</button>
@@ -455,6 +465,8 @@ function lihatTugas(btn) {
         ? 'Masukkan nilai (0-100)'
         : 'Belum bisa dinilai (siswa belum mengumpulkan)';
     nilaiInput.value = row.dataset.nilai || '';
+    document.getElementById('lihatFeedback').value =
+    row.dataset.feedback || '';
 
     document.getElementById('modalLihat').hidden = false;
 }
