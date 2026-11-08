@@ -8,6 +8,9 @@ class TentorKursus extends Model
 {
     protected $table = tentor_kursus;
     protected $primaryKey = id_tentor_kursus;
+
+    public $timestamps = true;
+
     protected $fillable = [
         'id_tentor_kursus',
         'id_tentor',

@@ -13,12 +13,13 @@ class User extends Authenticatable
 
     protected $table = 'users';
     protected $primaryKey = 'id_user';
+    const CREATED_AT = 'created_at';
     const UPDATED_AT = 'update_at';
     protected $fillable = [
         'nama',
         'email',
         'no_telp',
-        'password',
+        'pasword',
         'role',
         'tahun_masuk',
         'status',
