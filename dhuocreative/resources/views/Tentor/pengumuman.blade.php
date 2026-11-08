@@ -1,14 +1,9 @@
-{{-- 
-    Halaman Pengumuman dengan hak akses role.
-    Sesuaikan kolom role dan nama pengguna dengan struktur tabel users di proyekmu.
-    Contoh di bawah mengasumsikan auth()->user()->role dan auth()->user()->name.
---}}
-@extends('layouts.Tentor')
+@extends('layouts.tentor')
 @section('title', 'Pengumuman')
 
 @php
     $rolePengguna = auth()->user()->role ?? 'Tentor';
-    $namaPengguna = auth()->user()->name ?? 'Tentor Demo';
+    $namaPengguna = auth()->user()->nama ?? 'Tentor Demo';
     $roleNormal = strtolower(trim($rolePengguna));
     $bolehPosting = in_array($roleNormal, ['admin', 'operator', 'tentor']);
     $penggunaSiswa = $roleNormal === 'siswa';
@@ -28,6 +23,13 @@
         @endif
     </div>
 
+    @if (session('sukses'))
+        <p style="background:#e3f6e8;color:#1d6b35;padding:10px 14px;border-radius:10px;margin:10px 0;">{{ session('sukses') }}</p>
+    @endif
+    @if ($errors->any())
+        <p style="background:#fde8e8;color:#a12222;padding:10px 14px;border-radius:10px;margin:10px 0;">{{ $errors->first() }}</p>
+    @endif
+
     <div class="t-announcement-toolbar">
         <div class="t-search-wrap">
             <input type="search" id="cariPengumuman" class="t-search"
@@ -41,48 +43,23 @@
     </div>
 
     <div class="t-announcement-list" id="daftarPengumuman">
-        {{-- Data contoh. Nantinya ganti dengan data dari database. --}}
+        @foreach ($pengumuman as $p)
         <article class="t-announcement-card"
-                 data-tanggal="2026-10-18"
-                 data-pembuat="Admin"
-                 data-role-pembuat="admin"
-                 data-owner="admin">
+                 data-tanggal="{{ date('Y-m-d', strtotime($p->tanggal)) }}"
+                 data-pembuat="{{ $p->nama }}"
+                 data-role-pembuat="{{ $p->role }}"
+                 data-owner="{{ (int) $p->id_user === (int) auth()->id() ? $roleNormal : 'bukan-pemilik' }}"
+                 data-url-update="{{ route('tentor.pengumuman.update', ['pengumuman' => $p->id_pengumuman]) }}"
+                 data-url-hapus="{{ route('tentor.pengumuman.hapus', ['pengumuman' => $p->id_pengumuman]) }}">
             <div class="t-announcement-top">
-                <span class="t-announcement-date">18 Oktober 2026</span>
+                <span class="t-announcement-date">{{ \Carbon\Carbon::parse($p->tanggal)->locale('id')->translatedFormat('j F Y') }}</span>
             </div>
-            <h3>Informasi Kegiatan Belajar</h3>
-            <p class="t-announcement-body">Siswa dan tentor diharapkan mengikuti kegiatan belajar sesuai jadwal yang telah ditentukan.</p>
-            <p class="t-announcement-author">Dibuat oleh: Admin (Admin)</p>
+            <h3>{{ $p->judul }}</h3>
+            <p class="t-announcement-body">{{ $p->isi }}</p>
+            <p class="t-announcement-author">Dibuat oleh: {{ $p->nama }} ({{ ucfirst($p->role) }})</p>
             <div class="t-announcement-actions"></div>
         </article>
-
-        <article class="t-announcement-card"
-                 data-tanggal="2026-10-17"
-                 data-pembuat="Rina"
-                 data-role-pembuat="operator"
-                 data-owner="operator">
-            <div class="t-announcement-top">
-                <span class="t-announcement-date">17 Oktober 2026</span>
-            </div>
-            <h3>Pengingat Pembayaran</h3>
-            <p class="t-announcement-body">Mohon periksa status pembayaran kursus melalui bagian administrasi. Jika sudah membayar, abaikan pengingat ini.</p>
-            <p class="t-announcement-author">Dibuat oleh: Rina (Operator)</p>
-            <div class="t-announcement-actions"></div>
-        </article>
-
-        <article class="t-announcement-card"
-                 data-tanggal="2026-10-16"
-                 data-pembuat="Dewi"
-                 data-role-pembuat="tentor"
-                 data-owner="tentor">
-            <div class="t-announcement-top">
-                <span class="t-announcement-date">16 Oktober 2026</span>
-            </div>
-            <h3>Materi Pertemuan Berikutnya</h3>
-            <p class="t-announcement-body">Untuk pertemuan berikutnya, siswa diminta mempersiapkan materi latihan yang telah dibagikan di kelas.</p>
-            <p class="t-announcement-author">Dibuat oleh: Dewi (Tentor)</p>
-            <div class="t-announcement-actions"></div>
-        </article>
+        @endforeach
     </div>
 
     <p class="t-empty" id="pengumumanKosong" hidden>Pengumuman tidak ditemukan.</p>
@@ -101,28 +78,29 @@
             <h2 id="judulModalPengumuman">Buat Pengumuman</h2>
         </div>
 
-        <form id="formPengumuman">
+        <form id="formPengumuman" method="POST" action="{{ route('tentor.pengumuman.simpan') }}">
+            @csrf
+            <input type="hidden" name="_method" value="PUT" id="metodeForm" disabled>
             <div class="t-form-group">
                 <label for="judulPengumuman">Judul</label>
-                <input id="judulPengumuman" type="text" maxlength="150" required
+                <input id="judulPengumuman" name="judul" type="text" maxlength="150" required
                        placeholder="Masukkan judul pengumuman">
             </div>
 
             <div class="t-form-group">
                 <label for="pembuatPengumuman">Dibuat oleh</label>
-                {{-- Otomatis mengikuti akun login, tidak dapat diubah dari form. --}}
                 <input id="pembuatPengumuman" type="text" value="{{ $namaPengguna }} ({{ $rolePengguna }})" readonly>
             </div>
 
             <div class="t-form-group">
                 <label for="isiPengumuman">Isi Pengumuman</label>
-                <textarea id="isiPengumuman" rows="5" required
+                <textarea id="isiPengumuman" name="isi" rows="5" required
                           placeholder="Tulis isi pengumuman..."></textarea>
             </div>
 
             <div class="t-form-group">
                 <label for="tanggalPengumuman">Tanggal</label>
-                <input id="tanggalPengumuman" type="date" required>
+                <input id="tanggalPengumuman" name="tanggal" type="date" required>
             </div>
 
             <button type="submit" class="t-btn t-btn-orange o-btn-full">Simpan Pengumuman</button>
@@ -130,6 +108,11 @@
     </div>
 </div>
 @endif
+
+<form id="formHapusPengumuman" method="POST" action="" hidden>
+    @csrf
+    @method('DELETE')
+</form>
 
 <style>
 .t-announcement-category {
@@ -177,6 +160,7 @@
     const modal = el('modalPengumuman');
     const form = el('formPengumuman');
     let editing = null;
+    const metodeForm = el('metodeForm');
 
     function today() {
         const d = new Date();
@@ -196,6 +180,8 @@
         if (!canPost || !modal || !form) return;
         editing = card;
         form.reset();
+        form.action = card ? card.dataset.urlUpdate : "{{ route('tentor.pengumuman.simpan') }}";
+        metodeForm.disabled = !card;
         el('judulModalPengumuman').textContent = card ? 'Edit Pengumuman' : 'Buat Pengumuman';
 
         if (card) {
@@ -214,7 +200,6 @@
         if (!actions) return;
         actions.replaceChildren();
 
-        // Pada contoh ini, pengguna hanya boleh mengubah pengumuman yang ia buat.
         const isOwner = (card.dataset.owner || '').toLowerCase() === currentRole;
         if (!canPost || !isOwner) return;
 
@@ -233,45 +218,7 @@
         actions.append(editButton, deleteButton);
     }
 
-    function renderCard(card, title, body, author, authorRole, date, ownerRole) {
-        card.className = 't-announcement-card';
-        card.dataset.tanggal = date;
-        card.dataset.pembuat = author;
-        card.dataset.rolePembuat = authorRole;
-        card.dataset.owner = ownerRole;
-        card.replaceChildren();
-
-        const top = document.createElement('div');
-        top.className = 't-announcement-top';
-
-        const category = document.createElement('span');
-        category.className = 't-announcement-category';
-        category.textContent = 'Pengumuman';
-
-        const dateLabel = document.createElement('span');
-        dateLabel.className = 't-announcement-date';
-        dateLabel.textContent = fmt(date);
-        top.append(category, dateLabel);
-
-        const heading = document.createElement('h3');
-        heading.textContent = title;
-
-        const paragraph = document.createElement('p');
-        paragraph.className = 't-announcement-body';
-        paragraph.textContent = body;
-
-        const authorLabel = document.createElement('p');
-        authorLabel.className = 't-announcement-author';
-        authorLabel.textContent = `Dibuat oleh: ${author} (${authorRole})`;
-
-        const actions = document.createElement('div');
-        actions.className = 't-announcement-actions';
-
-        card.append(top, heading, paragraph, authorLabel, actions);
-        renderActions(card);
-    }
-
-    if (canPost) {
+        if (canPost) {
         el('btnTambahPengumuman')?.addEventListener('click', () => openModal());
 
         document.querySelectorAll('[data-close]').forEach(button => {
@@ -291,27 +238,19 @@
                 const card = deleteButton.closest('.t-announcement-card');
                 if ((card.dataset.owner || '').toLowerCase() === currentRole &&
                     confirm('Hapus pengumuman ini?')) {
-                    card.remove();
-                    filterAnnouncements();
+                    const formHapus = el('formHapusPengumuman');
+                    formHapus.action = card.dataset.urlHapus;
+                    formHapus.submit();
                 }
             }
         });
 
         form?.addEventListener('submit', event => {
-            event.preventDefault();
-
-            const title = el('judulPengumuman').value.trim();
-            const body = el('isiPengumuman').value.trim();
-            const date = el('tanggalPengumuman').value;
-
-            if (!title || !body || !date) return;
-
-            const card = editing || document.createElement('article');
-            renderCard(card, title, body, currentName, currentRole, date, currentRole);
-
-            if (!editing) list.prepend(card);
-            modal.hidden = true;
-            filterAnnouncements();
+            if (!el('judulPengumuman').value.trim() ||
+                !el('isiPengumuman').value.trim() ||
+                !el('tanggalPengumuman').value) {
+                event.preventDefault();
+            }
         });
 
         modal?.addEventListener('click', event => {
@@ -337,6 +276,13 @@
 
         el('pengumumanKosong').hidden = visibleCount > 0;
     }
+
+    @if ($errors->any() && old('_method') !== 'PUT')
+        openModal();
+        el('judulPengumuman').value = {{ \Illuminate\Support\Js::from(old('judul', '')) }};
+        el('isiPengumuman').value = {{ \Illuminate\Support\Js::from(old('isi', '')) }};
+        el('tanggalPengumuman').value = {{ \Illuminate\Support\Js::from(old('tanggal', '')) }} || today();
+    @endif
 
     list.querySelectorAll('.t-announcement-card').forEach(renderActions);
     el('cariPengumuman').addEventListener('input', filterAnnouncements);

@@ -8,6 +8,11 @@ class Tugas extends Model
 {
     protected $table = tugas;
     protected $primaryKey = id_tugas;
+
+    public $timestamps = true;
+    const CREATED_AT = 'created_at';
+    const UPDATED_AT = 'updated_at';
+
     protected $fillable = [
         'id_tugas',
         'id_kelas',
@@ -15,7 +20,8 @@ class Tugas extends Model
         'judul',
         'deskripsi',
         'deadline',
-        'file_tugas'
+        'file_tugas',
+        'tipe'
     ];
 
     public function pengumpulanTugas() {

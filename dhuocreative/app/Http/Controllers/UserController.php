@@ -25,7 +25,7 @@ class UserController extends Controller
                 'min:7',
                 'regex:/[A-Z]/',
                 'regex:/[0-9]/',
-                'regex:/^[a-zA-Z0-9]+$/^',
+                'regex:/^[a-zA-Z0-9]+$/',
             ],
             'role'        => [
                 'required',
@@ -34,7 +34,7 @@ class UserController extends Controller
             'tahun_masuk' => ['required', 'integer'],
             'status'      => [
                 'required',
-                Rule::in(['aktif', 'nonaltif']),
+                Rule::in(['aktif', 'nonaktif']),
             ],
         ]);
 
@@ -55,7 +55,7 @@ class UserController extends Controller
             'update_at' => now(),  
         ]);
 
-        return back()->with('succes', 'Akun berhasil dibuat.');
+        return back()->with('success', 'Akun berhasil dibuat.');
 
     }
 }

@@ -8,6 +8,9 @@ class PengumpulanTugas extends Model
 {
     protected $table = pengumpulan_tugas;
     protected $primaryKey = id_pengumpulan;
+
+    public $timestamps = true;
+
     protected $fillable = [
         'id_pengumpulan',
         'id_tugas',
