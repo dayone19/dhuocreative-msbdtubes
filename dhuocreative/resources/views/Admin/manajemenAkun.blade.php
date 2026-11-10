@@ -31,7 +31,7 @@
                     <th>Nama</th>
                     <th>Role</th>
                     <th>Status</th>
-                    <th></th>
+                    <th>Aksi</th>
                 </tr>
             </thead>
             <tbody id="akunBody">
@@ -100,47 +100,26 @@
         <div class="o-modal-card">
 
             <div class="o-modal-header">
-                <h2>Detail Akun</h2>
-
-                <button type="button" class="o-modal-close" data-close>
-                    ×
+                <button type="button" class="o-modal-close" data-close aria-label="Kembali">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M15 5L7 12l8 7z"/>
+                    </svg>
                 </button>
+                <h2>Detail Akun</h2>
             </div>
 
             <div class="o-detail-list">
-
-                <div>
-                    <span>Nama Lengkap</span>
-                    <strong id="detailNamaLengkap">-</strong>
-                </div>
-
-                <div>
-                    <span>Role</span>
-                    <strong id="detailRole">-</strong>
-                </div>
-
-                <div>
-                    <span>Status</span>
-                    <strong id="detailStatus">-</strong>
-                </div>
-
-                <div>
-                    <span>No. Telepon</span>
-                    <strong id="detailTelepon">-</strong>
-                </div>
-
-                <div>
-                    <span>Tahun Masuk</span>
-                    <strong id="detailTahunMasuk">-</strong>
-                </div>
+                <div><span>Nama Lengkap</span><strong id="detailNamaLengkap">-</strong></div>
+                <div><span>Role</span><strong id="detailRole">-</strong></div>
+                <div><span>Status</span><strong id="detailStatus">-</strong></div>
+                <div><span>No. Telepon</span><strong id="detailTelepon">-</strong></div>
+                <div><span>Tahun Masuk</span><strong id="detailTahunMasuk">-</strong></div>
 
                 <div class="o-detail-action">
-                    <button type="button" class="o-btn-edit" id="btnEditAkun">
-                        Edit Akun
-                    </button>
+                    <button type="button" class="o-btn-edit" id="btnEditAkun">Edit Akun</button>
                 </div>
-
             </div>
+
         </div>
     </div>
     <!-- MODAL EDIT AKUN -->
@@ -148,24 +127,25 @@
         <div class="o-modal-card">
 
             <div class="o-modal-header">
-                <h2>Edit Akun</h2>
-
-                <button type="button" class="o-modal-close" data-close-edit>
-                    ×
+                <button type="button" class="o-modal-close" data-close-edit aria-label="Kembali">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M15 5L7 12l8 7z"/>
+                    </svg>
                 </button>
+                <h2>Edit Akun</h2>
             </div>
 
             <form id="formEditAkun">
 
-                <div class="o-detail-list">
+                <div class="o-form-list">
 
-                    <div>
-                        <span>Nama Lengkap</span>
-                        <input type="text" id="editNamaLengkap" required>
+                    <div class="o-field">
+                        <label for="editNamaLengkap">Nama Lengkap</label>
+                        <input type="text" id="editNamaLengkap" placeholder="Masukkan nama lengkap" required>
                     </div>
 
-                    <div>
-                        <span>Role</span>
+                    <div class="o-field">
+                        <label for="editRole">Role</label>
                         <select id="editRole" required>
                             <option value="Admin">Admin</option>
                             <option value="Operator">Operator</option>
@@ -174,36 +154,28 @@
                         </select>
                     </div>
 
-                    <div>
-                        <span>Status</span>
+                    <div class="o-field">
+                        <label for="editStatus">Status</label>
                         <select id="editStatus" required>
                             <option value="Aktif">Aktif</option>
                             <option value="Tidak Aktif">Tidak Aktif</option>
                         </select>
                     </div>
 
-                    <div>
-                        <span>No. Telepon</span>
-                        <input type="tel" id="editTelepon" required>
+                    <div class="o-field">
+                        <label for="editTelepon">No. Telepon</label>
+                        <input type="tel" id="editTelepon" placeholder="Masukkan no. telepon" required>
                     </div>
 
-                    <div>
-                        <span>Tahun Masuk</span>
-                        <input type="number" id="editTahunMasuk" required>
+                    <div class="o-field">
+                        <label for="editTahunMasuk">Tahun Masuk</label>
+                        <input type="number" id="editTahunMasuk" placeholder="Masukkan tahun masuk" required>
                     </div>
 
                 </div>
 
-                <div class="o-detail-action">
-
-                    <button type="submit" class="o-btn-edit">
-                        Simpan Perubahan
-                    </button>
-
-                    <button type="button" class="o-btn-cancel" id="btnBatalEdit">
-                        Batal
-                    </button>
-
+                <div class="o-form-action">
+                    <button type="submit" class="o-btn-simpan">Simpan Perubahan</button>
                 </div>
 
             </form>
@@ -220,7 +192,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const modal = el('modalDetailAkun');
     const modalEdit = el('modalEditAkun');
     const btnEdit = el('btnEditAkun');
-    const btnBatalEdit = el('btnBatalEdit');
     const formEdit = el('formEditAkun');
 
     let tombolAktif = null;
@@ -256,11 +227,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     });
 
-
-    // =========================
-    // SIMPAN PERUBAHAN
-    // =========================
-
     formEdit.addEventListener('submit', function (e) {
 
         e.preventDefault();
@@ -278,33 +244,23 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // Update atribut tombol
         tombolAktif.dataset.nama = nama;
         tombolAktif.dataset.role = role;
         tombolAktif.dataset.status = status;
         tombolAktif.dataset.telepon = telepon;
         tombolAktif.dataset.tahun = tahun;
 
-        // Update isi tabel
         const baris = tombolAktif.closest('tr');
 
         baris.cells[0].textContent = nama;
         baris.cells[1].textContent = role;
         baris.cells[2].textContent = status;
 
-        // Tutup popup edit
         modalEdit.hidden = true;
 
         alert('Data akun berhasil diperbarui!');
 
     });
-
-    btnBatalEdit.addEventListener('click', function () {
-
-        modalEdit.hidden = true;
-
-    });
-
     modal.querySelector('[data-close]')
         .addEventListener('click', function () {
 
