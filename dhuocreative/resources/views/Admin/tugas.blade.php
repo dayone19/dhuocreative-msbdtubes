@@ -34,7 +34,7 @@
             </div>
         </div>
 
-        <!-- 3. Select Tentor (Menggantikan Status) -->
+        <!-- 3. Select Tentor -->
         <select class="at-select" id="filterTentor" aria-label="Filter tentor">
             <option value="">Semua Tentor</option>
             <option value="Tentor C">Tentor C</option>
@@ -112,6 +112,9 @@
         </table>
     </div>
     <p class="at-empty" id="kosongTugas" hidden>Tugas tidak ditemukan.</p>
+
+    <!-- Komponen Paginasi -->
+    <nav class="tj-pagination" id="paginasiTugasAdmin" aria-label="Halaman daftar tugas" style="margin-top: 20px;" hidden></nav>
 </div>
 
 <!-- MODAL DETAIL TUGAS & NILAI -->
@@ -177,15 +180,72 @@
     </div>
 </div>
 
-
 <script>
+const PER_HALAMAN_TUGAS_ADMIN = 10;
+let halTugasAdmin = 1;
+
+function renderPaginasiTugasAdmin(navId, total, halaman, pindah) {
+    const nav = document.getElementById(navId);
+    if (!nav) return;
+    
+    nav.replaceChildren();
+    if (!total || total <= 1) {
+        nav.hidden = true;
+        return;
+    }
+    nav.hidden = false;
+    
+    const jumlah = Math.ceil(total / PER_HALAMAN_TUGAS_ADMIN);
+    const awal = (halaman - 1) * PER_HALAMAN_TUGAS_ADMIN + 1;
+    const akhir = Math.min(halaman * PER_HALAMAN_TUGAS_ADMIN, total);
+
+    const info = document.createElement('span');
+    info.className = 'tj-pg-info';
+    info.textContent = `Menampilkan ${awal}–${akhir} dari ${total}`;
+    nav.appendChild(info);
+
+    const btn = (label, tujuan, { aktif = false, mati = false, aria } = {}) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'tj-pg-btn' + (aktif ? ' active' : '');
+        b.textContent = label;
+        b.disabled = mati;
+        if (aria) b.setAttribute('aria-label', aria);
+        if (aktif) b.setAttribute('aria-current', 'page');
+        b.addEventListener('click', () => pindah(tujuan));
+        return b;
+    };
+
+    const grup = document.createElement('div');
+    grup.className = 'tj-pg-list';
+    grup.appendChild(btn('‹', halaman - 1, { mati: halaman === 1, aria: 'Halaman sebelumnya' }));
+
+    let terakhir = 0;
+    for (let i = 1; i <= jumlah; i++) {
+        if (i === 1 || i === jumlah || Math.abs(i - halaman) <= 1) {
+            if (i - terakhir > 1) {
+                const t = document.createElement('span');
+                t.className = 'tj-pg-dots';
+                t.textContent = '…';
+                grup.appendChild(t);
+            }
+            grup.appendChild(btn(String(i), i, { aktif: i === halaman, aria: `Halaman ${i}` }));
+            terakhir = i;
+        }
+    }
+
+    grup.appendChild(btn('›', halaman + 1, { mati: halaman === jumlah, aria: 'Halaman berikutnya' }));
+    nav.appendChild(grup);
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     const el = id => document.getElementById(id);
     const modalDetail = el('modalDetailTugas');
     const cariInput = el('cariTugas');
     const filterKursus = el('filterKursus');
-    const filterTentor = el('filterTentor'); // Diubah dari filterStatus menjadi filterTentor
+    const filterTentor = el('filterTentor');
     const judulHalaman = el('judulHalamanSiswa');
+    const bodyTugas = el('bodyTugas');
 
     // Elemen Dropdown Siswa
     const siswaFilter   = el('siswaFilter');
@@ -196,13 +256,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const siswaNoResult = el('siswaNoResult');
     const cariSiswa     = el('cariSiswa');
 
-    // Ambil data baris tabel
-    const semuaBaris = () => [...document.querySelectorAll('#bodyTugas tr')];
+    const semuaBaris = () => [...bodyTugas.querySelectorAll('tr')];
 
-    // Siswa aktif: dari URL (?siswa=...) atau default kosong (Semua Siswa)
     let siswaAktif = new URLSearchParams(window.location.search).get('siswa') || '';
 
-    /* ---------- FUNGSI DROPDOWN SISWA ---------- */
     function updateLabelSiswa() {
         siswaTerpilih.textContent = siswaAktif || 'Semua Siswa';
         judulHalaman.textContent = siswaAktif ? `Daftar Tugas ${siswaAktif}` : 'Daftar Tugas';
@@ -254,6 +311,7 @@ document.addEventListener('DOMContentLoaded', function () {
         updateLabelSiswa();
         tutupDropdown();
         siswaTrigger.focus();
+        halTugasAdmin = 1;
         filter();
     }
 
@@ -277,34 +335,55 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    /* ---------- FUNGSI FILTER UTAMA TABEL ---------- */
     function filter() {
         const q = cariInput.value.toLowerCase().trim();
         const kursus = filterKursus.value;
-        const tentor = filterTentor.value; // Mengambil nilai dari filter tentor
-        let count = 0;
+        const tentor = filterTentor.value;
+        
+        const allRows = semuaBaris();
 
-        semuaBaris().forEach(row => {
+        const filteredRows = allRows.filter(row => {
             const textMatch = row.cells[0].textContent.toLowerCase().includes(q); 
             const kursusMatch = !kursus || row.dataset.kursus === kursus;
-            const tentorMatch = !tentor || row.dataset.tentor === tentor; // Mencocokkan data-tentor
-            
+            const tentorMatch = !tentor || row.dataset.tentor === tentor;
             const siswaMatch = !siswaAktif || row.dataset.siswa.toLowerCase() === siswaAktif.toLowerCase();
 
-            const show = textMatch && kursusMatch && tentorMatch && siswaMatch;
-            row.hidden = !show;
-            if (show) count++;
+            return textMatch && kursusMatch && tentorMatch && siswaMatch;
         });
 
-        el('kosongTugas').hidden = count > 0;
+        allRows.forEach(row => row.style.display = 'none');
+
+        const totalFiltered = filteredRows.length;
+        el('kosongTugas').hidden = totalFiltered > 0;
+
+        if (totalFiltered === 0) {
+            renderPaginasiTugasAdmin('paginasiTugasAdmin', 0, halTugasAdmin, pindahHalaman);
+            return;
+        }
+
+        const maxPage = Math.ceil(totalFiltered / PER_HALAMAN_TUGAS_ADMIN);
+        if (halTugasAdmin > maxPage) halTugasAdmin = maxPage || 1;
+
+        const start = (halTugasAdmin - 1) * PER_HALAMAN_TUGAS_ADMIN;
+        const end = start + PER_HALAMAN_TUGAS_ADMIN;
+
+        filteredRows.slice(start, end).forEach(row => {
+            row.style.display = '';
+        });
+
+        renderPaginasiTugasAdmin('paginasiTugasAdmin', totalFiltered, halTugasAdmin, pindahHalaman);
     }
 
-    // Event listener untuk pencarian utama & filter select baru
-    cariInput.addEventListener('input', filter);
-    filterKursus.addEventListener('change', filter);
-    filterTentor.addEventListener('change', filter); // Menggantikan filterStatus
+    function pindahHalaman(tujuanBaru) {
+        halTugasAdmin = tujuanBaru;
+        filter();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
-    /* ---------- FUNGSI MODAL DETAIL ---------- */
+    cariInput.addEventListener('input', () => { halTugasAdmin = 1; filter(); });
+    filterKursus.addEventListener('change', () => { halTugasAdmin = 1; filter(); });
+    filterTentor.addEventListener('change', () => { halTugasAdmin = 1; filter(); });
+
     window.lihatDetailTugas = function (btn) {
         const row = btn.closest('tr');
         el('detJudul').textContent = row.cells[0].textContent.trim();
@@ -353,11 +432,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    /* ---------- Inisialisasi Awal ---------- */
     updateLabelSiswa();
     renderOpsiSiswa();
     filter();
 });
 </script>
-
 @endsection

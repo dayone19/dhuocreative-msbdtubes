@@ -38,6 +38,21 @@
 .o-modal-box::-webkit-scrollbar-track, .o-modal-box::-webkit-scrollbar-track-piece, .o-modal-box::-webkit-scrollbar-corner,
 .at-modal-box::-webkit-scrollbar-track, .at-modal-box::-webkit-scrollbar-track-piece, .at-modal-box::-webkit-scrollbar-corner {background: transparent !important;}
 .o-modal-box::-webkit-scrollbar-thumb, .at-modal-box::-webkit-scrollbar-thumb {background: var(--orange);border-radius: 10px;}
+
+/* css pagination */
+.tj-pagination{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-top:14px}
+.tj-pagination[hidden]{display:none}
+.tj-pg-info{color:var(--teal);font-size:14px;font-weight:600}
+.tj-pg-list{display:flex;align-items:center;flex-wrap:wrap;gap:6px}
+.tj-pg-btn{min-width:40px;height:40px;padding:0 12px;border:1px solid var(--mint-line);border-radius:20px;background:#fff;color:var(--teal);font:inherit;font-size:14px;font-weight:700;cursor:pointer;transition:background .2s ease,border-color .2s ease}
+.tj-pg-btn:hover:not(:disabled):not(.active){background:var(--mint);border-color:var(--teal)}
+.tj-pg-btn.active{background:var(--orange);border-color:var(--orange);color:#fff;cursor:default}
+.tj-pg-btn:disabled{opacity:.4;cursor:not-allowed}
+.tj-pg-btn:focus-visible{outline:3px solid rgba(242,118,64,.45);outline-offset:2px}
+.tj-pg-dots{padding:0 4px;color:var(--gold-dk);font-weight:700}
+@media (max-width:560px){.tj-pagination{justify-content:center}.tj-pg-btn{min-width:36px;height:36px;padding:0 9px}}
+
+
 /* dashboard */
 .o-mint-theme {
     --m-mint: var(--mint, #e3efed);
@@ -1305,13 +1320,14 @@ body {
     background-size: 20px;
     color: #fff;
     font: inherit;
-    font-size: 20px;
+    font-size: 17px;
     cursor: pointer;
 }
 
 .akun-select option { 
     background: #fff; 
     color: var(--orange-dk); 
+    font-size: 15px;
 }
 
 .akun-table-container {
@@ -1344,10 +1360,10 @@ body {
     letter-spacing: .3px;
     color: var(--teal);
 }
-.akun-table th:first-child { width: 22%; border-radius: 22px 0 0 22px; }
+.akun-table th:first-child { width: 30%; border-radius: 22px 0 0 22px; }
 .akun-table th:nth-child(2) { width: 20%; }
 .akun-table th:nth-child(3) { width: 20%; }
-.akun-table th:last-child  { width: 38%; border-radius: 0 22px 22px 0; }
+.akun-table th:last-child  { width: 30%; border-radius: 0 22px 22px 0; }
 
 .akun-table td {
     height: 64px;
@@ -1401,7 +1417,7 @@ body {
     border-radius: 999px;
     background: var(--orange);
     color: #fff;
-    font-size: 17px;
+    font-size: 16px;
     font-weight: 700;
     line-height: 1;
     text-decoration: none;
@@ -1470,14 +1486,14 @@ body {
     }
 
     .t-btn, .t-search-wrap .t-search, .akun-select {
-        font-size: 17px; 
+        font-size: 15px; 
     }
 }
 
 /* buat akun */
 .akun-form-page {
     width: 100%;
-    max-width: 820px;
+    max-width: 920px;
     font-family: Arial, Helvetica, sans-serif;
     color: #111;
 }
@@ -1514,7 +1530,7 @@ body {
 .akun-form-group label {
     padding-left: 10px;
     color: var(--orange);
-    font-size: 20px;
+    font-size: 17px;
     font-weight: 700;
     line-height: 1.2;
 }
@@ -1529,7 +1545,7 @@ body {
     background-color: #ffdd59;
     color: var(--teal, #1f6b63);
     font: inherit;
-    font-size: 19px;
+    font-size: 16px;
     transition: box-shadow .2s ease;
 }
 
@@ -1614,7 +1630,7 @@ body {
 }
 
 .akun-btn {
-    min-width: 185px;
+    min-width: 180px;
     height: 58px;
     padding: 0 22px;
     display: inline-flex;
@@ -1625,7 +1641,7 @@ body {
     background: var(--orange);
     color: #fff;
     font: inherit;
-    font-size: 20px;
+    font-size: 17px;
     font-weight: 700;
     text-decoration: none;
     cursor: pointer;
@@ -3118,7 +3134,7 @@ body {
 .ra-page {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 32px 30px 60px;
+  padding: 12px 30px 60px;
   font-family: Arial, Helvetica, sans-serif;
   color: var(--ink);
   background: #fff;
@@ -3133,7 +3149,7 @@ body {
   flex-wrap: wrap;
   margin-bottom: 20px;
 }
-.ra-page-title { margin: 0; font-size: 30px; color: var(--teal); }
+.ra-page-title { margin: 0; font-size: 30px; font-weight: 800; color: var(--teal); }
 .ra-page-sub { margin: 4px 0 0; font-size: 14px; color: var(--muted); }
 .ra-back-link {
   display: inline-block;

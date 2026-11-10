@@ -19,7 +19,6 @@
         </div>
     </div>
 
-
     <div class="o-attendance-stats">
         <article class="o-attendance-stat">
             <span>Total siswa</span>
@@ -55,7 +54,7 @@
                     <th>Aksi</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="bodyRekapAbsensi">
                 @forelse ($rekapAbsensi as $row)
                     @php
                         $id = is_array($row) ? $row['id'] : $row->id;
@@ -66,43 +65,34 @@
                         $hadir = is_array($row) ? $row['hadir'] : ($row->jumlah_hadir ?? 0);
                         $total = is_array($row) ? $row['total'] : ($row->total_pertemuan ?? 0);
 
-                        $persentase = $total > 0
-                            ? round(($hadir / $total) * 100)
-                            : 0;
+                        $persentase = $total > 0 ? round(($hadir / $total) * 100) : 0;
                     @endphp
 
                     <tr>
                         <td>{{ $kursus }}</td>
-
                         <td>
                             <strong class="o-attendance-student">{{ $nama }}</strong>
                         </td>
-
                         <td>{{ $tentor }}</td>
-
                         <td>{{ $kelas }}</td>
-
                         <td>
                             <div class="o-attendance-rate">
                                 <strong>{{ $hadir }} / {{ $total }}</strong>
                                 <span>{{ $persentase }}%</span>
                             </div>
-
                             <div class="o-attendance-progress">
                                 <span style="width: {{ $persentase }}%"></span>
                             </div>
                         </td>
-
                         <td>
-                            <a href="{{ route('operator.absensiSiswa', ['id' => $id]) }}"
-                            class="o-action o-attendance-view">
+                            <a href="{{ route('operator.absensiSiswa', ['id' => $id]) }}" class="o-action o-attendance-view">
                                 Lihat
                             </a>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="o-empty">
+                        <td colspan="6" class="o-empty">
                             Belum ada data absensi siswa.
                         </td>
                     </tr>
@@ -110,34 +100,117 @@
             </tbody>
         </table>
     </div>
+
+    <p class="o-empty" id="kosongAbsensi" hidden style="margin-top:15px;">Data absensi tidak ditemukan.</p>
+    <nav class="tj-pagination" id="paginasiAbsensi" aria-label="Halaman rekap absensi" style="margin-top:20px;" hidden></nav>
 </div>
 
-<style>
-.o-attendance-page .o-page-subtitle{margin-top:7px;color:#71817a;font-size:14px}
-.o-attendance-page .o-attendance-filters{grid-template-columns:repeat(4,minmax(0,1fr));gap:0 16px;padding:20px;margin-bottom:22px;border-radius:22px;background:#e3efed}
-.o-attendance-page .o-attendance-filters .o-form-group{margin-bottom:12px}
-.o-attendance-page .o-attendance-filter-actions{grid-column:1/-1;display:flex;gap:9px;flex-wrap:wrap}
-.o-attendance-page .o-attendance-stats{grid-template-columns:repeat(4,minmax(0,1fr))}
-.o-attendance-page .o-attendance-table{min-width:850px;table-layout:auto}
-.o-attendance-page .o-attendance-table th,.o-attendance-page .o-attendance-table td{text-align:left}
-.o-attendance-page .o-attendance-table th:last-child,.o-attendance-page .o-attendance-table td:last-child{text-align:center}
-.o-attendance-student{display:block;color:#286c65;font-size:14px}
-.o-attendance-id{display:block;margin-top:4px;color:#89948e;font-size:11px}
-.o-attendance-rate{display:flex;justify-content:space-between;gap:12px;color:#286c65;font-size:13px}
-.o-attendance-rate span{color:#f27640;font-weight:700}
-.o-attendance-progress{height:7px;max-width:130px;margin-top:7px;overflow:hidden;border-radius:20px;background:#f1e5d2}
-.o-attendance-progress span{display:block;height:100%;border-radius:20px;background:linear-gradient(90deg,#ffb83f,#f27640)}
-.o-attendance-view{display:inline-flex;justify-content:center;min-width:72px;padding:8px 15px;text-decoration:none}
-@media(max-width:950px){.o-attendance-page .o-attendance-filters{grid-template-columns:repeat(2,minmax(0,1fr))}.o-attendance-page .o-attendance-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:600px){.o-attendance-page .o-attendance-filters,.o-attendance-page .o-attendance-stats{grid-template-columns:1fr}.o-attendance-page .o-attendance-filter-actions .o-btn{flex:1}}
-</style>
-
 <script>
-document.getElementById('searchRekapAbsensi')?.addEventListener('input', function () {
-    const q = this.value.toLocaleLowerCase('id');
-    document.querySelectorAll('#tableRekapAbsensi tbody tr').forEach(row => {
-        row.hidden = !row.innerText.toLocaleLowerCase('id').includes(q);
-    });
+const PER_HALAMAN_ABSEN = 10;
+let halAbsen = 1;
+
+function renderPaginasi(navId, total, halaman, pindah) {
+    const nav = document.getElementById(navId);
+    if (!nav) return;
+    
+    nav.replaceChildren();
+    if (!total || total <= 1) {
+        nav.hidden = true;
+        return;
+    }
+    nav.hidden = false;
+    
+    const jumlah = Math.ceil(total / PER_HALAMAN_ABSEN);
+    const awal = (halaman - 1) * PER_HALAMAN_ABSEN + 1;
+    const akhir = Math.min(halaman * PER_HALAMAN_ABSEN, total);
+
+    const info = document.createElement('span');
+    info.className = 'tj-pg-info';
+    info.textContent = `Menampilkan ${awal}–${akhir} dari ${total}`;
+    nav.appendChild(info);
+
+    const btn = (label, tujuan, { aktif = false, mati = false, aria } = {}) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'tj-pg-btn' + (aktif ? ' active' : '');
+        b.textContent = label;
+        b.disabled = mati;
+        if (aria) b.setAttribute('aria-label', aria);
+        if (aktif) b.setAttribute('aria-current', 'page');
+        b.addEventListener('click', () => pindah(tujuan));
+        return b;
+    };
+
+    const grup = document.createElement('div');
+    grup.className = 'tj-pg-list';
+    grup.appendChild(btn('‹', halaman - 1, { mati: halaman === 1, aria: 'Halaman sebelumnya' }));
+
+    let terakhir = 0;
+    for (let i = 1; i <= jumlah; i++) {
+        if (i === 1 || i === jumlah || Math.abs(i - halaman) <= 1) {
+            if (i - terakhir > 1) {
+                const t = document.createElement('span');
+                t.className = 'tj-pg-dots';
+                t.textContent = '…';
+                grup.appendChild(t);
+            }
+            grup.appendChild(btn(String(i), i, { aktif: i === halaman, aria: `Halaman ${i}` }));
+            terakhir = i;
+        }
+    }
+
+    grup.appendChild(btn('›', halaman + 1, { mati: halaman === jumlah, aria: 'Halaman berikutnya' }));
+    nav.appendChild(grup);
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    const body = document.getElementById('bodyRekapAbsensi');
+    const searchInput = document.getElementById('searchRekapAbsensi');
+    const emptyMsg = document.getElementById('kosongAbsensi');
+
+    function filterTabelAbsensi() {
+        const q = searchInput ? searchInput.value.toLowerCase().trim() : '';
+        const allRows = [...body.querySelectorAll('tr')];
+
+        const filteredRows = allRows.filter(r => r.textContent.toLowerCase().includes(q));
+
+        allRows.forEach(r => r.style.display = 'none');
+
+        const totalFiltered = filteredRows.length;
+        if (emptyMsg) emptyMsg.hidden = totalFiltered > 0;
+
+        if (totalFiltered === 0) {
+            renderPaginasi('paginasiAbsensi', 0, halAbsen, pindahHalamanAbsen);
+            return;
+        }
+
+        const maxPage = Math.ceil(totalFiltered / PER_HALAMAN_ABSEN);
+        if (halAbsen > maxPage) halAbsen = maxPage || 1;
+
+        const start = (halAbsen - 1) * PER_HALAMAN_ABSEN;
+        const end = start + PER_HALAMAN_ABSEN;
+
+        filteredRows.slice(start, end).forEach(r => {
+            r.style.display = '';
+        });
+
+        renderPaginasi('paginasiAbsensi', totalFiltered, halAbsen, pindahHalamanAbsen);
+    }
+
+    function pindahHalamanAbsen(tujuanBaru) {
+        halAbsen = tujuanBaru;
+        filterTabelAbsensi();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    if (searchInput) {
+        searchInput.addEventListener('input', () => {
+            halAbsen = 1;
+            filterTabelAbsensi();
+        });
+    }
+
+    filterTabelAbsensi();
 });
 </script>
 @endsection

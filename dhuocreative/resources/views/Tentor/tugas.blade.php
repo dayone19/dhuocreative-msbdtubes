@@ -103,6 +103,8 @@
         </div>
     </div>
 
+    <nav class="tj-pagination" id="paginasiTugas" aria-label="Halaman daftar tugas" hidden></nav>
+
 </div>
 
 {{-- modal upload tgs --}}
@@ -350,12 +352,66 @@ const sortTugas = document.getElementById('sortTugas');
 const tugasTable = document.getElementById('tugasTable');
 const tugasKosong = document.getElementById('tugasKosong');
 
+const PER_HALAMAN = 10;
+let halTugas = 1;
+
+function renderPaginasi(navId, total, halaman, pindah) {
+    const nav = document.getElementById(navId);
+    nav.replaceChildren();
+    if (!total) { nav.hidden = true; return; }
+    nav.hidden = false;
+
+    const jumlah = Math.ceil(total / PER_HALAMAN);
+    const awal = (halaman - 1) * PER_HALAMAN + 1;
+    const akhir = Math.min(halaman * PER_HALAMAN, total);
+
+    const info = document.createElement('span');
+    info.className = 'tj-pg-info';
+    info.textContent = `Menampilkan ${awal}–${akhir} dari ${total}`;
+    nav.appendChild(info);
+    if (jumlah <= 1) return;
+
+    const btn = (label, tujuan, { aktif = false, mati = false, aria } = {}) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'tj-pg-btn' + (aktif ? ' active' : '');
+        b.textContent = label;
+        b.disabled = mati;
+        if (aria) b.setAttribute('aria-label', aria);
+        if (aktif) b.setAttribute('aria-current', 'page');
+        b.addEventListener('click', () => pindah(tujuan));
+        return b;
+    };
+
+    const grup = document.createElement('div');
+    grup.className = 'tj-pg-list';
+    grup.appendChild(btn('‹', halaman - 1, { mati: halaman === 1, aria: 'Halaman sebelumnya' }));
+
+    let terakhir = 0;
+    for (let i = 1; i <= jumlah; i++) {
+        if (i === 1 || i === jumlah || Math.abs(i - halaman) <= 1) {
+            if (i - terakhir > 1) {
+                const t = document.createElement('span');
+                t.className = 'tj-pg-dots';
+                t.textContent = '…';
+                grup.appendChild(t);
+            }
+            grup.appendChild(btn(String(i), i, { aktif: i === halaman, aria: `Halaman ${i}` }));
+            terakhir = i;
+        }
+    }
+
+    grup.appendChild(btn('›', halaman + 1, { mati: halaman === jumlah, aria: 'Halaman berikutnya' }));
+    nav.appendChild(grup);
+}
+
 // data dari database (TugasController@index)
 const kelasOptions = @json($kelasOptions);
 const updateUrlTemplate = "{{ route('tentor.tugas.update', ['tugas' => '__ID__']) }}";
 const nilaiUrlTemplate = "{{ route('tentor.tugas.nilai', ['pengumpulan' => '__ID__']) }}";
 
-function filterTugas() {
+function filterTugas(reset = true) {
+    if (reset !== false) halTugas = 1; // ubah filter/urutan -> balik ke halaman 1
     const keyword = searchTugas.value.toLowerCase().trim();
     const kelas = filterKelas.value;
     const rows = [...tugasTable.querySelectorAll('tr')];
@@ -381,10 +437,16 @@ function filterTugas() {
         return a.dataset.judul.localeCompare(b.dataset.judul);
     });
 
-    visibleRows.forEach(row => tugasTable.appendChild(row));
+    halTugas = Math.min(halTugas, Math.max(1, Math.ceil(visibleRows.length / PER_HALAMAN)));
+    visibleRows.forEach((row, i) => {
+        row.hidden = i < (halTugas - 1) * PER_HALAMAN || i >= halTugas * PER_HALAMAN;
+        tugasTable.appendChild(row);
+    });
 
     tugasKosong.hidden = visibleRows.length > 0;
     tugasKosong.textContent = rows.length ? 'Tugas tidak ditemukan.' : 'Belum ada tugas.';
+
+    renderPaginasi('paginasiTugas', visibleRows.length, halTugas, h => { halTugas = h; filterTugas(false); });
 }
 
 searchTugas.addEventListener('input', filterTugas);

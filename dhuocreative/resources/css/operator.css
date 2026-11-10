@@ -40,6 +40,20 @@
 .tt-modal-box::-webkit-scrollbar-track, .tt-modal-box::-webkit-scrollbar-track-piece, .tt-modal-box::-webkit-scrollbar-corner {background: transparent !important;}
 .o-modal-box::-webkit-scrollbar-thumb, .tt-modal-box::-webkit-scrollbar-thumb {background: var(--orange);border-radius: 10px;}
 
+/* css pagination */
+.tj-pagination{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-top:14px}
+.tj-pagination[hidden]{display:none}
+.tj-pg-info{color:var(--teal);font-size:14px;font-weight:600}
+.tj-pg-list{display:flex;align-items:center;flex-wrap:wrap;gap:6px}
+.tj-pg-btn{min-width:40px;height:40px;padding:0 12px;border:1px solid var(--mint-line);border-radius:20px;background:#fff;color:var(--teal);font:inherit;font-size:14px;font-weight:700;cursor:pointer;transition:background .2s ease,border-color .2s ease}
+.tj-pg-btn:hover:not(:disabled):not(.active){background:var(--mint);border-color:var(--teal)}
+.tj-pg-btn.active{background:var(--orange);border-color:var(--orange);color:#fff;cursor:default}
+.tj-pg-btn:disabled{opacity:.4;cursor:not-allowed}
+.tj-pg-btn:focus-visible{outline:3px solid rgba(242,118,64,.45);outline-offset:2px}
+.tj-pg-dots{padding:0 4px;color:var(--gold-dk);font-weight:700}
+@media (max-width:560px){.tj-pagination{justify-content:center}.tj-pg-btn{min-width:36px;height:36px;padding:0 9px}}
+
+
 .o-summary {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -633,6 +647,23 @@
 @media(max-width:950px){.o-report-grid{grid-template-columns:1fr}.o-attendance-filters{grid-template-columns:repeat(2,minmax(0,1fr))}.o-attendance-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){.o-report-heading{align-items:stretch;flex-direction:column}.o-attendance-filters,.o-attendance-stats{grid-template-columns:1fr}.o-report-section{padding:18px}}
 
+.o-attendance-page .o-page-subtitle{margin-top:7px;color:#71817a;font-size:14px}
+.o-attendance-page .o-attendance-filters{grid-template-columns:repeat(4,minmax(0,1fr));gap:0 16px;padding:20px;margin-bottom:22px;border-radius:22px;background:#e3efed}
+.o-attendance-page .o-attendance-filters .o-form-group{margin-bottom:12px}
+.o-attendance-page .o-attendance-filter-actions{grid-column:1/-1;display:flex;gap:9px;flex-wrap:wrap}
+.o-attendance-page .o-attendance-stats{grid-template-columns:repeat(4,minmax(0,1fr))}
+.o-attendance-page .o-attendance-table{min-width:850px;table-layout:auto}
+.o-attendance-page .o-attendance-table th,.o-attendance-page .o-attendance-table td{text-align:left}
+.o-attendance-page .o-attendance-table th:last-child,.o-attendance-page .o-attendance-table td:last-child{text-align:center}
+.o-attendance-student{display:block;color:#286c65;font-size:14px}
+.o-attendance-id{display:block;margin-top:4px;color:#89948e;font-size:11px}
+.o-attendance-rate{display:flex;justify-content:space-between;gap:12px;color:#286c65;font-size:13px}
+.o-attendance-rate span{color:#f27640;font-weight:700}
+.o-attendance-progress{height:7px;max-width:130px;margin-top:7px;overflow:hidden;border-radius:20px;background:#f1e5d2}
+.o-attendance-progress span{display:block;height:100%;border-radius:20px;background:linear-gradient(90deg,#ffb83f,#f27640)}
+.o-attendance-view{display:inline-flex;justify-content:center;min-width:72px;padding:8px 15px;text-decoration:none}
+@media(max-width:950px){.o-attendance-page .o-attendance-filters{grid-template-columns:repeat(2,minmax(0,1fr))}.o-attendance-page .o-attendance-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.o-attendance-page .o-attendance-filters,.o-attendance-page .o-attendance-stats{grid-template-columns:1fr}.o-attendance-page .o-attendance-filter-actions .o-btn{flex:1}}
 
 /* css tugas nilai */
 .at-toolbar {
