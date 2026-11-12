@@ -25,7 +25,6 @@ class AbsensiController extends Controller
             })
             ->select(
                 'kelas.id_kelas',
-                'kelas.id_kursus',
                 'kelas.id_siswa as id',
                 'siswa.nama',
                 'kursus.nama_kursus as kursus',
@@ -74,7 +73,7 @@ class AbsensiController extends Controller
 
         $mulai = DB::table('siswa_kursus')
             ->where('id_siswa', $kelas->id)
-            ->where('id_kursus', $kelas->id_kursus)
+            ->where('id_kursus', $kelas->id_kelas)
             ->value('tanggal_daftar');
 
         $siswa = [

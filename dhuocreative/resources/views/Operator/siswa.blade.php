@@ -33,7 +33,7 @@
                     <th>Aksi</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="bodySiswa">
                 <tr data-status="aktif">
                     <td>S-001</td>
                     <td>Siswa A</td>
@@ -74,6 +74,7 @@
         </table>
     </div>
     <p class="o-empty" id="kosongSiswa" hidden>Pendaftaran siswa tidak ditemukan.</p>
+    <nav class="tj-pagination" id="paginasiSiswa" aria-label="Halaman daftar siswa" style="margin-top:20px;" hidden></nav>
 </div>
 
 <!-- Modal tambah / edit pendaftaran -->
@@ -131,6 +132,10 @@
                     <span class="o-hari-hint" id="hariCount" aria-live="polite">0/3 hari dipilih</span>
                 </div>
                 <div class="o-form-group">
+                    <label for="jamMulai">Jam Mulai Pembelajaran</label>
+                    <input type="time" id="jamMulai" required>
+                </div>
+                <div class="o-form-group">
                     <label for="tanggalDaftar">Tanggal Daftar</label>
                     <input id="tanggalDaftar" type="date" required>
                 </div>
@@ -147,7 +152,7 @@
     </div>
 </div>
 
-<!-- Modal detail siswa (contoh: Siswa A ikut 2 kursus) -->
+<!-- Modal detail siswa -->
 <div class="o-modal" id="modalDetailSiswa" hidden>
     <div class="o-modal-box">
         <div class="o-modal-header">
@@ -174,14 +179,17 @@
             <div class="o-course-item">
                 <div class="o-course-head">
                     <strong>Web Master - Online</strong>
+                    <button type="button" class="o-action" data-edit-course>Edit</button>
                 </div>
                 <div class="o-course-row"><span>Hari</span><strong>Senin, Rabu, Jumat</strong></div>
+                <div class="o-course-row"><span>Jam Mulai</span><strong class="course-jam">08:00</strong></div>
                 <div class="o-course-row"><span>Tentor</span><strong>Tentor C</strong></div>
                 <div class="o-course-row"><span>Status</span><strong>Aktif</strong></div>
             </div>
             <div class="o-course-item">
                 <div class="o-course-head">
                     <strong>MS Office - Offline</strong>
+                    <button type="button" class="o-action" data-edit-course>Edit</button>
                 </div>
                 <div class="o-course-row"><span>Hari</span><strong>Selasa</strong></div>
                 <div class="o-course-row"><span>Tentor</span><strong>Tentor E</strong></div>
@@ -193,11 +201,70 @@
 </div>
 
 <script>
+const PER_HALAMAN_SISWA = 10;
+let halSiswa = 1;
+
+function renderPaginasi(navId, total, halaman, pindah) {
+    const nav = document.getElementById(navId);
+    if (!nav) return;
+    
+    nav.replaceChildren();
+    if (!total || total <= 1) {
+        nav.hidden = true;
+        return;
+    }
+    nav.hidden = false;
+    
+    const jumlah = Math.ceil(total / PER_HALAMAN_SISWA);
+    const awal = (halaman - 1) * PER_HALAMAN_SISWA + 1;
+    const akhir = Math.min(halaman * PER_HALAMAN_SISWA, total);
+
+    const info = document.createElement('span');
+    info.className = 'tj-pg-info';
+    info.textContent = `Menampilkan ${awal}–${akhir} dari ${total}`;
+    nav.appendChild(info);
+
+    const btn = (label, tujuan, { aktif = false, mati = false, aria } = {}) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'tj-pg-btn' + (aktif ? ' active' : '');
+        b.textContent = label;
+        b.disabled = mati;
+        if (aria) b.setAttribute('aria-label', aria);
+        if (aktif) b.setAttribute('aria-current', 'page');
+        b.addEventListener('click', () => pindah(tujuan));
+        return b;
+    };
+
+    const grup = document.createElement('div');
+    grup.className = 'tj-pg-list';
+    grup.appendChild(btn('‹', halaman - 1, { mati: halaman === 1, aria: 'Halaman sebelumnya' }));
+
+    let terakhir = 0;
+    for (let i = 1; i <= jumlah; i++) {
+        if (i === 1 || i === jumlah || Math.abs(i - halaman) <= 1) {
+            if (i - terakhir > 1) {
+                const t = document.createElement('span');
+                t.className = 'tj-pg-dots';
+                t.textContent = '…';
+                grup.appendChild(t);
+            }
+            grup.appendChild(btn(String(i), i, { aktif: i === halaman, aria: `Halaman ${i}` }));
+            terakhir = i;
+        }
+    }
+
+    grup.appendChild(btn('›', halaman + 1, { mati: halaman === jumlah, aria: 'Halaman berikutnya' }));
+    nav.appendChild(grup);
+}
+
 (()=>{
 const $=s=>document.querySelector(s),all=s=>[...document.querySelectorAll(s)];
 const modal=$('#modalSiswa'),detail=$('#modalDetailSiswa'),form=$('#formSiswa');
 const masterFields=$('#fieldDataMaster'),courseFields=$('#fieldDataKursus');
+const bodySiswa=$('#bodySiswa');
 let formMode='new', returnToDetail=false;
+let activeCourse = null;
 
 function setGroup(group, show){
     group.hidden=!show;
@@ -207,27 +274,54 @@ function setGroup(group, show){
 }
 function openForm(mode){
     formMode=mode;
-    returnToDetail=mode==='add-course'||mode==='edit-master';
+    returnToDetail=mode==='add-course'||mode==='edit-master'||mode==='edit-course';
     setGroup(masterFields, mode==='new'||mode==='edit-master');
-    setGroup(courseFields, mode==='new'||mode==='add-course');
+    setGroup(courseFields, mode==='new'||mode==='add-course' || mode === 'edit-course');
+    $('#jamMulai').required = mode === 'new' || mode === 'add-course' || mode === 'edit-course';
     $('#namaSiswa').required=mode==='new'||mode==='edit-master';
     $('#telpSiswa').required=mode==='new'||mode==='edit-master';
-    $('#kursusSiswa').required=mode==='new'||mode==='add-course';
-    $('#kelasSiswa').required=mode==='new'||mode==='add-course';
+    $('#kursusSiswa').required=mode==='new'||mode==='add-course'||mode==='edit-course';
+    $('#kelasSiswa').required=mode==='new'||mode==='add-course' || mode === 'edit-course';
     $('#tanggalDaftar').required=mode==='new'||mode==='add-course';
-    $('#statusSiswa').required=mode==='new'||mode==='add-course';
+    $('#statusSiswa').required=mode==='new'||mode==='add-course' || mode === 'edit-course';
 
     $('#namaSiswa').value=$('#detailNama').textContent.trim();
     $('#telpSiswa').value=$('#detailTelp').textContent.trim();
 
+    if(mode==='edit-course' && activeCourse){
+        const heading=activeCourse.querySelector('.o-course-head strong').textContent.trim().split(' - ');
+        $('#kursusSiswa').value=heading[0] || '';
+        $('#kelasSiswa').value=heading[1] || '';
+        const rows=[...activeCourse.querySelectorAll('.o-course-row')];
+        const valueFor=label=>rows.find(r=>r.querySelector('span')?.textContent.trim()===label)?.querySelector('strong')?.textContent.trim() || '';
+        const selectedDays=valueFor('Hari').split(',').map(x=>x.trim()).filter(Boolean);
+        days.forEach(d=>d.checked=selectedDays.includes(d.value));
+        $('#jamMulai').value=valueFor('Jam Mulai');
+        $('#statusSiswa').value=valueFor('Status').toLowerCase()==='nonaktif'?'nonaktif':'aktif';
+        const count=selectedDays.length;
+        days.forEach(d=>d.disabled=!d.checked&&count>=3);
+        $('#hariCount').textContent=count+'/3 hari dipilih';
+    } else if(mode==='new' || mode==='add-course'){
+        $('#kursusSiswa').value='';
+        $('#kelasSiswa').value='';
+        days.forEach(d=>{d.checked=false;d.disabled=false;});
+        $('#jamMulai').value='';
+        $('#statusSiswa').value='aktif';
+        $('#hariCount').textContent='0/3 hari dipilih';
+    }
+
     const titles={
         'new':'Pendaftaran Siswa',
         'edit-master':'Edit Data Siswa',
-        'add-course':'Tambah Kursus Siswa'
+        'add-course':'Tambah Kursus Siswa',
+        'edit-course': 'Edit Kursus Siswa'
     };
     $('#modalSiswa h2').textContent=titles[mode];
-    $('#submitSiswa').textContent=mode==='edit-master'?'Simpan Perubahan':
-        mode==='add-course'?'Tambah Kursus':'Simpan Pendaftaran';
+    $('#submitSiswa').textContent =
+    mode === 'edit-master' ? 'Simpan Perubahan' :
+    mode === 'add-course' ? 'Tambah Kursus' :
+    mode === 'edit-course' ? 'Simpan Perubahan' :
+    'Simpan Pendaftaran';
     detail.hidden=true;
     modal.hidden=false;
 }
@@ -235,22 +329,61 @@ $('#btnTambahSiswa').onclick=()=>openForm('new');
 $('#editDataMaster').onclick=()=>openForm('edit-master');
 $('#tambahKursusSiswa').onclick=()=>openForm('add-course');
 
-all('[data-detail]').forEach(b=>b.onclick=()=>{
-    const row=b.closest('tr');
-    $('#detailNama').textContent=row.children[1].textContent.trim();
-    detail.hidden=false;
+detail.addEventListener('click',e=>{
+    const button=e.target.closest('[data-edit-course]');
+    if(!button)return;
+    activeCourse=button.closest('.o-course-item');
+    openForm('edit-course');
 });
+
+all('#tabelSiswa').forEach(tbl => {
+    tbl.addEventListener('click', e => {
+        const b = e.target.closest('[data-detail]');
+        if (!b) return;
+        const row = b.closest('tr');
+        $('#detailNama').textContent = row.children[1].textContent.trim();
+        detail.hidden = false;
+    });
+});
+
 all('[data-close]').forEach(b=>b.onclick=()=>{
     const parent=b.closest('.o-modal');
     parent.hidden=true;
     if(parent===modal&&returnToDetail) detail.hidden=false;
 });
+
 form.onsubmit=e=>{
     e.preventDefault();
     if(formMode==='edit-master'){
         $('#detailNama').textContent=$('#namaSiswa').value.trim();
         $('#detailTelp').textContent=$('#telpSiswa').value.trim();
     }
+
+    if(formMode==='edit-course' && activeCourse){
+        activeCourse.querySelector('.o-course-head strong').textContent=
+            $('#kursusSiswa').value+' - '+$('#kelasSiswa').value;
+
+        const rows=[...activeCourse.querySelectorAll('.o-course-row')];
+        const findRow=label=>rows.find(r=>r.querySelector('span')?.textContent.trim()===label);
+        const hariRow=findRow('Hari');
+        if(hariRow) hariRow.querySelector('strong').textContent=
+            days.filter(d=>d.checked).map(d=>d.value).join(', ');
+
+        let jamRow=findRow('Jam Mulai');
+        if(!jamRow){
+            jamRow=document.createElement('div');
+            jamRow.className='o-course-row';
+            jamRow.innerHTML='<span>Jam Mulai</span><strong></strong>';
+            const tentorRow=findRow('Tentor');
+            activeCourse.insertBefore(jamRow,tentorRow || null);
+        }
+        jamRow.querySelector('strong').textContent=$('#jamMulai').value;
+
+        const statusRow=findRow('Status');
+        if(statusRow) statusRow.querySelector('strong').textContent=
+            $('#statusSiswa').value==='aktif'?'Aktif':'Nonaktif';
+    }
+
     modal.hidden=true;
     if(returnToDetail) detail.hidden=false;
 };
@@ -262,18 +395,56 @@ days.forEach(d=>d.onchange=()=>{
     $('#hariCount').textContent=n+'/3 hari dipilih';
 });
 
-function filter(){
-    const q=$('#cariSiswa').value.toLowerCase(),st=$('#filterStatus').value;
-    let n=0;
-    all('#tabelSiswa tbody tr').forEach(r=>{
-        const ok=r.textContent.toLowerCase().includes(q)&&(!st||r.dataset.status===st);
-        r.hidden=!ok;
-        if(ok)n++;
+function filterTabelSiswa(){
+    const q=$('#cariSiswa').value.toLowerCase().trim();
+    const st=$('#filterStatus').value;
+    const allRows=[...bodySiswa.querySelectorAll('tr')];
+
+    const filteredRows = allRows.filter(r => {
+        const ok = r.textContent.toLowerCase().includes(q) && (!st || r.dataset.status === st);
+        return ok;
     });
-    $('#kosongSiswa').hidden=n>0;
+
+    allRows.forEach(r => r.style.display = 'none');
+
+    const totalFiltered = filteredRows.length;
+    $('#kosongSiswa').hidden = totalFiltered > 0;
+
+    if (totalFiltered === 0) {
+        renderPaginasi('paginasiSiswa', 0, halSiswa, pindahHalamanSiswa);
+        return;
+    }
+
+    const maxPage = Math.ceil(totalFiltered / PER_HALAMAN_SISWA);
+    if (halSiswa > maxPage) halSiswa = maxPage || 1;
+
+    const start = (halSiswa - 1) * PER_HALAMAN_SISWA;
+    const end = start + PER_HALAMAN_SISWA;
+
+    filteredRows.slice(start, end).forEach(r => {
+        r.style.display = '';
+    });
+
+    renderPaginasi('paginasiSiswa', totalFiltered, halSiswa, pindahHalamanSiswa);
 }
-$('#cariSiswa').oninput=filter;
-$('#filterStatus').onchange=filter;
+
+function pindahHalamanSiswa(tujuanBaru) {
+    halSiswa = tujuanBaru;
+    filterTabelSiswa();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+$('#cariSiswa').addEventListener('input', () => {
+    halSiswa = 1;
+    filterTabelSiswa();
+});
+
+$('#filterStatus').addEventListener('change', () => {
+    halSiswa = 1;
+    filterTabelSiswa();
+});
+
+filterTabelSiswa();
 })();
 </script>
 @endsection
