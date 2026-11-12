@@ -154,6 +154,11 @@
             color: var(--gold-dk);
         }
 
+        .pt-status-late {
+            background: #fde8e8;
+            color: #c44747;
+        }
+
         .pt-submit {
             margin-top: 16px;
             padding: 22px 36px 26px;
@@ -388,6 +393,13 @@
 <div class="pt-page">
 
     <!-- Daftar tugas -->
+    @if (session('sukses'))
+        <p style="background:#e3f6e8;color:#1d6b35;padding:10px 14px;border-radius:10px;margin:0 0 12px;">{{ session('sukses') }}</p>
+    @endif
+    @if ($errors->any())
+        <p style="background:#fde8e8;color:#a12222;padding:10px 14px;border-radius:10px;margin:0 0 12px;">{{ $errors->first() }}</p>
+    @endif
+
     <section aria-label="Daftar tugas">
         <div class="pt-grid pt-thead">
             <span>Nama Tugas</span>
@@ -396,28 +408,20 @@
         </div>
 
         <div class="pt-list">
-
+            @forelse ($tugas as $t)
             <div class="pt-grid pt-row">
                 <div class="pt-name">
-                    <strong>Latihan HTML</strong>
-                    <span>Web Development</span>
+                    <strong>{{ $t->judul }}</strong>
+                    <span>{{ $t->nama_kursus }}</span>
                 </div>
                 <div class="pt-deadline">
-                    12 Oktober 2026<br>23:59
+                    {{ $t->deadline_tanggal }}<br>{{ $t->deadline_jam }}
                 </div>
-                <span class="pt-status pt-status-done">Dikumpulkan</span>
+                <span class="pt-status {{ $t->status_css }}">{{ $t->status_teks }}</span>
             </div>
-
-            <div class="pt-grid pt-row">
-                <div class="pt-name">
-                    <strong>Membuat Halaman Profil</strong>
-                    <span>Web Development</span>
-                </div>
-                <div class="pt-deadline">
-                    19 Oktober 2026<br>23:59
-                </div>
-                <span class="pt-status pt-status-pending">Belum Dikumpulkan</span>
-            </div>
+            @empty
+            <p style="padding: 16px;">Belum ada tugas.</p>
+            @endforelse
 
         </div>
     </section>
@@ -426,20 +430,26 @@
     <section class="pt-submit" aria-labelledby="judul-pengumpulan">
         <h2 id="judul-pengumpulan">Pengumpulan Tugas</h2>
 
-        <form id="form-tugas">
+        <form id="form-tugas" method="POST" action="{{ route('siswa.pengumpulanTugas.kumpulkan') }}" enctype="multipart/form-data">
+            @csrf
 
             <div class="pt-field">
                 <label for="kelas">Kelas</label>
-                <select id="kelas" name="kelas" class="pt-select">
-                    <option>Web Development</option>
+                <select id="kelas" name="id_kelas" class="pt-select">
+                    @foreach ($kelasSiswa as $k)
+                        <option value="{{ $k->id_kelas }}">{{ $k->nama_kursus }}</option>
+                    @endforeach
                 </select>
             </div>
 
             <div class="pt-field">
-                <label for="kelas">Tugas</label>
-                <select id="kelas" name="kelas" class="pt-select">
-                    <option>Latihan HTML</option>
-                    <option>Membuat Halaman Profil</option>
+                <label for="tugas">Tugas</label>
+                <select id="tugas" name="id_tugas" class="pt-select" required>
+                    @foreach ($tugas as $t)
+                        <option value="{{ $t->id_tugas }}" data-kelas="{{ $t->id_kelas }}" {{ $t->sudah_dinilai ? 'disabled' : '' }}>
+                            {{ $t->judul }}{{ $t->sudah_dinilai ? ' (sudah dinilai)' : '' }}
+                        </option>
+                    @endforeach
                 </select>
             </div>
 
@@ -514,6 +524,20 @@
                 showFile(input.files[0]);
             }
         });
+
+        var selKelas = document.getElementById('kelas');
+        var selTugas = document.getElementById('tugas');
+        function saringTugas() {
+            var pilihan = null;
+            Array.prototype.forEach.call(selTugas.options, function (opt) {
+                var cocok = opt.dataset.kelas === selKelas.value;
+                opt.hidden = !cocok;
+                if (cocok && !opt.disabled && pilihan === null) pilihan = opt;
+            });
+            selTugas.value = pilihan ? pilihan.value : '';
+        }
+        selKelas.addEventListener('change', saringTugas);
+        saringTugas();
 
         form.addEventListener('submit', function (e) {
             if (!input.files.length) {

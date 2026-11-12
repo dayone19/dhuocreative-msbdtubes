@@ -70,10 +70,15 @@
                 <label for="tsStudent">Nama Siswa</label>
                 <select class="ts-nameUp" id="tsStudent" name="id_siswa" required>
                     <option value="">Pilih siswa</option>
-                    @foreach ($siswa as $s)
+                    @forelse ($siswa as $s)
                         <option value="{{ $s->id_user }}">{{ $s->nama }}</option>
-                    @endforeach
+                    @empty
+                        <option value="" disabled>Belum ada siswa yang mengumpulkan tugas besar</option>
+                    @endforelse
                 </select>
+                <small style="display:block;margin-top:6px;color:#5f7f7b;font-size:12px">
+                    Hanya siswa yang sudah mengumpulkan <strong>tugas besar (projek)</strong> yang bisa dipilih.
+                </small>
             </div>
             <div class="ts-field">
                 <label for="tsExam">Nama Project</label>

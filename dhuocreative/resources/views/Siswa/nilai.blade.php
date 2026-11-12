@@ -129,9 +129,10 @@
             border-radius: 20px;
         }
 
+        /* 4 kolom data + 1 kolom kecil untuk chevron */
         .nl-grid {
             display: grid;
-            grid-template-columns: 1.25fr 1fr .7fr .95fr;
+            grid-template-columns: 1.25fr 1fr .7fr .95fr 28px;
             align-items: center;
             column-gap: 16px;
             padding: 0 24px;
@@ -146,14 +147,28 @@
         }
 
         .nl-row {
+            position: relative;
             padding-top: 16px;
             padding-bottom: 16px;
-            border-top: 1px solid #ececec;
-            border-color: var(--mint-line);
+            border-top: 1px solid var(--mint-line);
         }
 
-        .nl-thead + .nl-row {
+        .nl-thead + .nl-item .nl-row {
             border-top: none;
+        }
+
+        .nl-row.is-clickable {
+            cursor: pointer;
+            transition: background .15s ease;
+        }
+
+        .nl-row.is-clickable:hover {
+            background: var(--sand);
+        }
+
+        .nl-row.is-clickable:focus-visible {
+            outline: 2px solid var(--teal);
+            outline-offset: -2px;
         }
 
         .nl-name strong {
@@ -223,7 +238,7 @@
         }
 
         .nl-badge-great {
-            bbackground: var(--mint);
+            background: var(--mint);
             color: var(--teal);
         }
 
@@ -232,9 +247,94 @@
             color: var(--gold-dk);
         }
 
+        .nl-badge-ok {
+            background: #fff8e6;
+            color: var(--olive);
+        }
+
+        .nl-badge-low {
+            background: #fde8e4;
+            color: var(--orange-dk);
+        }
+
         .nl-badge-wait {
             background: #fff0cf;
             color: var(--orange-dk);
+        }
+
+        /* Chevron */
+        .nl-chev {
+            justify-self: end;
+            font-size: 16px;
+            color: var(--teal);
+            transition: transform .2s ease;
+        }
+
+        .nl-item.is-open .nl-chev {
+            transform: rotate(180deg);
+        }
+
+        .nl-panel {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows .25s ease;
+        }
+
+        .nl-item.is-open .nl-panel {
+            grid-template-rows: 1fr;
+        }
+
+        .nl-panel-inner {
+            overflow: hidden;
+        }
+
+        .nl-feedback {
+            margin: 0 24px 18px;
+            padding: 16px 18px;
+            background: var(--mint);
+            border-radius: 16px;
+        }
+
+        .nl-feedback-head {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .nl-avatar {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--teal);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .nl-feedback-head strong {
+            display: block;
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--teal);
+        }
+
+        .nl-feedback-head span {
+            display: block;
+            font-size: 12px;
+            color: var(--teal-muted);
+        }
+
+        .nl-feedback p {
+            margin: 0;
+            font-size: 14.5px;
+            line-height: 1.65;
+            color: #2f5e5b;
+            white-space: pre-line;
         }
 
         .nl-scale {
@@ -338,12 +438,57 @@
             .nl-badge[data-label]::before {
                 display: none;
             }
+
+            .nl-chev {
+                position: absolute;
+                top: 18px;
+                right: 16px;
+            }
+
+            .nl-feedback {
+                margin: 0 16px 16px;
+            }
         }
 
         @media (max-width: 420px) {
             .nl-scale-list {
                 grid-template-columns: 1fr;
             }
+        }
+
+        .tj-pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tj-pagination button {
+            min-width: 40px;
+            height: 40px;
+            padding: 0 12px;
+            border: 1.5px solid #cfe0dd;
+            border-radius: 12px;
+            background: #fffaf0;
+            color: #14524b;
+            font: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .tj-pagination button.is-active {
+            background: #f27640;
+            border-color: #f27640;
+            color: #fff;
+        }
+
+        .tj-pagination button:disabled {
+            opacity: .45;
+            cursor: not-allowed;
         }
     </style>
 </head>
@@ -360,27 +505,26 @@
         <div class="nl-stat">
             <div>
                 <span class="nl-stat-label">Rata-rata Nilai</span>
-                <strong class="nl-stat-value">91,5</strong>
+                <strong class="nl-stat-value">{{ $rataRata }}</strong>
             </div>
         </div>
 
         <div class="nl-stat">
             <div>
                 <span class="nl-stat-label">Nilai Tertinggi</span>
-                <strong class="nl-stat-value">95</strong>
+                <strong class="nl-stat-value">{{ $tertinggi }}</strong>
             </div>
         </div>
 
         <div class="nl-stat">
             <div>
                 <span class="nl-stat-label">Tugas Dinilai</span>
-                <strong class="nl-stat-value">2 <small>dari 3 tugas</small></strong>
+                <strong class="nl-stat-value">{{ $dinilai }} <small>dari {{ $totalTugas }} tugas</small></strong>
             </div>
         </div>
 
     </section>
 
-    <!-- Tabel nilai -->
     <section class="nl-table" aria-label="Daftar nilai tugas">
 
         <div class="nl-grid nl-thead">
@@ -388,37 +532,94 @@
             <span>Tanggal Dinilai</span>
             <span>Nilai</span>
             <span>Keterangan</span>
+            <span></span>
         </div>
 
-        <div class="nl-grid nl-row">
-            <div class="nl-name">
-                <strong>Latihan HTML</strong>
-                <span>Web Development</span>
+        @forelse ($daftar as $r)
+        <div class="nl-item">
+            @if ($r->feedback)
+            <div class="nl-grid nl-row is-clickable" role="button" tabindex="0" aria-expanded="false">
+                <div class="nl-name">
+                    <strong>{{ $r->judul }}</strong>
+                    <span>{{ $r->kursus }}</span>
+                </div>
+                <span class="nl-date" data-label="Tanggal Dinilai">{{ $r->tanggal }}</span>
+                <span class="nl-score" data-label="Nilai">{{ $r->nilai }}</span>
+                <span class="nl-badge {{ $r->css }}" data-label="Keterangan">{{ $r->label }}</span>
+                <i class="bi bi-chevron-down nl-chev" aria-hidden="true"></i>
             </div>
-            <span class="nl-date" data-label="Tanggal Dinilai">15 Oktober 2026</span>
-            <span class="nl-score" data-label="Nilai">95</span>
-            <span class="nl-badge nl-badge-great" data-label="Keterangan">Sangat Baik</span>
+            <div class="nl-panel">
+                <div class="nl-panel-inner">
+                    <div class="nl-feedback">
+                        <div class="nl-feedback-head">
+                            <div class="nl-avatar">{{ $r->inisial }}</div>
+                            <div>
+                                <strong>Feedback dari {{ $r->nama_tentor }}</strong>
+                                <span>{{ $r->tanggal }}</span>
+                            </div>
+                        </div>
+                        <p>{{ $r->feedback }}</p>
+                    </div>
+                </div>
+            </div>
+            @else
+            <div class="nl-grid nl-row">
+                <div class="nl-name">
+                    <strong>{{ $r->judul }}</strong>
+                    <span>{{ $r->kursus }}</span>
+                </div>
+                @if ($r->dinilai)
+                    <span class="nl-date" data-label="Tanggal Dinilai">{{ $r->tanggal }}</span>
+                    <span class="nl-score" data-label="Nilai">{{ $r->nilai }}</span>
+                @else
+                    <span class="nl-date is-empty" data-label="Tanggal Dinilai">Belum dinilai</span>
+                    <span class="nl-score-empty" data-label="Nilai" aria-label="Belum ada nilai">&mdash;</span>
+                @endif
+                <span class="nl-badge {{ $r->css }}" data-label="Keterangan">{{ $r->label }}</span>
+                <span></span>
+            </div>
+            @endif
         </div>
+        @empty
+        <p style="padding: 16px;">Belum ada tugas.</p>
+        @endforelse
 
-        <div class="nl-grid nl-row">
-            <div class="nl-name">
-                <strong>Membuat Halaman Profil</strong>
-                <span>Web Development</span>
-            </div>
-            <span class="nl-date is-empty" data-label="Tanggal Dinilai">Belum dinilai</span>
-            <span class="nl-score-empty" data-label="Nilai" aria-label="Belum ada nilai">&mdash;</span>
-            <span class="nl-badge nl-badge-wait" data-label="Keterangan">Menunggu</span>
-        </div>
+        @if ($daftar->hasPages())
+            <nav class="tj-pagination" aria-label="Navigasi halaman">
 
-        <div class="nl-grid nl-row">
-            <div class="nl-name">
-                <strong>Kuis Dasar HTML</strong>
-                <span>Web Development</span>
-            </div>
-            <span class="nl-date" data-label="Tanggal Dinilai">10 Oktober 2026</span>
-            <span class="nl-score" data-label="Nilai">88</span>
-            <span class="nl-badge nl-badge-good" data-label="Keterangan">Baik</span>
-        </div>
+                @if ($daftar->onFirstPage())
+                    <button type="button" disabled>&lt;</button>
+                @else
+                    <a href="{{ $daftar->previousPageUrl() }}" style="text-decoration:none">
+                        <button type="button">&lt;</button>
+                    </a>
+                @endif
+
+                @php
+                    $current = $daftar->currentPage();
+                    $last = $daftar->lastPage();
+                @endphp
+
+                @for ($i = 1; $i <= $last; $i++)
+                    @if ($i == $current)
+                        <button type="button" class="is-active">{{ $i }}</button>
+                    @else
+                        <a href="{{ $daftar->url($i) }}" style="text-decoration:none">
+                            <button type="button">{{ $i }}</button>
+                        </a>
+                    @endif
+                @endfor
+
+                @if ($daftar->hasMorePages())
+                    <a href="{{ $daftar->nextPageUrl() }}" style="text-decoration:none">
+                        <button type="button">&gt;</button>
+                    </a>
+                @else
+                    <button type="button" disabled>&gt;</button>
+                @endif
+
+            </nav>
+        @endif
 
     </section>
 
@@ -432,10 +633,29 @@
             <li><b>Sangat Baik</b> <span>90 - 100</span></li>
             <li><b>Baik</b> <span>80 - 89</span></li>
             <li><b>Cukup Baik</b> <span>70 - 79</span></li>
+            <li><b>Perlu Ditingkatkan</b> <span>di bawah 70</span></li>
         </ul>
     </section>
 </div>
 
+<script>
+    document.querySelectorAll('.nl-row.is-clickable').forEach(function (row) {
+        var item = row.closest('.nl-item');
+
+        function toggle() {
+            var open = item.classList.toggle('is-open');
+            row.setAttribute('aria-expanded', open);
+        }
+
+        row.addEventListener('click', toggle);
+        row.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                toggle();
+            }
+        });
+    });
+</script>
 @endsection
 </body>
 </html>

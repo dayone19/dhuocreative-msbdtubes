@@ -8,24 +8,49 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class TugasController extends Controller
 {
     private const FOLDER_JAWABAN = 'pengumpulan_tugas';
+    private const PER_PAGE = 5;
 
-    public function index()
+    public function index(Request $request)
     {
         $idTentor    = auth()->id();
         $kolomStatus = $this->kolomStatus();
 
+        $q      = trim((string) $request->get('q', ''));
+        $kursus = $request->get('kursus', '');
+        $sort   = $request->get('sort', 'terbaru');
+
         $kelasOptions = $this->kelasTentor($idTentor)->get();
 
-        $tugas = DB::table('tugas')
+        // Query dasar tugas milik tentor
+        $base = DB::table('tugas')
             ->join('kelas', 'tugas.id_kelas', '=', 'kelas.id_kelas')
             ->join('kursus', 'kelas.id_kursus', '=', 'kursus.id_kursus')
             ->join('users as siswa', 'kelas.id_siswa', '=', 'siswa.id_user')
             ->where('tugas.id_tentor', $idTentor)
-            ->orderByDesc('tugas.created_at')
+            ->when($q !== '', function ($query) use ($q) {
+                $query->where(function ($w) use ($q) {
+                    $w->where('tugas.judul', 'ilike', "%{$q}%")
+                      ->orWhere('kursus.nama_kursus', 'ilike', "%{$q}%")
+                      ->orWhere('siswa.nama', 'ilike', "%{$q}%");
+                });
+            })
+            ->when($kursus !== '', fn ($query) => $query->where('kursus.nama_kursus', $kursus));
+
+        // Urutan
+        if ($sort === 'terlama') {
+            $base->orderBy('tugas.created_at');
+        } elseif ($sort === 'az') {
+            $base->orderBy('tugas.judul');
+        } else {
+            $base->orderByDesc('tugas.created_at');
+        }
+
+        $tugas = $base
             ->select(
                 'tugas.id_tugas',
                 'tugas.id_kelas',
@@ -38,10 +63,14 @@ class TugasController extends Controller
                 'kelas.id_siswa',
                 'siswa.nama as siswa'
             )
-            ->get();
+            ->paginate(self::PER_PAGE)
+            ->withQueryString();
+
+        // Ambil pengumpulan hanya untuk halaman ini (hemat)
+        $idsTugas = $tugas->getCollection()->pluck('id_tugas');
 
         $kirim = DB::table('pengumpulan_tugas')
-            ->whereIn('id_tugas', $tugas->pluck('id_tugas'))
+            ->whereIn('id_tugas', $idsTugas)
             ->orderBy('waktu_pengumpulan')
             ->select(
                 'id_pengumpulan', 'id_tugas', 'id_siswa', 'file_jawaban', 'waktu_pengumpulan',
@@ -58,7 +87,7 @@ class TugasController extends Controller
             ->whereIn('id_pengumpulan', $kirim->pluck('id_pengumpulan'))
             ->pluck('nilai', 'id_pengumpulan');
 
-        $daftarTugas = $tugas->map(function ($t) use ($terbaru, $nilai) {
+        $daftarTugas = $tugas->getCollection()->map(function ($t) use ($terbaru, $nilai) {
             $k = $terbaru[$t->id_tugas . '-' . $t->id_siswa] ?? null;
             $n = $k ? ($nilai[$k->id_pengumpulan] ?? null) : null;
 
@@ -80,11 +109,29 @@ class TugasController extends Controller
                 'file_url'       => $k ? route('tentor.tugas.file', ['pengumpulan' => $k->id_pengumpulan]) : '',
                 'nilai'          => $n !== null ? rtrim(rtrim(number_format((float) $n, 2, '.', ''), '0'), '.') : '',
             ];
-        })->all();
+        });
 
-        $kursusFilter = collect($daftarTugas)->pluck('kursus')->unique()->sort()->values()->all();
+        // Ganti collection di paginator supaya view tetap bisa pakai $tugas->links() dll
+        $tugas->setCollection($daftarTugas);
 
-        return view('tentor.tugas', compact('daftarTugas', 'kelasOptions', 'kursusFilter'));
+        // Filter kursus untuk dropdown (dari semua tugas tentor, bukan hanya halaman ini)
+        $kursusFilter = DB::table('tugas')
+            ->join('kelas', 'tugas.id_kelas', '=', 'kelas.id_kelas')
+            ->join('kursus', 'kelas.id_kursus', '=', 'kursus.id_kursus')
+            ->where('tugas.id_tentor', $idTentor)
+            ->distinct()
+            ->orderBy('kursus.nama_kursus')
+            ->pluck('kursus.nama_kursus')
+            ->all();
+
+        return view('tentor.tugas', compact(
+            'tugas',
+            'kelasOptions',
+            'kursusFilter',
+            'q',
+            'kursus',
+            'sort'
+        ));
     }
 
     public function simpan(Request $request)
@@ -112,9 +159,9 @@ class TugasController extends Controller
                 'judul'      => $data['judul'],
                 'deskripsi'  => $data['deskripsi'] ?? '',
                 'deadline'   => $data['deadline'],
-                'file_tugas' => '',           
+                'file_tugas' => '',
                 'created_at' => now(),
-                'update_at'  => now(),        
+                'update_at'  => now(),
                 'tipe'       => $data['tipe'],
             ]);
         });

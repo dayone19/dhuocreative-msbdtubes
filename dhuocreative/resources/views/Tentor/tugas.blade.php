@@ -22,10 +22,10 @@
         </div>
     @endif
 
-    <div class="tmt-toolbar">
+    <form method="GET" action="{{ route('tentor.tugas') }}" class="tmt-toolbar" id="formFilterTugas">
 
         <div class="tmt-search">
-            <input type="text" id="searchTugas"
+            <input type="text" name="q" value="{{ $q }}" id="searchTugas"
                    placeholder="Cari tugas...">
             <span>
                 <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="#ae9154" class="bi bi-search" viewBox="0 0 16 16">
@@ -34,18 +34,20 @@
             </span>
         </div>
 
-        <select id="filterKelas" class="tmt-select">
-            <option value="">Kelas</option>
-            @foreach ($kursusFilter as $kursus)
-                <option value="{{ $kursus }}">{{ $kursus }}</option>
+        <select name="kursus" id="filterKelas" class="tmt-select" onchange="this.form.submit()">
+            <option value="">Semua Kursus</option>
+            @foreach ($kursusFilter as $k)
+                <option value="{{ $k }}" @selected($kursus === $k)>{{ $k }}</option>
             @endforeach
         </select>
 
-        <select id="sortTugas" class="tmt-select">
-            <option value="terbaru">Terbaru</option>
-            <option value="terlama">Terlama</option>
-            <option value="az">Nama A-Z</option>
+        <select name="sort" id="sortTugas" class="tmt-select" onchange="this.form.submit()">
+            <option value="terbaru" @selected($sort === 'terbaru')>Terbaru</option>
+            <option value="terlama" @selected($sort === 'terlama')>Terlama</option>
+            <option value="az" @selected($sort === 'az')>Nama A-Z</option>
         </select>
+
+        <button type="submit" class="tmt-view-btn" style="align-self:center">Cari</button>
 
         <button type="button" class="tmt-upload-btn"
                 onclick="bukaUpload()">
@@ -53,7 +55,7 @@
             <span>Upload<br>Tugas</span>
         </button>
 
-    </div>
+    </form>
 
     <div class="tmt-table-container">
         <table class="tmt-table">
@@ -69,7 +71,7 @@
 
           <tbody id="tugasTable">
 
-            @foreach ($daftarTugas as $t)
+            @forelse ($tugas as $t)
             <tr data-id="{{ $t['id'] }}"
                 data-id-kelas="{{ $t['id_kelas'] }}"
                 data-kelas="{{ $t['kursus'] }}"
@@ -92,15 +94,122 @@
                     <button type="button" class="tmt-view-btn" onclick="lihatTugas(this)">Lihat</button>
                 </td>
             </tr>
-            @endforeach
+            @empty
+            <tr>
+                <td colspan="5" class="tmt-empty" style="text-align:center;padding:24px">
+                    {{ ($q || $kursus) ? 'Tugas tidak ditemukan.' : 'Belum ada tugas.' }}
+                </td>
+            </tr>
+            @endforelse
 
           </tbody>
         </table>
 
-        <div class="tmt-empty" id="tugasKosong" hidden>
-            Tugas tidak ditemukan.
-        </div>
+        {{-- Pagination server-side (style project) --}}
+        @if ($tugas->hasPages())
+        <nav class="tmt-pagination" aria-label="Navigasi halaman">
+            @if ($tugas->onFirstPage())
+                <button type="button" disabled aria-label="Sebelumnya">&lt;</button>
+            @else
+                <a href="{{ $tugas->previousPageUrl() }}" style="text-decoration:none">
+                    <button type="button" aria-label="Sebelumnya">&lt;</button>
+                </a>
+            @endif
+
+            @php
+                $current = $tugas->currentPage();
+                $last    = $tugas->lastPage();
+                $pages   = collect([1, $last, $current]);
+                for ($i = $current - 1; $i <= $current + 1; $i++) {
+                    if ($i >= 1 && $i <= $last) $pages->push($i);
+                }
+                if ($current <= 4) {
+                    foreach ([2, 3, 4] as $n) if ($n < $last) $pages->push($n);
+                }
+                if ($current >= $last - 3) {
+                    foreach ([$last - 1, $last - 2, $last - 3] as $n) if ($n > 1) $pages->push($n);
+                }
+                $pages = $pages->unique()->sort()->values();
+                $prev = 0;
+            @endphp
+
+            @foreach ($pages as $n)
+                @if ($prev && $n - $prev > 1)
+                    <span class="tmt-page-ellipsis">…</span>
+                @endif
+                @if ($n == $current)
+                    <button type="button" class="is-active" aria-current="page">{{ $n }}</button>
+                @else
+                    <a href="{{ $tugas->url($n) }}" style="text-decoration:none">
+                        <button type="button">{{ $n }}</button>
+                    </a>
+                @endif
+                @php $prev = $n; @endphp
+            @endforeach
+
+            @if ($tugas->hasMorePages())
+                <a href="{{ $tugas->nextPageUrl() }}" style="text-decoration:none">
+                    <button type="button" aria-label="Berikutnya">&gt;</button>
+                </a>
+            @else
+                <button type="button" disabled aria-label="Berikutnya">&gt;</button>
+            @endif
+        </nav>
+        @endif
     </div>
+
+    <style>
+    .tmt-pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        margin-top: 22px;
+        flex-wrap: wrap;
+        padding: 4px 0;
+    }
+    .tmt-pagination button {
+        min-width: 40px;
+        height: 40px;
+        padding: 0 12px;
+        border: 1.5px solid #e8d9b8;
+        border-radius: 12px;
+        background: #fffaf0;
+        color: #5a4a2a;
+        font: inherit;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background .15s, color .15s, border-color .15s, transform .1s;
+        box-shadow: 0 1px 2px rgba(0,0,0,.04);
+    }
+    .tmt-pagination button:hover:not(:disabled):not(.is-active) {
+        background: #f5e9cf;
+        border-color: #b29458;
+        color: #3d321c;
+    }
+    .tmt-pagination button.is-active {
+        background: #f27640;
+        border-color: #f27640;
+        color: #fff;
+        box-shadow: 0 2px 8px rgba(242,118,64,.35);
+    }
+    .tmt-pagination button:disabled {
+        opacity: .45;
+        cursor: not-allowed;
+    }
+    .tmt-pagination .tmt-page-ellipsis {
+        min-width: 28px;
+        height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #b29458;
+        font-weight: 700;
+        font-size: 15px;
+        user-select: none;
+    }
+    </style>
 
 </div>
 
@@ -334,52 +443,13 @@
 </div>
 
 <script>
-const searchTugas = document.getElementById('searchTugas');
-const filterKelas = document.getElementById('filterKelas');
-const sortTugas = document.getElementById('sortTugas');
-const tugasTable = document.getElementById('tugasTable');
-const tugasKosong = document.getElementById('tugasKosong');
-
 // data dari database (TugasController@index)
 const kelasOptions = @json($kelasOptions);
 const updateUrlTemplate = "{{ route('tentor.tugas.update', ['tugas' => '__ID__']) }}";
 const nilaiUrlTemplate = "{{ route('tentor.tugas.nilai', ['pengumpulan' => '__ID__']) }}";
 
-function filterTugas() {
-    const keyword = searchTugas.value.toLowerCase().trim();
-    const kelas = filterKelas.value;
-    const rows = [...tugasTable.querySelectorAll('tr')];
-
-    rows.forEach(row => {
-        row.hidden = !(
-            row.dataset.judul.includes(keyword) &&
-            (!kelas || row.dataset.kelas === kelas)
-        );
-    });
-
-    const visibleRows = rows.filter(row => !row.hidden);
-
-    visibleRows.sort((a, b) => {
-        if (sortTugas.value === 'terbaru') {
-            return b.dataset.tanggal.localeCompare(a.dataset.tanggal);
-        }
-
-        if (sortTugas.value === 'terlama') {
-            return a.dataset.tanggal.localeCompare(b.dataset.tanggal);
-        }
-
-        return a.dataset.judul.localeCompare(b.dataset.judul);
-    });
-
-    visibleRows.forEach(row => tugasTable.appendChild(row));
-
-    tugasKosong.hidden = visibleRows.length > 0;
-    tugasKosong.textContent = rows.length ? 'Tugas tidak ditemukan.' : 'Belum ada tugas.';
-}
-
-searchTugas.addEventListener('input', filterTugas);
-filterKelas.addEventListener('change', filterTugas);
-sortTugas.addEventListener('change', filterTugas);
+// Pagination & filter sudah di-handle controller (server-side).
+// JS di bawah hanya untuk modal upload / detail / nilai.
 
 function bukaUpload() {
     document.getElementById('modalUpload').hidden = false;
@@ -531,6 +601,6 @@ function batalEditMode() {
     document.getElementById('actionEdit').hidden = true;
 }
 
-filterTugas();
+
 </script>
 @endsection

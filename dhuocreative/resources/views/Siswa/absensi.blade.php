@@ -132,6 +132,10 @@
         background: var(--red-light);
         color: var(--red);
     }
+    .pill-alpha {
+        background: var(--red-light);
+        color: var(--red);
+    }
     .btn {
         padding: 14px 26px;
         border: none;
@@ -244,6 +248,44 @@
             justify-self: end;
         }
     }
+
+    .tj-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+    .tj-pagination button {
+        min-width: 40px;
+        height: 40px;
+        padding: 0 12px;
+        border: 1.5px solid #cfe0dd;
+        border-radius: 12px;
+        background: #fffaf0;
+        color: #14524b;
+        font: inherit;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .tj-pagination button.is-active {
+        background: #f27640;
+        border-color: #f27640;
+        color: #fff;
+    }
+
+    .tj-pagination button:disabled {
+        opacity: .45;
+        cursor: not-allowed;
+    }
+
+@media (max-width: 640px) {
+
     @media (max-width: 640px) {
         .page {
             gap: 20px;
@@ -289,7 +331,8 @@
         td {
             padding: 13px 14px;
         }
-    }
+}
+}
 
 </style>
 
@@ -305,34 +348,25 @@
                 <h1>Presensi Kelas</h1>
             </div>
 
-            <div class="date">Senin, 13 Oktober 2026</div>
+            <div class="date">{{ $tanggalHariIni }}</div>
         </header>
 
         <section class="attandance today">
             <h2>Jadwal Hari Ini</h2>
-            <div class="class active">
+            @forelse ($jadwalHariIni as $j)
+            <div class="class {{ $j->berlangsung ? 'active' : '' }}">
                 <div>
-                    <h3>Pemrograman Web Lanjut</h3>
+                    <h3>{{ $j->nama_kursus }}</h3>
                     <div class="meta">
-                        <span>Muhammad Azizi</span>
-                        <span>10.00 – 12.00</span>
+                        <span>{{ $j->nama_tentor }}</span>
+                        <span>{{ $j->jam }}</span>
                     </div>
                 </div>
-
-                <span class="pill pill-online">Online</span>
+                <span class="pill pill-online">{{ $j->jenis }}</span>
             </div>
-
-            <div class="class">
-                <div>
-                    <h3>Basis Data</h3>
-                    <div class="meta">
-                        <span>Hapis Ahmad</span>
-                        <span>15.30 – 17.30</span>
-                    </div>
-                </div>
-
-                <span class="pill pill-online">Online</span>
-            </div>
+            @empty
+            <p>Tidak ada jadwal kelas hari ini.</p>
+            @endforelse
         </section>
 
         <section class="attandance">
@@ -341,7 +375,11 @@
                     <h2>Riwayat Presensi</h2>
                 </div>
 
-                <a class="link" href="#">Lihat Semua</a>
+                @if ($semua)
+                    <a class="link" href="{{ route('siswa.absensi') }}">Ringkas</a>
+                @elseif ($totalRiwayat > $ringkas)
+                    <a class="link" href="{{ route('siswa.absensi', ['semua' => 1]) }}">Lihat Semua</a>
+                @endif
             </div>
 
                <div class="scroll">
@@ -356,43 +394,54 @@
                     </thead>
 
                     <tbody>
+                        @forelse ($riwayat as $r)
                         <tr>
-                            <td>10 Oktober 2026</td>
-                            <td>Web Development</td>
-                            <td>10.00 – 12.00</td>
-                            <td><span class="pill pill-hadir">Hadir</span></td>
+                            <td>{{ $r->tanggal_teks }}</td>
+                            <td>{{ $r->nama_kursus }}</td>
+                            <td>{{ $r->jam }}</td>
+                            <td><span class="pill pill-{{ $r->status }}">{{ $r->status_teks }}</span></td>
                         </tr>
-
+                        @empty
                         <tr>
-                            <td>8 Oktober 2026</td>
-                            <td>Web Development</td>
-                            <td>10.00 – 12.00</td>
-                            <td><span class="pill pill-hadir">Hadir</span></td>
+                            <td colspan="4">Belum ada riwayat presensi.</td>
                         </tr>
-
-                        <tr>
-                            <td>6 Oktober 2026</td>
-                            <td>Basis Data</td>
-                            <td>15.30 – 17.30</td>
-                            <td><span class="pill pill-izin">Izin</span></td>
-                        </tr>
-
-                        <tr>
-                            <td>4 Oktober 2026</td>
-                            <td>Web Development</td>
-                            <td>10.00 – 12.00</td>
-                            <td><span class="pill pill-sakit">Sakit</span></td>
-                        </tr>
-
-                        <tr>
-                            <td>2 Oktober 2026</td>
-                            <td>Basis Data</td>
-                            <td>15.30 – 17.30</td>
-                            <td><span class="pill pill-sakit">Sakit</span></td>
-                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
+                @if ($semua && $riwayat->hasPages())
+
+                    <nav class="tj-pagination">
+
+                        @if ($riwayat->onFirstPage())
+                            <button disabled>&lt;</button>
+                        @else
+                            <a href="{{ $riwayat->previousPageUrl() }}">
+                                <button>&lt;</button>
+                            </a>
+                        @endif
+
+                        @for ($i = 1; $i <= $riwayat->lastPage(); $i++)
+                            @if ($i == $riwayat->currentPage())
+                                <button class="is-active">{{ $i }}</button>
+                            @else
+                                <a href="{{ $riwayat->url($i) }}">
+                                    <button>{{ $i }}</button>
+                                </a>
+                            @endif
+                        @endfor
+
+                        @if ($riwayat->hasMorePages())
+                            <a href="{{ $riwayat->nextPageUrl() }}">
+                                <button>&gt;</button>
+                            </a>
+                        @else
+                            <button disabled>&gt;</button>
+                        @endif
+
+                    </nav>
+
+                    @endif
         </section>
     </main>
 @endsection

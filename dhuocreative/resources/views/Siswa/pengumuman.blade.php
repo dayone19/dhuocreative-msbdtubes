@@ -42,8 +42,9 @@
 
     <div class="t-announcement-list" id="daftarPengumuman">
 
+        @foreach ($pengumuman as $p)
         <article class="t-announcement-card"
-                 data-tanggal="2026-10-18">
+                 data-tanggal="{{ $p->tanggal_iso}}">
 
             <div class="t-announcement-top">
                 <span class="t-announcement-category">
@@ -51,83 +52,27 @@
                 </span>
 
                 <span class="t-announcement-date">
-                    18 Oktober 2026
+                    {{ $p->tanggal_teks }}
                 </span>
             </div>
 
-            <h3>Informasi Kegiatan Belajar</h3>
+            <h3>{{ $p->judul}}</h3>
 
             <p class="t-announcement-body">
-                Siswa dan tentor diharapkan mengikuti kegiatan
-                belajar sesuai jadwal yang telah ditentukan.
+                {{ $p->isi }}
             </p>
 
             <p class="t-announcement-author">
-                Dibuat oleh: Admin (Admin)
+                {{ $p->pembuat_teks }}
             </p>
 
         </article>
-
-
-        <article class="t-announcement-card"
-                 data-tanggal="2026-10-17">
-
-            <div class="t-announcement-top">
-                <span class="t-announcement-category">
-                    Pengumuman
-                </span>
-
-                <span class="t-announcement-date">
-                    17 Oktober 2026
-                </span>
-            </div>
-
-            <h3>Pengingat Pembayaran</h3>
-
-            <p class="t-announcement-body">
-                Mohon periksa status pembayaran kursus melalui
-                bagian administrasi. Jika sudah membayar,
-                abaikan pengingat ini.
-            </p>
-
-            <p class="t-announcement-author">
-                Dibuat oleh: Rina (Operator)
-            </p>
-
-        </article>
-
-
-        <article class="t-announcement-card"
-                 data-tanggal="2026-10-16">
-
-            <div class="t-announcement-top">
-                <span class="t-announcement-category">
-                    Pengumuman
-                </span>
-
-                <span class="t-announcement-date">
-                    16 Oktober 2026
-                </span>
-            </div>
-
-            <h3>Materi Pertemuan Berikutnya</h3>
-
-            <p class="t-announcement-body">
-                Untuk pertemuan berikutnya, siswa diminta
-                mempersiapkan materi latihan yang telah
-                dibagikan di kelas.
-            </p>
-
-            <p class="t-announcement-author">
-                Dibuat oleh: Dewi (Tentor)
-            </p>
-
-        </article>
+        @endforeach
 
     </div>
 
     <p class="t-empty" id="pengumumanKosong" hidden>
-        Pengumuman tidak ditemukan.
+        {{ count($pengumuman) > 0 ? 'pengumuman tidak ditemukan.' : 'Belum ada pengumuman' }}
     </p>
 
 </div>
