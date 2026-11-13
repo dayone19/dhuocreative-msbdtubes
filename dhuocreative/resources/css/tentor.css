@@ -62,16 +62,17 @@ body {
 }
 
 /* css pagination */
-.tj-pagination{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-top:14px}
+.tj-pagination{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px;margin-top:18px;padding:4px 0}
 .tj-pagination[hidden]{display:none}
-.tj-pg-info{color:var(--teal);font-size:14px;font-weight:600}
-.tj-pg-list{display:flex;align-items:center;flex-wrap:wrap;gap:6px}
-.tj-pg-btn{min-width:40px;height:40px;padding:0 12px;border:1px solid var(--mint-line);border-radius:20px;background:#fff;color:var(--teal);font:inherit;font-size:14px;font-weight:700;cursor:pointer;transition:background .2s ease,border-color .2s ease}
-.tj-pg-btn:hover:not(:disabled):not(.active){background:var(--mint);border-color:var(--teal)}
-.tj-pg-btn.active{background:var(--orange);border-color:var(--orange);color:#fff;cursor:default}
-.tj-pg-btn:disabled{opacity:.4;cursor:not-allowed}
+.tj-pg-info{display:none}
+.tj-pg-list{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.tj-pg-btn{min-width:40px;height:40px;padding:0 12px;border:1.5px solid #e8d9b8;border-radius:12px;background:#fffaf0;color:#5a4a2a;font:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:background .15s,color .15s,border-color .15s;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;box-sizing:border-box;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+a.tj-pg-btn{line-height:1}
+.tj-pg-btn:hover:not(:disabled):not(.active){background:#f5e9cf;border-color:#b29458;color:#3d321c}
+.tj-pg-btn.active{background:#f27640;border-color:#f27640;color:#fff;cursor:default;box-shadow:0 2px 8px rgba(242,118,64,.35)}
+.tj-pg-btn:disabled{opacity:.45;cursor:not-allowed}
 .tj-pg-btn:focus-visible{outline:3px solid rgba(242,118,64,.45);outline-offset:2px}
-.tj-pg-dots{padding:0 4px;color:var(--gold-dk);font-weight:700}
+.tj-pg-dots{min-width:28px;height:40px;display:inline-flex;align-items:center;justify-content:center;color:#b29458;font-weight:700;font-size:15px;user-select:none}
 @media (max-width:560px){.tj-pagination{justify-content:center}.tj-pg-btn{min-width:36px;height:36px;padding:0 9px}}
 
 /* css dashboard */

@@ -50,7 +50,6 @@ class DashboardController extends Controller
                 return $j;
             });
 
-        // Pengumuman hari ini saja — ambil yang paling terbaru (jika ada yang baru diposting hari ini, otomatis berubah)
         $pengumumanTerbaru = DB::table('pengumuman')
             ->join('users', 'pengumuman.id_user', '=', 'users.id_user')
             ->whereDate('pengumuman.tanggal', today())
@@ -65,7 +64,6 @@ class DashboardController extends Controller
             )
             ->first();
 
-        // Semua kelas aktif siswa + progress
         $kursusAktif = DB::table('kelas')
             ->join('kursus', 'kelas.id_kursus', '=', 'kursus.id_kursus')
             ->where('kelas.id_siswa', $idSiswa)

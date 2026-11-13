@@ -250,16 +250,18 @@
     }
 
     .tj-pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-}
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        gap: 8px !important;
+        margin: 20px auto !important;
+        padding: 8px 0 !important;
+        flex-wrap: wrap !important;
+        width: 100% !important;
+        text-align: center;
+    }
 
-    .tj-pagination button {
+    .tj-pagination .tj-pg-btn {
         min-width: 40px;
         height: 40px;
         padding: 0 12px;
@@ -271,17 +273,36 @@
         font-size: 14px;
         font-weight: 600;
         cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        box-sizing: border-box;
     }
 
-    .tj-pagination button.is-active {
+    .tj-pagination .tj-pg-btn.is-active,
+    .tj-pagination .tj-pg-btn.active {
         background: #f27640;
         border-color: #f27640;
         color: #fff;
+        cursor: default;
     }
 
-    .tj-pagination button:disabled {
+    .tj-pagination .tj-pg-btn:disabled {
         opacity: .45;
         cursor: not-allowed;
+    }
+
+    .tj-pagination .tj-pg-dots {
+        min-width: 28px;
+        height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #5f7f7b;
+        font-weight: 700;
+        font-size: 15px;
+        user-select: none;
     }
 
 @media (max-width: 640px) {
@@ -410,38 +431,45 @@
                 </table>
             </div>
                 @if ($semua && $riwayat->hasPages())
-
-                    <nav class="tj-pagination">
-
+                    <nav class="tj-pagination" aria-label="Navigasi halaman">
                         @if ($riwayat->onFirstPage())
-                            <button disabled>&lt;</button>
+                            <button type="button" class="tj-pg-btn" disabled aria-label="Sebelumnya">&lt;</button>
                         @else
-                            <a href="{{ $riwayat->previousPageUrl() }}">
-                                <button>&lt;</button>
-                            </a>
+                            <a href="{{ $riwayat->previousPageUrl() }}" class="tj-pg-btn" aria-label="Sebelumnya">&lt;</a>
                         @endif
 
-                        @for ($i = 1; $i <= $riwayat->lastPage(); $i++)
-                            @if ($i == $riwayat->currentPage())
-                                <button class="is-active">{{ $i }}</button>
-                            @else
-                                <a href="{{ $riwayat->url($i) }}">
-                                    <button>{{ $i }}</button>
-                                </a>
+                        @php
+                            $__cur = $riwayat->currentPage();
+                            $__last = $riwayat->lastPage();
+                            if ($__last <= 7) {
+                                $__pages = range(1, $__last);
+                            } else {
+                                $__pages = collect([1, $__last, $__cur, $__cur - 1, $__cur + 1, $__cur - 2, $__cur + 2])
+                                    ->filter(fn ($n) => $n >= 1 && $n <= $__last)
+                                    ->unique()->sort()->values()->all();
+                            }
+                            $__prev = 0;
+                        @endphp
+
+                        @foreach ($__pages as $__i)
+                            @if ($__prev && $__i - $__prev > 1)
+                                <span class="tj-pg-dots">…</span>
                             @endif
-                        @endfor
+                            @if ($__i == $__cur)
+                                <button type="button" class="tj-pg-btn is-active" aria-current="page">{{ $__i }}</button>
+                            @else
+                                <a href="{{ $riwayat->url($__i) }}" class="tj-pg-btn">{{ $__i }}</a>
+                            @endif
+                            @php $__prev = $__i; @endphp
+                        @endforeach
 
                         @if ($riwayat->hasMorePages())
-                            <a href="{{ $riwayat->nextPageUrl() }}">
-                                <button>&gt;</button>
-                            </a>
+                            <a href="{{ $riwayat->nextPageUrl() }}" class="tj-pg-btn" aria-label="Berikutnya">&gt;</a>
                         @else
-                            <button disabled>&gt;</button>
+                            <button type="button" class="tj-pg-btn" disabled aria-label="Berikutnya">&gt;</button>
                         @endif
-
                     </nav>
-
-                    @endif
+                @endif
         </section>
     </main>
 @endsection

@@ -9,7 +9,7 @@ class KursusController extends Controller
 {
     public function index()
     {
-        $idSiswa = auth()->id();   // = id_user siswa yang login
+        $idSiswa = auth()->id();   
 
         $kursus = DB::table('kelas')
             ->join('kursus', 'kelas.id_kursus', '=', 'kursus.id_kursus')

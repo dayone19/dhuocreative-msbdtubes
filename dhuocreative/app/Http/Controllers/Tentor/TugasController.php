@@ -85,8 +85,7 @@ class TugasController extends Controller
 
         $nilai = DB::table('nilai')
             ->whereIn('id_pengumpulan', $kirim->pluck('id_pengumpulan'))
-            ->get()
-            ->keyBy('id_pengumpulan');
+            ->pluck('nilai', 'id_pengumpulan');
 
         $daftarTugas = $tugas->getCollection()->map(function ($t) use ($terbaru, $nilai) {
             $k = $terbaru[$t->id_tugas . '-' . $t->id_siswa] ?? null;
@@ -108,8 +107,7 @@ class TugasController extends Controller
                 'id_pengumpulan' => $k->id_pengumpulan ?? '',
                 'file_nama'      => $k ? preg_replace('/^\d+_/', '', basename($k->file_jawaban)) : '',
                 'file_url'       => $k ? route('tentor.tugas.file', ['pengumpulan' => $k->id_pengumpulan]) : '',
-                'nilai' => $n && $n->nilai !== null ? rtrim(rtrim(number_format((float) $n->nilai, 2, '.', ''), '0'), '.') : '',
-                'feedback' => $n->feedback ?? '',
+                'nilai'          => $n !== null ? rtrim(rtrim(number_format((float) $n, 2, '.', ''), '0'), '.') : '',
             ];
         });
 
@@ -201,7 +199,6 @@ class TugasController extends Controller
     {
         $data = $request->validate([
             'nilai' => 'required|numeric|min:0|max:100',
-            'feedback' => 'nullable|string|max:100',
         ], [
             'nilai.required' => 'Nilai wajib diisi.',
             'nilai.numeric'  => 'Nilai harus berupa angka.',
@@ -224,7 +221,6 @@ class TugasController extends Controller
             if ($sudahAda) {
                 DB::table('nilai')->where('id_pengumpulan', $idPengumpulan)->update([
                     'nilai'         => $data['nilai'],
-                    'feedback'      => $data['feedback'] ?? null,
                     'id_tentor'     => auth()->id(),
                     'tanggal_nilai' => now(),
                 ]);
@@ -234,7 +230,7 @@ class TugasController extends Controller
                     'id_pengumpulan' => $idPengumpulan,
                     'id_tentor'      => auth()->id(),
                     'nilai'          => $data['nilai'],
-                    'feedback' => $data['feedback'] ?? null,
+                    'feedback'       => null,
                     'tanggal_nilai'  => now(),
                 ]);
             }

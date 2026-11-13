@@ -40,7 +40,6 @@
     </div>
 
     <div class="t-announcement-list" id="daftarPengumuman">
-        {{-- satu kartu per pengumuman (dari PengumumanController@index); halaman ini hanya untuk melihat --}}
         @foreach ($pengumuman as $p)
         <article class="t-announcement-card"
                  data-tanggal="{{ $p->tanggal_iso }}">

@@ -44,7 +44,6 @@ class SertifikatController extends Controller
             'fileType'   => $this->jenisFile($s->file_sertifikat),
         ])->values()->all();
 
-        // Hanya siswa yang sudah mengumpulkan tugas bertipe "projek" (tugas besar)
         $siswa = $this->siswaLayakSertifikat($idTentor);
 
         return view('tentor.sertifikat', compact('sertifikat', 'siswa'));
@@ -62,7 +61,6 @@ class SertifikatController extends Controller
         $idTentor = auth()->id();
         $idSiswa  = (int) $request->id_siswa;
 
-        // Validasi server-side: siswa harus sudah mengumpulkan tugas besar (projek)
         if (!$this->sudahKumpulProjek($idTentor, $idSiswa)) {
             return redirect()
                 ->route('tentor.sertifikat')
@@ -153,10 +151,6 @@ class SertifikatController extends Controller
         );
     }
 
-    /**
-     * Siswa milik tentor yang sudah mengumpulkan minimal 1 tugas bertipe "projek".
-     * Hanya mereka yang boleh dipilih saat upload sertifikat.
-     */
     private function siswaLayakSertifikat($idTentor)
     {
         return DB::table('pengumpulan_tugas as pt')
@@ -170,9 +164,6 @@ class SertifikatController extends Controller
             ->get();
     }
 
-    /**
-     * Cek ulang di server: apakah siswa ini sudah kumpul tugas besar milik tentor ini.
-     */
     private function sudahKumpulProjek(int $idTentor, int $idSiswa): bool
     {
         return DB::table('pengumpulan_tugas as pt')

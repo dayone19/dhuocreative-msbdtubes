@@ -110,7 +110,6 @@
     </section>
 </div>
 
-{{-- Modal Detail Sertifikat --}}
 <div class="ts-overlay" id="tsDetailModal" hidden>
     <section class="ts-modal ts-detail-modal" role="dialog" aria-modal="true" aria-labelledby="tsDetailTitle">
         <div class="ts-modal-header">
@@ -158,7 +157,6 @@
     </section>
 </div>
 
-{{-- Modal Edit Sertifikat --}}
 <div class="ts-overlay" id="tsEditModal" hidden>
     <section class="ts-modal" role="dialog" aria-modal="true" aria-labelledby="tsEditTitle">
         <div class="ts-modal-header">
@@ -216,17 +214,11 @@ function renderPaginasi(navId, total, halaman, pindah) {
     if (!nav) return;
     nav.replaceChildren();
     if (!total) { nav.hidden = true; return; }
-    nav.hidden = false;
- 
+
     const jumlah = Math.ceil(total / PER_HALAMAN);
-    const awal = (halaman - 1) * PER_HALAMAN + 1;
-    const akhir = Math.min(halaman * PER_HALAMAN, total);
- 
-    const info = document.createElement('span');
-    info.className = 'tj-pg-info';
-    info.textContent = `Menampilkan ${awal}–${akhir} dari ${total}`;
-    nav.appendChild(info);
-    if (jumlah <= 1) return;
+    // Sembunyikan pagination (termasuk teks "Menampilkan …") kalau cuma 1 halaman
+    if (jumlah <= 1) { nav.hidden = true; return; }
+    nav.hidden = false;
  
     const btn = (label, tujuan, { aktif = false, mati = false, aria } = {}) => {
         const b = document.createElement('button');
@@ -295,7 +287,6 @@ function renderPaginasi(navId, total, halaman, pindah) {
         }
     }
  
-    // Buat elemen baris dari data sertifikat sekali saja di awal
     certificates.forEach(data => {
         const row = document.createElement('tr');
         row.dataset.year = data.year;
@@ -371,7 +362,6 @@ function renderPaginasi(navId, total, halaman, pindah) {
         const query = search.value.toLowerCase().trim();
         const year = yearFilter.value;
         
-        // Filter baris berdasarkan pencarian dan tahun
         const visibleRows = rowElements.filter(row => {
             const matches = row.textContent.toLowerCase().includes(query) &&
                 (!year || row.dataset.year === year);

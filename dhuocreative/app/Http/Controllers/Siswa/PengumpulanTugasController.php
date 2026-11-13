@@ -10,13 +10,22 @@ use Illuminate\Support\Facades\DB;
 
 class PengumpulanTugasController extends Controller
 {
+    private const PER_PAGE = 5;
+
     public function index()
     {
         $idSiswa = auth()->id();
 
-        $tugas = DB::table('tugas')
-            ->join('kelas', 'tugas.id_kelas', '=', 'kelas.id_kelas')
+        $kelasSiswa = DB::table('kelas')
             ->join('kursus', 'kelas.id_kursus', '=', 'kursus.id_kursus')
+            ->where('kelas.id_siswa', $idSiswa)
+            ->where('kelas.status', 'aktif')
+            ->orderBy('kursus.nama_kursus')
+            ->select('kelas.id_kelas', 'kursus.nama_kursus')
+            ->get();
+
+        $semuaTugas = DB::table('tugas')
+            ->join('kelas', 'tugas.id_kelas', '=', 'kelas.id_kelas')
             ->leftJoin('pengumpulan_tugas as p', function ($j) {
                 $j->on('p.id_tugas', '=', 'tugas.id_tugas')
                     ->on('p.id_siswa', '=', 'kelas.id_siswa');
@@ -27,18 +36,47 @@ class PengumpulanTugasController extends Controller
             ->select(
                 'tugas.id_tugas',
                 'tugas.judul',
+                'kelas.id_kelas',
+                'nilai.nilai'
+            )
+            ->get()
+            ->map(function ($t) {
+                $t->sudah_dinilai = $t->nilai !== null;
+                return $t;
+            });
+
+        $tugas = DB::table('tugas')
+            ->join('kelas', 'tugas.id_kelas', '=', 'kelas.id_kelas')
+            ->join('kursus', 'kelas.id_kursus', '=', 'kursus.id_kursus')
+            ->leftJoin('pengumpulan_tugas as p', function ($j) {
+                $j->on('p.id_tugas', '=', 'tugas.id_tugas')
+                    ->on('p.id_siswa', '=', 'kelas.id_siswa');
+            })
+            ->leftJoin('nilai', 'nilai.id_pengumpulan', '=', 'p.id_pengumpulan')
+            ->where('kelas.id_siswa', $idSiswa)
+            ->orderByDesc('tugas.deadline')
+            ->select(
+                'tugas.id_tugas',
+                'tugas.judul',
+                'tugas.deskripsi',
                 'tugas.deadline',
                 'kelas.id_kelas',
                 'kursus.nama_kursus',
                 'p.status as status_pengumpulan',
                 'nilai.nilai'
             )
-            ->get()
-            ->map(function ($t) {
+            ->paginate(self::PER_PAGE)
+            ->withQueryString();
+
+        $tugas->setCollection(
+            $tugas->getCollection()->map(function ($t) {
                 $d = Carbon::parse($t->deadline)->locale('id');
 
                 $t->deadline_tanggal = $d->translatedFormat('j F Y');
                 $t->deadline_jam = $d->format('H:i');
+                $t->deskripsi_teks = $t->deskripsi
+                    ? \Illuminate\Support\Str::limit(strip_tags($t->deskripsi), 120)
+                    : '—';
 
                 [$t->status_teks, $t->status_css] = match ($t->status_pengumpulan) {
                     'terkumpul' => ['Dikumpulkan', 'pt-status-done'],
@@ -49,11 +87,10 @@ class PengumpulanTugasController extends Controller
                 $t->sudah_dinilai = $t->nilai !== null;
 
                 return $t;
-            });
+            })
+        );
 
-        $kelasSiswa = $tugas->unique('id_kelas')->values();
-
-        return view('siswa.pengumpulanTugas', compact('tugas', 'kelasSiswa'));
+        return view('siswa.pengumpulanTugas', compact('tugas', 'kelasSiswa', 'semuaTugas'));
     }
 
     public function kumpulkan(Request $request)
