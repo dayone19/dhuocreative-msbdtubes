@@ -337,6 +337,24 @@ body {
     color: #444;
 }
 
+.sd-announcement-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 128px;
+    text-align: center;
+}
+
+.sd-announcement-empty .sd-dot {
+    display: none;
+}
+
+.sd-announcement-empty small {
+    margin-top: 0;
+    font-size: 14px;
+    color: #6b7280;
+}
+
 .sd-color-operator {
     display: block;
     font-size: 13px;

@@ -4,7 +4,7 @@
 
 <div class="sd-dashboard">
     <section class="sd-welcome">
-        <h1>Halo, Nadhira Ameera</h1>
+        <h1>Halo, {{ $namaSiswa}}</h1>
         <p>Selamat datang di DhuoCreative Portal!</p>
     </section>
 
@@ -64,83 +64,75 @@
 
             <div class="sd-schedule-list">
 
+                @forelse ($jadwalHariIni as $j)
                 <div class="sd-schedule-row">
 
                     <div class="sd-schedule-info">
-                        <h4>Web Development</h4>
+                        <h4>{{ $j->nama_kursus}}</h4>
 
                         <p class="sd-meta">
                             <i class="bi bi-person-fill"></i>
-                            Tentor : Deyoan Salsabila
+                            Tentor : {{ $j->nama_tentor}}
                         </p>
 
                         <p class="sd-meta">
                             <i class="bi bi-clock"></i>
-                            10:00 - 12:00
+                            {{ $j->jam}}
                         </p>
                     </div>
 
                     <div class="sd-schedule-side">
 
-                        <span class="sd-badge sd-badge-online">
-                            Online
+                        <span class="sd-badge {{ $j->badge_class}}">
+                            {{ $j->badge_text}}
                         </span>
                     </div>
                 </div>
+                @empty
 
                 <div class="sd-schedule-row">
 
                     <div class="sd-schedule-info">
-                        <h4>Web Development</h4>
-
                         <p class="sd-meta">
-                            <i class="bi bi-person-fill"></i>
-                            Tentor : Deyoan Salsabila
+                            Tidak ada jadwal kelas untuk hari ini.
                         </p>
-
-                        <p class="sd-meta">
-                            <i class="bi bi-clock"></i>
-                            10:00 - 12:00
-                        </p>
-                    </div>
-
-                    <div class="sd-schedule-side">
-
-                        <span class="sd-badge sd-badge-online">
-                            Online
-                        </span>
                     </div>
                 </div>
+                @endforelse
 
             </div>
         </div>
 
         <div class="sd-panel sd-announcement">
-
+ 
             <div class="sd-panel-title">
                 <h2>Pengumuman Hari Ini</h2>
             </div>
-
+ 
+            @if ($pengumumanTerbaru)
             <div class="sd-announcement-item">
                 <span class="sd-dot"></span>
-
+ 
                 <div>
-                    <strong>Pengingat Pembayaran</strong>
-
+                    <strong>{{ $pengumumanTerbaru->judul }}</strong>
+ 
                     <small>
-                        Mohon periksa status pembayaran kursus melalui
-                        bagian administrasi. Jika sudah membayar,
-                        abaikan pengingat ini. 
+                        {{ $pengumumanTerbaru->isi }}
                         <br>
-                        <div class="sd-color-operator">Dibuat oleh: Rina (Operator)</div>
+                        <div class="sd-color-{{ $pengumumanTerbaru->role }}">Dibuat oleh: {{ $pengumumanTerbaru->nama }} ({{ ucfirst($pengumumanTerbaru->role) }})</div>
                     </small>
                 </div>
             </div>
-
+            @else
+            <p>Belum ada pengumuman hari ini.</p>
+            @endif
+ 
         </div>
 
     </section>
 
+    
+    @if ($kursusUtama)
     <section class="sd-course">
 
         <div class="sd-course-info">
@@ -150,19 +142,19 @@
                 Kursus Aktif
             </span>
 
-            <h4>Web Development</h4>
+            <h4>{{ $kursusUtama->nama_kursus }}</h4>
 
             <p class="sd-meta">
                 <i class="bi bi-person-fill"></i>
-                Tentor : Deyoan Salsabila
+                Tentor : {{ $kursusUtama->nama_tentor }}
             </p>
 
             <div class="sd-progress-wrap">
                 <div class="sd-progress">
-                    <div class="sd-progress-bar" style="width: 60%;"></div>
+                    <div class="sd-progress-bar" style="width: {{ $kursusUtama->persen }}%;"></div>
                 </div>
 
-                <span class="sd-progress-text">60%</span>
+                <span class="sd-progress-text">{{ $kursusUtama->persen }}%</span>
             </div>
 
         </div>
@@ -173,28 +165,7 @@
         </a>
 
     </section>
-
+    @endif
 </div>
-
-<script>
-document.querySelectorAll('.js-setujui-kelas').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-        const side = btn.closest('.sd-schedule-side');
-
-        if (!side) return;
-
-        const actions = side.querySelector('.sd-schedule-actions');
-        const badge = side.querySelector('.sd-badge-disetujui');
-
-        if (actions) {
-            actions.hidden = true;
-        }
-
-        if (badge) {
-            badge.hidden = false;
-        }
-    });
-});
-</script>
 
 @endsection

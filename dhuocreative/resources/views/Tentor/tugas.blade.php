@@ -22,10 +22,10 @@
         </div>
     @endif
 
-    <div class="tmt-toolbar">
+    <form method="GET" action="{{ route('tentor.tugas') }}" class="tmt-toolbar" id="formFilterTugas">
 
         <div class="tmt-search">
-            <input type="text" id="searchTugas"
+            <input type="text" name="q" value="{{ $q }}" id="searchTugas"
                    placeholder="Cari tugas...">
             <span>
                 <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="#ae9154" class="bi bi-search" viewBox="0 0 16 16">
@@ -34,18 +34,20 @@
             </span>
         </div>
 
-        <select id="filterKelas" class="tmt-select">
-            <option value="">Kelas</option>
-            @foreach ($kursusFilter as $kursus)
-                <option value="{{ $kursus }}">{{ $kursus }}</option>
+        <select name="kursus" id="filterKelas" class="tmt-select" onchange="this.form.submit()">
+            <option value="">Semua Kursus</option>
+            @foreach ($kursusFilter as $k)
+                <option value="{{ $k }}" @selected($kursus === $k)>{{ $k }}</option>
             @endforeach
         </select>
 
-        <select id="sortTugas" class="tmt-select">
-            <option value="terbaru">Terbaru</option>
-            <option value="terlama">Terlama</option>
-            <option value="az">Nama A-Z</option>
+        <select name="sort" id="sortTugas" class="tmt-select" onchange="this.form.submit()">
+            <option value="terbaru" @selected($sort === 'terbaru')>Terbaru</option>
+            <option value="terlama" @selected($sort === 'terlama')>Terlama</option>
+            <option value="az" @selected($sort === 'az')>Nama A-Z</option>
         </select>
+
+        <button type="submit" class="tmt-view-btn" style="align-self:center">Cari</button>
 
         <button type="button" class="tmt-upload-btn"
                 onclick="bukaUpload()">
@@ -53,7 +55,7 @@
             <span>Upload<br>Tugas</span>
         </button>
 
-    </div>
+    </form>
 
     <div class="tmt-table-container">
         <table class="tmt-table">
@@ -69,7 +71,7 @@
 
           <tbody id="tugasTable">
 
-            @foreach ($daftarTugas as $t)
+            @forelse ($tugas as $t)
             <tr data-id="{{ $t['id'] }}"
                 data-id-kelas="{{ $t['id_kelas'] }}"
                 data-kelas="{{ $t['kursus'] }}"
@@ -81,7 +83,6 @@
                 data-deskripsi="{{ $t['deskripsi'] }}"
                 data-id-pengumpulan="{{ $t['id_pengumpulan'] }}"
                 data-nilai="{{ $t['nilai'] }}"
-                data-feedback="{{ $t['feedback'] }}"
                 data-file-nama="{{ $t['file_nama'] }}"
                 data-file-url="{{ $t['file_url'] }}">
                 <td>{{ $t['judul'] }}</td>
@@ -93,21 +94,124 @@
                     <button type="button" class="tmt-view-btn" onclick="lihatTugas(this)">Lihat</button>
                 </td>
             </tr>
-            @endforeach
+            @empty
+            <tr>
+                <td colspan="5" class="tmt-empty" style="text-align:center;padding:24px">
+                    {{ ($q || $kursus) ? 'Tugas tidak ditemukan.' : 'Belum ada tugas.' }}
+                </td>
+            </tr>
+            @endforelse
 
           </tbody>
         </table>
 
-        <div class="tmt-empty" id="tugasKosong" hidden>
-            Tugas tidak ditemukan.
-        </div>
+        @if ($tugas->hasPages())
+        <nav class="tmt-pagination" aria-label="Navigasi halaman">
+            @if ($tugas->onFirstPage())
+                <button type="button" disabled aria-label="Sebelumnya">&lt;</button>
+            @else
+                <a href="{{ $tugas->previousPageUrl() }}" style="text-decoration:none">
+                    <button type="button" aria-label="Sebelumnya">&lt;</button>
+                </a>
+            @endif
+
+            @php
+                $current = $tugas->currentPage();
+                $last    = $tugas->lastPage();
+                $pages   = collect([1, $last, $current]);
+                for ($i = $current - 1; $i <= $current + 1; $i++) {
+                    if ($i >= 1 && $i <= $last) $pages->push($i);
+                }
+                if ($current <= 4) {
+                    foreach ([2, 3, 4] as $n) if ($n < $last) $pages->push($n);
+                }
+                if ($current >= $last - 3) {
+                    foreach ([$last - 1, $last - 2, $last - 3] as $n) if ($n > 1) $pages->push($n);
+                }
+                $pages = $pages->unique()->sort()->values();
+                $prev = 0;
+            @endphp
+
+            @foreach ($pages as $n)
+                @if ($prev && $n - $prev > 1)
+                    <span class="tmt-page-ellipsis">…</span>
+                @endif
+                @if ($n == $current)
+                    <button type="button" class="is-active" aria-current="page">{{ $n }}</button>
+                @else
+                    <a href="{{ $tugas->url($n) }}" style="text-decoration:none">
+                        <button type="button">{{ $n }}</button>
+                    </a>
+                @endif
+                @php $prev = $n; @endphp
+            @endforeach
+
+            @if ($tugas->hasMorePages())
+                <a href="{{ $tugas->nextPageUrl() }}" style="text-decoration:none">
+                    <button type="button" aria-label="Berikutnya">&gt;</button>
+                </a>
+            @else
+                <button type="button" disabled aria-label="Berikutnya">&gt;</button>
+            @endif
+        </nav>
+        @endif
     </div>
 
-    <nav class="tj-pagination" id="paginasiTugas" aria-label="Halaman daftar tugas" hidden></nav>
+    <style>
+    .tmt-pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        margin-top: 22px;
+        flex-wrap: wrap;
+        padding: 4px 0;
+    }
+    .tmt-pagination button {
+        min-width: 40px;
+        height: 40px;
+        padding: 0 12px;
+        border: 1.5px solid #e8d9b8;
+        border-radius: 12px;
+        background: #fffaf0;
+        color: #5a4a2a;
+        font: inherit;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background .15s, color .15s, border-color .15s, transform .1s;
+        box-shadow: 0 1px 2px rgba(0,0,0,.04);
+    }
+    .tmt-pagination button:hover:not(:disabled):not(.is-active) {
+        background: #f5e9cf;
+        border-color: #b29458;
+        color: #3d321c;
+    }
+    .tmt-pagination button.is-active {
+        background: #f27640;
+        border-color: #f27640;
+        color: #fff;
+        box-shadow: 0 2px 8px rgba(242,118,64,.35);
+    }
+    .tmt-pagination button:disabled {
+        opacity: .45;
+        cursor: not-allowed;
+    }
+    .tmt-pagination .tmt-page-ellipsis {
+        min-width: 28px;
+        height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #b29458;
+        font-weight: 700;
+        font-size: 15px;
+        user-select: none;
+    }
+    </style>
 
 </div>
 
-{{-- modal upload tgs --}}
 <div class="tmt-modal-overlay" id="modalUpload" hidden>
     <div class="tmt-upload-modal">
 
@@ -195,7 +299,6 @@
     </div>
 </div>
 
-{{-- Modal Detail / Edit Tugas --}}
 <div class="tmt-modal-overlay" id="modalDetail" hidden>
     <div class="tmt-upload-modal tmt-modal-wide" id="detailBox">
 
@@ -264,7 +367,6 @@
 </div>
 
 
-{{-- Modal Lihat Tugas --}}
 <div class="tmt-modal-overlay" id="modalLihat" hidden>
     <div class="tmt-upload-modal tmt-modal-wide">
 
@@ -277,7 +379,6 @@
             <h2>Lihat<br>Tugas</h2>
         </div>
 
-        {{-- action diisi JS (butuh id pengumpulan) --}}
         <form id="formNilai" class="tmt-upload-form" method="POST" action="#">
             @csrf
 
@@ -313,7 +414,6 @@
                     <textarea id="lihatDeskripsi" readonly placeholder="-"></textarea>
                 </div>
 
-                {{-- Tempat File Tugas Siswa yang Di-upload --}}
                 <div class="tmt-form-group">
                     <label>File Tugas Siswa</label>
                     <div id="containerFileSiswa">
@@ -327,15 +427,6 @@
                           placeholder="Masukkan nilai (0-100)" required>
                 </div>
 
-                <div class="tmt-form-group">
-                    <label for="lihatFeedback">Feedback</label>
-                    <textarea
-                        id="lihatFeedback"
-                        name="feedback"
-                        placeholder="Berikan feedback atau evaluasi untuk siswa..."
-                        rows="4"></textarea>
-                </div>
-
                 <div class="tmt-upload-actions">
                     <button type="button" class="tmt-cancel-btn" onclick="tutupLihat()">Batal</button>
                     <button type="submit" class="tmt-send-btn">Simpan</button>
@@ -346,112 +437,11 @@
 </div>
 
 <script>
-const searchTugas = document.getElementById('searchTugas');
-const filterKelas = document.getElementById('filterKelas');
-const sortTugas = document.getElementById('sortTugas');
-const tugasTable = document.getElementById('tugasTable');
-const tugasKosong = document.getElementById('tugasKosong');
 
-const PER_HALAMAN = 10;
-let halTugas = 1;
-
-function renderPaginasi(navId, total, halaman, pindah) {
-    const nav = document.getElementById(navId);
-    nav.replaceChildren();
-    if (!total) { nav.hidden = true; return; }
-    nav.hidden = false;
-
-    const jumlah = Math.ceil(total / PER_HALAMAN);
-    const awal = (halaman - 1) * PER_HALAMAN + 1;
-    const akhir = Math.min(halaman * PER_HALAMAN, total);
-
-    const info = document.createElement('span');
-    info.className = 'tj-pg-info';
-    info.textContent = `Menampilkan ${awal}–${akhir} dari ${total}`;
-    nav.appendChild(info);
-    if (jumlah <= 1) return;
-
-    const btn = (label, tujuan, { aktif = false, mati = false, aria } = {}) => {
-        const b = document.createElement('button');
-        b.type = 'button';
-        b.className = 'tj-pg-btn' + (aktif ? ' active' : '');
-        b.textContent = label;
-        b.disabled = mati;
-        if (aria) b.setAttribute('aria-label', aria);
-        if (aktif) b.setAttribute('aria-current', 'page');
-        b.addEventListener('click', () => pindah(tujuan));
-        return b;
-    };
-
-    const grup = document.createElement('div');
-    grup.className = 'tj-pg-list';
-    grup.appendChild(btn('‹', halaman - 1, { mati: halaman === 1, aria: 'Halaman sebelumnya' }));
-
-    let terakhir = 0;
-    for (let i = 1; i <= jumlah; i++) {
-        if (i === 1 || i === jumlah || Math.abs(i - halaman) <= 1) {
-            if (i - terakhir > 1) {
-                const t = document.createElement('span');
-                t.className = 'tj-pg-dots';
-                t.textContent = '…';
-                grup.appendChild(t);
-            }
-            grup.appendChild(btn(String(i), i, { aktif: i === halaman, aria: `Halaman ${i}` }));
-            terakhir = i;
-        }
-    }
-
-    grup.appendChild(btn('›', halaman + 1, { mati: halaman === jumlah, aria: 'Halaman berikutnya' }));
-    nav.appendChild(grup);
-}
-
-// data dari database (TugasController@index)
 const kelasOptions = @json($kelasOptions);
 const updateUrlTemplate = "{{ route('tentor.tugas.update', ['tugas' => '__ID__']) }}";
 const nilaiUrlTemplate = "{{ route('tentor.tugas.nilai', ['pengumpulan' => '__ID__']) }}";
 
-function filterTugas(reset = true) {
-    if (reset !== false) halTugas = 1; // ubah filter/urutan -> balik ke halaman 1
-    const keyword = searchTugas.value.toLowerCase().trim();
-    const kelas = filterKelas.value;
-    const rows = [...tugasTable.querySelectorAll('tr')];
-
-    rows.forEach(row => {
-        row.hidden = !(
-            row.dataset.judul.includes(keyword) &&
-            (!kelas || row.dataset.kelas === kelas)
-        );
-    });
-
-    const visibleRows = rows.filter(row => !row.hidden);
-
-    visibleRows.sort((a, b) => {
-        if (sortTugas.value === 'terbaru') {
-            return b.dataset.tanggal.localeCompare(a.dataset.tanggal);
-        }
-
-        if (sortTugas.value === 'terlama') {
-            return a.dataset.tanggal.localeCompare(b.dataset.tanggal);
-        }
-
-        return a.dataset.judul.localeCompare(b.dataset.judul);
-    });
-
-    halTugas = Math.min(halTugas, Math.max(1, Math.ceil(visibleRows.length / PER_HALAMAN)));
-    visibleRows.forEach((row, i) => {
-        row.hidden = i < (halTugas - 1) * PER_HALAMAN || i >= halTugas * PER_HALAMAN;
-        tugasTable.appendChild(row);
-    });
-
-    tugasKosong.hidden = visibleRows.length > 0;
-    tugasKosong.textContent = rows.length ? 'Tugas tidak ditemukan.' : 'Belum ada tugas.';
-
-    renderPaginasi('paginasiTugas', visibleRows.length, halTugas, h => { halTugas = h; filterTugas(false); });
-}
-
-searchTugas.addEventListener('input', filterTugas);
-filterKelas.addEventListener('change', filterTugas);
-sortTugas.addEventListener('change', filterTugas);
 
 function bukaUpload() {
     document.getElementById('modalUpload').hidden = false;
@@ -475,7 +465,6 @@ document.getElementById('kelasBaru').addEventListener('change', function () {
     });
 });
 
-// ===== MODAL LIHAT TUGAS =====
 function lihatTugas(btn) {
     const row = btn.closest('tr');
 
@@ -527,8 +516,6 @@ function lihatTugas(btn) {
         ? 'Masukkan nilai (0-100)'
         : 'Belum bisa dinilai (siswa belum mengumpulkan)';
     nilaiInput.value = row.dataset.nilai || '';
-    document.getElementById('lihatFeedback').value =
-    row.dataset.feedback || '';
 
     document.getElementById('modalLihat').hidden = false;
 }
@@ -605,6 +592,6 @@ function batalEditMode() {
     document.getElementById('actionEdit').hidden = true;
 }
 
-filterTugas();
+
 </script>
 @endsection

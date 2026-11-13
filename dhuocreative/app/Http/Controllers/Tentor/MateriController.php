@@ -164,7 +164,6 @@ class MateriController extends Controller
         $meta = json_decode($disk->get($jsonPath), true);
         abort_unless($meta && isset($meta['file']), 404);
 
-        // pengaman 3 (hanya edit & hapus): pengunggahnya harus tentor yang sedang login
         if ($harusMilikSendiri) {
             abort_unless((int) ($meta['id_tentor'] ?? 0) === (int) auth()->id(), 403);
         }

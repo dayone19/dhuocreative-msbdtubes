@@ -8,24 +8,66 @@ use Illuminate\Support\Facades\DB;
 
 class JadwalController extends Controller
 {
-    /** Halaman Jadwal Saya */
-    public function index()
+    private const PER_PAGE = 5;
+
+    /** Halaman Jadwal Saya — pagination + filter di controller (server-side) */
+    public function index(Request $request)
     {
         $idTentor = auth()->id();
 
-        // daftar jadwal tentor (dipakai tabel + kalender mingguan)
-        $jadwal = DB::table('jadwal')
+        $q       = trim((string) $request->get('q', ''));
+        $tanggal = $request->get('tanggal');
+        $status  = $request->get('status', 'terjadwal'); // default sama seperti sebelumnya
+
+        // Query dasar untuk tabel (paginated)
+        $base = DB::table('jadwal')
             ->join('kelas', 'jadwal.id_kelas', '=', 'kelas.id_kelas')
             ->join('kursus', 'kelas.id_kursus', '=', 'kursus.id_kursus')
             ->join('users as siswa', 'kelas.id_siswa', '=', 'siswa.id_user')
             ->where('jadwal.id_tentor', $idTentor)
-            ->orderBy('jadwal.tanggal')->orderBy('jadwal.jam_mulai')
+            ->when($q !== '', function ($query) use ($q) {
+                $query->where(function ($w) use ($q) {
+                    $w->where('kursus.nama_kursus', 'ilike', "%{$q}%")
+                      ->orWhere('siswa.nama', 'ilike', "%{$q}%")
+                      ->orWhereRaw('kelas.kelas::text ilike ?', ["%{$q}%"]);
+                });
+            })
+            ->when($tanggal, fn ($query) => $query->whereDate('jadwal.tanggal', $tanggal))
+            ->when($status !== '' && $status !== null, fn ($query) => $query->where('jadwal.status', $status));
+
+        $jadwal = (clone $base)
+            ->orderByDesc('jadwal.tanggal')
+            ->orderByDesc('jadwal.jam_mulai')
             ->select(
                 'jadwal.id_jadwal',
                 'kelas.id_kelas',
                 'kursus.nama_kursus as kursus',
                 DB::raw('kelas.kelas::text as kelas'),
                 'siswa.nama as siswa',
+                DB::raw("to_char(jadwal.tanggal, 'YYYY-MM-DD') as tanggal"),
+                DB::raw("to_char(jadwal.jam_mulai, 'HH24:MI') as mulai"),
+                DB::raw("to_char(jadwal.jam_selesai, 'HH24:MI') as selesai"),
+                DB::raw('jadwal.status::text as status')
+            )
+            ->paginate(self::PER_PAGE)
+            ->withQueryString();
+
+        // Data penuh (atau rentang minggu ini) khusus kalender mingguan — tanpa pagination
+        $jadwalKalender = DB::table('jadwal')
+            ->join('kelas', 'jadwal.id_kelas', '=', 'kelas.id_kelas')
+            ->join('kursus', 'kelas.id_kursus', '=', 'kursus.id_kursus')
+            ->where('jadwal.id_tentor', $idTentor)
+            ->where('jadwal.status', 'terjadwal')
+            ->whereBetween('jadwal.tanggal', [
+                now()->startOfWeek()->toDateString(),
+                now()->endOfWeek()->toDateString(),
+            ])
+            ->orderBy('jadwal.tanggal')
+            ->orderBy('jadwal.jam_mulai')
+            ->select(
+                'jadwal.id_jadwal',
+                'kursus.nama_kursus as kursus',
+                DB::raw('kelas.kelas::text as kelas'),
                 DB::raw("to_char(jadwal.tanggal, 'YYYY-MM-DD') as tanggal"),
                 DB::raw("to_char(jadwal.jam_mulai, 'HH24:MI') as mulai"),
                 DB::raw("to_char(jadwal.jam_selesai, 'HH24:MI') as selesai"),
@@ -56,8 +98,7 @@ class JadwalController extends Controller
             )
             ->get();
 
-        // pilihan kelas untuk dropdown (kelas aktif yang pernah dijadwalkan tentor ini
-        // atau kursus yang diampu tentor lewat tentor_kursus)
+        // pilihan kelas untuk dropdown
         $kelasOptions = DB::table('kelas')
             ->join('kursus', 'kelas.id_kursus', '=', 'kursus.id_kursus')
             ->join('users as siswa', 'kelas.id_siswa', '=', 'siswa.id_user')
@@ -78,7 +119,15 @@ class JadwalController extends Controller
             )
             ->get();
 
-        return view('tentor.jadwal', compact('jadwal', 'pengajuan', 'kelasOptions'));
+        return view('tentor.jadwal', compact(
+            'jadwal',
+            'jadwalKalender',
+            'pengajuan',
+            'kelasOptions',
+            'q',
+            'tanggal',
+            'status'
+        ));
     }
 
     /** POST: ajukan jadwal baru / perubahan jadwal */
@@ -95,7 +144,6 @@ class JadwalController extends Controller
             'catatan'        => ['nullable', 'string', 'max:500'],
         ]);
 
-        // kalau ubah jadwal, pastikan jadwal itu milik tentor ini & masih terjadwal
         if (!empty($data['id_jadwal_lama'])) {
             $lama = DB::table('jadwal')
                 ->where('id_jadwal', $data['id_jadwal_lama'])
@@ -104,13 +152,11 @@ class JadwalController extends Controller
                 ->first();
             abort_unless($lama, 403, 'Jadwal ini bukan milikmu atau sudah tidak bisa diubah.');
 
-            // kelas pada permintaan harus sama dengan kelas jadwal yang diubah
             if ((int) $lama->id_kelas !== (int) $data['id_kelas']) {
                 return response()->json(['message' => 'Kelas tidak sesuai dengan jadwal yang diubah.'], 422);
             }
         }
 
-        // cegah bentrok dengan jadwal tentor sendiri (selain jadwal yang sedang diubah)
         $bentrok = DB::table('jadwal')
             ->where('id_tentor', $idTentor)
             ->where('status', '!=', 'dibatalkan')
@@ -124,7 +170,6 @@ class JadwalController extends Controller
             return response()->json(['message' => 'Jadwal bentrok dengan jadwal lain milikmu.'], 422);
         }
 
-        // cegah pengajuan dobel yang masih menunggu untuk jadwal lama yang sama
         if (!empty($data['id_jadwal_lama'])) {
             $dobel = DB::table('pengajuan_jadwal')
                 ->where('id_jadwal_lama', $data['id_jadwal_lama'])

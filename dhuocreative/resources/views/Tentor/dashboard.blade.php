@@ -62,7 +62,6 @@
     <section class="schedule-section">
         <h2>Jadwal Hari Ini</h2>
 
-        {{-- satu baris per jadwal hari ini (dari DashboardController@index) --}}
         @forelse ($jadwalHariIni as $j)
         <div class="schedule-row">
             <div class="schedule-name">

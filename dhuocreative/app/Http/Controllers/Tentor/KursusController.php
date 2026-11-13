@@ -7,13 +7,11 @@ use Illuminate\Support\Facades\DB;
 
 class KursusController extends Controller
 {
-    /** Daftar kelas aktif yang diajar tentor yang login */
+
     public function index()
     {
         $idTentor = auth()->id();
 
-        // kelas yang diajar tentor = kelas yang punya jadwal dengan id_tentor ini
-        // (sama dengan acuan di dashboard)
         $kelasSaya = DB::table('kelas')
             ->join('kursus', 'kelas.id_kursus', '=', 'kursus.id_kursus')
             ->join('users as siswa', 'kelas.id_siswa', '=', 'siswa.id_user')

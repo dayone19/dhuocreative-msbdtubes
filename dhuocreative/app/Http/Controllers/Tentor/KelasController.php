@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 
 class KelasController extends Controller
 {
-    // satu kursus = 12 pertemuan 
+ 
     private const TOTAL_PERTEMUAN = 12;
 
     public function index()
@@ -45,7 +45,6 @@ class KelasController extends Controller
             $jadwal[] = ['hari' => $hari, 'detail' => $detail ?: '-'];
         }
 
-        // ---- 2. Kartu kelas ----
         $semuaJadwal = DB::table('jadwal')
             ->join('kelas', 'jadwal.id_kelas', '=', 'kelas.id_kelas')
             ->join('kursus', 'kelas.id_kursus', '=', 'kursus.id_kursus')
@@ -57,7 +56,6 @@ class KelasController extends Controller
             ->get()
             ->groupBy('id_kelas');         
 
-        // jumlah siswa aktif tiap kelas (1 query untuk semua kelas)
         $jumlahSiswa = DB::table('siswa_kelas')
             ->where('status', 'aktif')
             ->whereIn('id_kelas', $semuaJadwal->keys())
@@ -69,7 +67,6 @@ class KelasController extends Controller
         $urutan    = 0;
 
         foreach ($semuaJadwal as $idKelas => $baris) {
-            // pakai jadwal terdekat yang belum lewat; kalau tidak ada, jadwal terakhir
             $pilih = $baris->first(fn ($r) => $r->tanggal >= $hariIni->toDateString())
                   ?? $baris->last();
 
@@ -85,18 +82,14 @@ class KelasController extends Controller
         return view('tentor.kelas', compact('jadwal', 'kelasSaya'));
     }
 
-    /* ------------------------------------------------------------
-     | HALAMAN 2: /tentor/kelas/absensi/{kelas}?pertemuan=N
-     ------------------------------------------------------------ */
     public function absensi(Request $request, $idKelas)
     {
         $kelas       = $this->kelasMilikTentor($idKelas);
         $jadwalKelas = $this->jadwalKelas($idKelas);
 
-        // Pertemuan ke-N = jadwal urutan ke-N (diurutkan dari tanggal paling awal)
         $daftarPertemuan = [];
         for ($i = 1; $i <= self::TOTAL_PERTEMUAN; $i++) {
-            $daftarPertemuan[$i] = $jadwalKelas->get($i - 1);   // null kalau belum dijadwalkan
+            $daftarPertemuan[$i] = $jadwalKelas->get($i - 1); 
         }
 
         $pertemuan = $request->query('pertemuan')
@@ -111,7 +104,6 @@ class KelasController extends Controller
                 . ', ' . $this->jam($jadwalTerpilih->jam_mulai, $jadwalTerpilih->jam_selesai)
             : 'Pertemuan ini belum dijadwalkan';
 
-        // siswa aktif di kelas ini
         $siswaKelas = DB::table('siswa_kelas')
             ->join('users', 'siswa_kelas.id_siswa', '=', 'users.id_user')
             ->where('siswa_kelas.id_kelas', $idKelas)
@@ -120,14 +112,12 @@ class KelasController extends Controller
             ->select('users.id_user as id', 'users.nama')
             ->get();
 
-        // status yang sudah tersimpan untuk pertemuan terpilih  [id_siswa => status]
         $statusTersimpan = $jadwalTerpilih
             ? DB::table('absensi_siswa')
                 ->where('id_jadwal', $jadwalTerpilih->id_jadwal)
                 ->pluck('status', 'id_siswa')
             : collect();
 
-        // total hadir tiap siswa dari semua pertemuan kelas ini  [id_siswa => jumlah]
         $totalHadir = DB::table('absensi_siswa')
             ->whereIn('id_jadwal', $jadwalKelas->pluck('id_jadwal'))
             ->where('status', 'hadir')
@@ -153,9 +143,6 @@ class KelasController extends Controller
         ]);
     }
 
-    /* ------------------------------------------------------------
-     | AKSI: POST /tentor/kelas/absensi/{kelas}  (tombol Simpan)
-     ------------------------------------------------------------ */
     public function simpanAbsensi(Request $request, $idKelas)
     {
         $this->kelasMilikTentor($idKelas);
@@ -163,7 +150,7 @@ class KelasController extends Controller
         $request->validate([
             'pertemuan'   => 'required|integer|between:1,' . self::TOTAL_PERTEMUAN,
             'absensi'     => 'required|array',
-            'absensi.*'   => 'in:hadir,sakit,izin,alpha',   // sesuai enum status_absensi
+            'absensi.*'   => 'in:hadir,sakit,izin,alpha',  
         ], [
             'absensi.required' => 'Pilih status absensi untuk setiap siswa terlebih dahulu.',
             'absensi.*.in'     => 'Status absensi tidak valid.',
@@ -176,7 +163,6 @@ class KelasController extends Controller
             return back()->withErrors(['absensi' => "Pertemuan {$pertemuan} belum dijadwalkan."]);
         }
 
-        // hanya siswa aktif kelas ini yang boleh diabsen
         $idSiswaKelas = DB::table('siswa_kelas')
             ->where('id_kelas', $idKelas)
             ->where('status', 'aktif')
@@ -192,7 +178,6 @@ class KelasController extends Controller
         }
 
         DB::transaction(function () use ($idSiswaKelas, $absensi, $jadwal) {
-            // kolom id_absensi di database tidak auto-increment, jadi kita hitung sendiri
             $idBerikutnya = (int) DB::table('absensi_siswa')->max('id_absensi');
 
             foreach ($idSiswaKelas as $idSiswa) {
@@ -223,8 +208,6 @@ class KelasController extends Controller
             ->with('sukses', "Absensi pertemuan {$pertemuan} berhasil disimpan.");
     }
 
-
-    // Ambil kelas HANYA kalau tentor yang login memang mengajar di kelas itu
     private function kelasMilikTentor($idKelas)
     {
         $kelas = DB::table('kelas')
@@ -244,7 +227,6 @@ class KelasController extends Controller
         return $kelas;
     }
 
-    // Semua jadwal kelas ini milik tentor yang login, urut dari yang paling awal
     private function jadwalKelas($idKelas)
     {
         return DB::table('jadwal')
@@ -257,7 +239,6 @@ class KelasController extends Controller
             ->values();
     }
 
-    // Pertemuan yang dibuka pertama kali: jadwal terdekat yang belum lewat
     private function pertemuanDefault($jadwalKelas): int
     {
         $hariIni = Carbon::today()->toDateString();

@@ -9,7 +9,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $idTentor = auth()->id(); // = id_user
+        $idTentor = auth()->id(); 
 
         $kelasTentor = function () use ($idTentor) {
             return DB::table('kelas')

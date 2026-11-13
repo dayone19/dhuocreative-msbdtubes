@@ -33,7 +33,7 @@
             padding: 24px 40px;
             background: #fff;
         }
- 
+
         .nl-page {
             width: 100%;
             max-width: 100%;
@@ -41,26 +41,26 @@
             color: var(--teal);
             box-sizing: border-box;
         }
- 
+
         .nl-page *,
         .nl-page *::before,
         .nl-page *::after {
             box-sizing: border-box;
         }
- 
+
         .nl-header {
             display: flex;
             align-items: center;
             gap: 16px;
             margin-bottom: 20px;
         }
- 
+
         .nl-header i {
             font-size: 40px;
             line-height: 1;
             color: var(--teal);
         }
- 
+
         .nl-header h1 {
             font-family: arial, helvetica, sans-serif;
             font-size: 36px;
@@ -69,14 +69,14 @@
             color: var(--teal);
             margin: 0;
         }
- 
+
         .nl-summary {
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 20px;
             margin-bottom: 20px;
         }
- 
+
         .nl-stat {
             display: flex;
             align-items: center;
@@ -86,7 +86,7 @@
             background: var(--mint);
             border-radius: 22px;
         }
- 
+
         .nl-stat-icon {
             flex-shrink: 0;
             display: flex;
@@ -99,14 +99,14 @@
             background: var(--ivory);
             color: var(--teal);
         }
- 
+
         .nl-stat-label {
             display: block;
             font-size: 13px;
             font-weight: 500;
             color: var(--teal-muted);
         }
- 
+
         .nl-stat-value {
             display: block;
             margin-top: 2px;
@@ -115,20 +115,20 @@
             line-height: 1.2;
             color: var(--orange);
         }
- 
+
         .nl-stat-value small {
             font-size: 14px;
             font-weight: 500;
             color: var(--teal-muted);
         }
- 
+
         .nl-table {
             overflow: hidden;
             background: var(--ivory);
             border: 1px solid var(--mint-line);
             border-radius: 20px;
         }
- 
+
         /* 4 kolom data + 1 kolom kecil untuk chevron */
         .nl-grid {
             display: grid;
@@ -137,7 +137,7 @@
             column-gap: 16px;
             padding: 0 24px;
         }
- 
+
         .nl-thead {
             min-height: 46px;
             font-size: 15px;
@@ -145,56 +145,55 @@
             background: var(--cream);
             color: var(--orange-dk);
         }
- 
+
         .nl-row {
             position: relative;
             padding-top: 16px;
             padding-bottom: 16px;
             border-top: 1px solid var(--mint-line);
         }
- 
+
         .nl-thead + .nl-item .nl-row {
             border-top: none;
         }
- 
-        /* Baris yang punya feedback bisa diklik */
+
         .nl-row.is-clickable {
             cursor: pointer;
             transition: background .15s ease;
         }
- 
+
         .nl-row.is-clickable:hover {
             background: var(--sand);
         }
- 
+
         .nl-row.is-clickable:focus-visible {
             outline: 2px solid var(--teal);
             outline-offset: -2px;
         }
- 
+
         .nl-name strong {
             display: block;
             font-size: 15px;
             font-weight: 700;
             color: var(--teal);
         }
- 
+
         .nl-name span {
             display: block;
             margin-top: 4px;
             font-size: 12px;
             color: var(--teal-muted);
         }
- 
+
         .nl-date {
             font-size: 14.5px;
             color: var(--teal);
         }
- 
+
         .nl-date.is-empty {
             color: var(--teal-muted);
         }
- 
+
         .nl-score {
             display: inline-flex;
             align-items: center;
@@ -209,7 +208,7 @@
             background: var(--mint);
             color: var(--teal);
         }
- 
+
         .nl-score-empty {
             justify-self: start;
             padding-left: 16px;
@@ -217,7 +216,7 @@
             font-weight: 700;
             color: var(--teal-muted);
         }
- 
+
         .nl-badge {
             display: inline-flex;
             align-items: center;
@@ -229,7 +228,7 @@
             font-weight: 700;
             white-space: nowrap;
         }
- 
+
         .nl-badge::before {
             content: "";
             width: 9px;
@@ -237,22 +236,32 @@
             border-radius: 50%;
             background: currentColor;
         }
- 
+
         .nl-badge-great {
             background: var(--mint);
             color: var(--teal);
         }
- 
+
         .nl-badge-good {
             background: var(--sand);
             color: var(--gold-dk);
         }
- 
+
+        .nl-badge-ok {
+            background: #fff8e6;
+            color: var(--olive);
+        }
+
+        .nl-badge-low {
+            background: #fde8e4;
+            color: var(--orange-dk);
+        }
+
         .nl-badge-wait {
             background: #fff0cf;
             color: var(--orange-dk);
         }
- 
+
         /* Chevron */
         .nl-chev {
             justify-self: end;
@@ -260,40 +269,39 @@
             color: var(--teal);
             transition: transform .2s ease;
         }
- 
+
         .nl-item.is-open .nl-chev {
             transform: rotate(180deg);
         }
- 
-        /* Panel feedback (read-only) */
+
         .nl-panel {
             display: grid;
             grid-template-rows: 0fr;
             transition: grid-template-rows .25s ease;
         }
- 
+
         .nl-item.is-open .nl-panel {
             grid-template-rows: 1fr;
         }
- 
+
         .nl-panel-inner {
             overflow: hidden;
         }
- 
+
         .nl-feedback {
             margin: 0 24px 18px;
             padding: 16px 18px;
             background: var(--mint);
             border-radius: 16px;
         }
- 
+
         .nl-feedback-head {
             display: flex;
             align-items: center;
             gap: 12px;
             margin-bottom: 10px;
         }
- 
+
         .nl-avatar {
             flex-shrink: 0;
             display: flex;
@@ -307,20 +315,20 @@
             font-size: 14px;
             font-weight: 700;
         }
- 
+
         .nl-feedback-head strong {
             display: block;
             font-size: 13.5px;
             font-weight: 700;
             color: var(--teal);
         }
- 
+
         .nl-feedback-head span {
             display: block;
             font-size: 12px;
             color: var(--teal-muted);
         }
- 
+
         .nl-feedback p {
             margin: 0;
             font-size: 14.5px;
@@ -328,14 +336,14 @@
             color: #2f5e5b;
             white-space: pre-line;
         }
- 
+
         .nl-scale {
             margin-top: 20px;
             padding: 20px 24px 22px;
             background: var(--mint);
             border-radius: 24px;
         }
- 
+
         .nl-scale h2 {
             display: flex;
             align-items: center;
@@ -345,7 +353,7 @@
             color: var(--teal);
             margin: 0 0 14px;
         }
- 
+
         .nl-scale-list {
             display: grid;
             grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -354,7 +362,7 @@
             margin: 0;
             padding: 0;
         }
- 
+
         .nl-scale-list li {
             display: flex;
             align-items: center;
@@ -365,127 +373,244 @@
             border-radius: 14px;
             font-size: 13px;
         }
- 
+
         .nl-scale-list b {
             font-weight: 700;
             color: var(--teal);
         }
- 
+
         .nl-scale-list span {
             color: var(--teal-muted);
             white-space: nowrap;
         }
- 
+
         .nl-note {
             margin: 14px 0 0;
             font-size: 12.5px;
             color: var(--teal-muted);
         }
- 
+
         @media (max-width: 900px) {
             .nl-scale-list {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
         }
- 
+
         @media (max-width: 768px) {
             body {
                 padding: 16px;
             }
- 
+
             .nl-header i {
                 font-size: 32px;
             }
- 
+
             .nl-header h1 {
                 font-size: 28px;
             }
- 
+
             .nl-summary {
                 grid-template-columns: 1fr;
                 gap: 12px;
             }
- 
+
             .nl-thead {
                 display: none;
             }
- 
+
             .nl-grid {
                 padding: 0 16px;
             }
- 
+
             .nl-row {
                 grid-template-columns: 1fr;
                 row-gap: 8px;
             }
- 
+
             .nl-row [data-label]::before {
                 content: attr(data-label) ": ";
                 font-size: 12px;
                 font-weight: 600;
                 color: #667085;
             }
- 
+
             .nl-score[data-label]::before,
             .nl-badge[data-label]::before {
                 display: none;
             }
- 
-            /* chevron pindah ke pojok kanan atas di mobile */
+
             .nl-chev {
                 position: absolute;
                 top: 18px;
                 right: 16px;
             }
- 
+
             .nl-feedback {
                 margin: 0 16px 16px;
             }
         }
- 
+
         @media (max-width: 420px) {
             .nl-scale-list {
                 grid-template-columns: 1fr;
             }
         }
+
+        .tj-pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin: 20px auto;
+            padding: 8px 0;
+            flex-wrap: wrap;
+            width: 100%;
+            text-align: center;
+        }
+
+        .tj-pagination .tj-pg-btn {
+            min-width: 40px;
+            height: 40px;
+            padding: 0 12px;
+            border: 1.5px solid #cfe0dd;
+            border-radius: 12px;
+            background: #fffaf0;
+            color: #14524b;
+            font: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            box-sizing: border-box;
+        }
+
+        .tj-pagination .tj-pg-btn.is-active,
+        .tj-pagination .tj-pg-btn.active {
+            background: #f27640;
+            border-color: #f27640;
+            color: #fff;
+            cursor: default;
+        }
+
+        .tj-pagination .tj-pg-btn:disabled {
+            opacity: .45;
+            cursor: not-allowed;
+        }
+
+        .tj-pagination .tj-pg-dots {
+            min-width: 28px;
+            height: 40px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #5f7f7b;
+            font-weight: 700;
+            font-size: 15px;
+            user-select: none;
+        }
     </style>
 </head>
 <body>
- 
+
 @extends('layouts.siswa')
- 
+
 @section('content')
- 
+
+<style>
+/* pagination siswa – rata tengah (inject di section biar pasti ke-load) */
+.nl-page .tj-pagination,
+.pt-page .tj-pagination,
+.tj-pagination {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 8px !important;
+    margin: 20px auto !important;
+    padding: 8px 0 !important;
+    flex-wrap: wrap !important;
+    width: 100% !important;
+}
+.tj-pagination .tj-pg-btn {
+    min-width: 40px;
+    height: 40px;
+    padding: 0 12px;
+    border: 1.5px solid #cfe0dd;
+    border-radius: 12px;
+    background: #fffaf0;
+    color: #14524b;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    box-sizing: border-box;
+    box-shadow: 0 1px 2px rgba(0,0,0,.04);
+}
+.tj-pagination .tj-pg-btn:hover:not(:disabled):not(.is-active):not(.active) {
+    background: #e3efed;
+    border-color: #286c65;
+}
+.tj-pagination .tj-pg-btn.is-active,
+.tj-pagination .tj-pg-btn.active {
+    background: #f27640;
+    border-color: #f27640;
+    color: #fff;
+    cursor: default;
+    box-shadow: 0 2px 8px rgba(242,118,64,.35);
+}
+.tj-pagination .tj-pg-btn:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+}
+.tj-pagination .tj-pg-dots {
+    min-width: 28px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #5f7f7b;
+    font-weight: 700;
+    font-size: 15px;
+    user-select: none;
+}
+</style>
+
+
 <div class="nl-page">
- 
+
     <section class="nl-summary" aria-label="Ringkasan nilai">
- 
+
         <div class="nl-stat">
             <div>
                 <span class="nl-stat-label">Rata-rata Nilai</span>
-                <strong class="nl-stat-value">91,5</strong>
+                <strong class="nl-stat-value">{{ $rataRata }}</strong>
             </div>
         </div>
- 
+
         <div class="nl-stat">
             <div>
                 <span class="nl-stat-label">Nilai Tertinggi</span>
-                <strong class="nl-stat-value">95</strong>
+                <strong class="nl-stat-value">{{ $tertinggi }}</strong>
             </div>
         </div>
- 
+
         <div class="nl-stat">
             <div>
                 <span class="nl-stat-label">Tugas Dinilai</span>
-                <strong class="nl-stat-value">2 <small>dari 3 tugas</small></strong>
+                <strong class="nl-stat-value">{{ $dinilai }} <small>dari {{ $totalTugas }} tugas</small></strong>
             </div>
         </div>
- 
+
     </section>
- 
-    <!-- Tabel nilai -->
+
     <section class="nl-table" aria-label="Daftar nilai tugas">
- 
+
         <div class="nl-grid nl-thead">
             <span>Nama Tugas</span>
             <span>Tanggal Dinilai</span>
@@ -493,103 +618,123 @@
             <span>Keterangan</span>
             <span></span>
         </div>
- 
-        {{-- 1. Sudah dinilai + ada feedback --}}
+
+        @forelse ($daftar as $r)
         <div class="nl-item">
+            @if ($r->feedback)
             <div class="nl-grid nl-row is-clickable" role="button" tabindex="0" aria-expanded="false">
                 <div class="nl-name">
-                    <strong>Latihan HTML</strong>
-                    <span>Web Development</span>
+                    <strong>{{ $r->judul }}</strong>
+                    <span>{{ $r->kursus }}</span>
                 </div>
-                <span class="nl-date" data-label="Tanggal Dinilai">15 Oktober 2026</span>
-                <span class="nl-score" data-label="Nilai">95</span>
-                <span class="nl-badge nl-badge-great" data-label="Keterangan">Sangat Baik</span>
+                <span class="nl-date" data-label="Tanggal Dinilai">{{ $r->tanggal }}</span>
+                <span class="nl-score" data-label="Nilai">{{ $r->nilai }}</span>
+                <span class="nl-badge {{ $r->css }}" data-label="Keterangan">{{ $r->label }}</span>
                 <i class="bi bi-chevron-down nl-chev" aria-hidden="true"></i>
             </div>
             <div class="nl-panel">
                 <div class="nl-panel-inner">
                     <div class="nl-feedback">
                         <div class="nl-feedback-head">
-                            <div class="nl-avatar">K</div>
+                            <div class="nl-avatar">{{ $r->inisial }}</div>
                             <div>
-                                <strong>Feedback dari Kak Dhuo</strong>
-                                <span>15 Oktober 2026</span>
+                                <strong>Feedback dari {{ $r->nama_tentor }}</strong>
+                                <span>{{ $r->tanggal }}</span>
                             </div>
                         </div>
-                        <p>Hasilnya sangat baik! Struktur HTML sudah rapi dan penggunaan tag semantik sudah tepat.
-Untuk selanjutnya, coba tingkatkan lagi tampilan UI-nya agar lebih konsisten.</p>
+                        <p>{{ $r->feedback }}</p>
                     </div>
                 </div>
             </div>
-        </div>
- 
-        {{-- 2. Belum dinilai: tidak ada chevron, tidak bisa diklik --}}
-        <div class="nl-item">
+            @else
             <div class="nl-grid nl-row">
                 <div class="nl-name">
-                    <strong>Membuat Halaman Profil</strong>
-                    <span>Web Development</span>
+                    <strong>{{ $r->judul }}</strong>
+                    <span>{{ $r->kursus }}</span>
                 </div>
-                <span class="nl-date is-empty" data-label="Tanggal Dinilai">Belum dinilai</span>
-                <span class="nl-score-empty" data-label="Nilai" aria-label="Belum ada nilai">&mdash;</span>
-                <span class="nl-badge nl-badge-wait" data-label="Keterangan">Menunggu</span>
+                @if ($r->dinilai)
+                    <span class="nl-date" data-label="Tanggal Dinilai">{{ $r->tanggal }}</span>
+                    <span class="nl-score" data-label="Nilai">{{ $r->nilai }}</span>
+                @else
+                    <span class="nl-date is-empty" data-label="Tanggal Dinilai">Belum dinilai</span>
+                    <span class="nl-score-empty" data-label="Nilai" aria-label="Belum ada nilai">&mdash;</span>
+                @endif
+                <span class="nl-badge {{ $r->css }}" data-label="Keterangan">{{ $r->label }}</span>
                 <span></span>
             </div>
+            @endif
         </div>
- 
-        {{-- 3. Sudah dinilai + ada feedback --}}
-        <div class="nl-item">
-            <div class="nl-grid nl-row is-clickable" role="button" tabindex="0" aria-expanded="false">
-                <div class="nl-name">
-                    <strong>Kuis Dasar HTML</strong>
-                    <span>Web Development</span>
-                </div>
-                <span class="nl-date" data-label="Tanggal Dinilai">10 Oktober 2026</span>
-                <span class="nl-score" data-label="Nilai">88</span>
-                <span class="nl-badge nl-badge-good" data-label="Keterangan">Baik</span>
-                <i class="bi bi-chevron-down nl-chev" aria-hidden="true"></i>
-            </div>
-            <div class="nl-panel">
-                <div class="nl-panel-inner">
-                    <div class="nl-feedback">
-                        <div class="nl-feedback-head">
-                            <div class="nl-avatar">K</div>
-                            <div>
-                                <strong>Feedback dari Kak Dhuo</strong>
-                                <span>10 Oktober 2026</span>
-                            </div>
-                        </div>
-                        <p>Hasilnya baik, pemahaman dasar sudah kuat. Masih perlu ditingkatkan di bagian atribut form dan tabel.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
- 
+        @empty
+        <p style="padding: 16px;">Belum ada tugas.</p>
+        @endforelse
+
+        @if ($daftar->hasPages())
+        <nav class="tj-pagination" aria-label="Navigasi halaman">
+            @if ($daftar->onFirstPage())
+                <button type="button" class="tj-pg-btn" disabled aria-label="Sebelumnya">&lt;</button>
+            @else
+                <a href="{{ $daftar->previousPageUrl() }}" class="tj-pg-btn" aria-label="Sebelumnya">&lt;</a>
+            @endif
+
+            @php
+                $__cur = $daftar->currentPage();
+                $__last = $daftar->lastPage();
+                if ($__last <= 7) {
+                    $__pages = range(1, $__last);
+                } else {
+                    $__pages = collect([1, $__last, $__cur, $__cur - 1, $__cur + 1, $__cur - 2, $__cur + 2])
+                        ->filter(fn ($n) => $n >= 1 && $n <= $__last)
+                        ->unique()->sort()->values()->all();
+                }
+                $__prev = 0;
+            @endphp
+
+            @foreach ($__pages as $__i)
+                @if ($__prev && $__i - $__prev > 1)
+                    <span class="tj-pg-dots">…</span>
+                @endif
+                @if ($__i == $__cur)
+                    <button type="button" class="tj-pg-btn is-active" aria-current="page">{{ $__i }}</button>
+                @else
+                    <a href="{{ $daftar->url($__i) }}" class="tj-pg-btn">{{ $__i }}</a>
+                @endif
+                @php $__prev = $__i; @endphp
+            @endforeach
+
+            @if ($daftar->hasMorePages())
+                <a href="{{ $daftar->nextPageUrl() }}" class="tj-pg-btn" aria-label="Berikutnya">&gt;</a>
+            @else
+                <button type="button" class="tj-pg-btn" disabled aria-label="Berikutnya">&gt;</button>
+            @endif
+        </nav>
+        @endif
+
     </section>
- 
+
     <section class="nl-scale" aria-labelledby="judul-skala">
         <h2 id="judul-skala">
             <i class="bi bi-info-circle"></i>
             Skala Penilaian
         </h2>
- 
+
         <ul class="nl-scale-list">
             <li><b>Sangat Baik</b> <span>90 - 100</span></li>
             <li><b>Baik</b> <span>80 - 89</span></li>
             <li><b>Cukup Baik</b> <span>70 - 79</span></li>
+            <li><b>Perlu Ditingkatkan</b> <span>di bawah 70</span></li>
         </ul>
     </section>
 </div>
- 
+
 <script>
     document.querySelectorAll('.nl-row.is-clickable').forEach(function (row) {
         var item = row.closest('.nl-item');
- 
+
         function toggle() {
             var open = item.classList.toggle('is-open');
             row.setAttribute('aria-expanded', open);
         }
- 
+
         row.addEventListener('click', toggle);
         row.addEventListener('keydown', function (e) {
             if (e.key === 'Enter' || e.key === ' ') {

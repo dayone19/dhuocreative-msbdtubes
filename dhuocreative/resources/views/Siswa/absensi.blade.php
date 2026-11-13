@@ -132,6 +132,10 @@
         background: var(--red-light);
         color: var(--red);
     }
+    .pill-alpha {
+        background: var(--red-light);
+        color: var(--red);
+    }
     .btn {
         padding: 14px 26px;
         border: none;
@@ -244,6 +248,65 @@
             justify-self: end;
         }
     }
+
+    .tj-pagination {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        gap: 8px !important;
+        margin: 20px auto !important;
+        padding: 8px 0 !important;
+        flex-wrap: wrap !important;
+        width: 100% !important;
+        text-align: center;
+    }
+
+    .tj-pagination .tj-pg-btn {
+        min-width: 40px;
+        height: 40px;
+        padding: 0 12px;
+        border: 1.5px solid #cfe0dd;
+        border-radius: 12px;
+        background: #fffaf0;
+        color: #14524b;
+        font: inherit;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        box-sizing: border-box;
+    }
+
+    .tj-pagination .tj-pg-btn.is-active,
+    .tj-pagination .tj-pg-btn.active {
+        background: #f27640;
+        border-color: #f27640;
+        color: #fff;
+        cursor: default;
+    }
+
+    .tj-pagination .tj-pg-btn:disabled {
+        opacity: .45;
+        cursor: not-allowed;
+    }
+
+    .tj-pagination .tj-pg-dots {
+        min-width: 28px;
+        height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #5f7f7b;
+        font-weight: 700;
+        font-size: 15px;
+        user-select: none;
+    }
+
+@media (max-width: 640px) {
+
     @media (max-width: 640px) {
         .page {
             gap: 20px;
@@ -289,7 +352,8 @@
         td {
             padding: 13px 14px;
         }
-    }
+}
+}
 
 </style>
 
@@ -305,34 +369,25 @@
                 <h1>Presensi Kelas</h1>
             </div>
 
-            <div class="date">Senin, 13 Oktober 2026</div>
+            <div class="date">{{ $tanggalHariIni }}</div>
         </header>
 
         <section class="attandance today">
             <h2>Jadwal Hari Ini</h2>
-            <div class="class active">
+            @forelse ($jadwalHariIni as $j)
+            <div class="class {{ $j->berlangsung ? 'active' : '' }}">
                 <div>
-                    <h3>Pemrograman Web Lanjut</h3>
+                    <h3>{{ $j->nama_kursus }}</h3>
                     <div class="meta">
-                        <span>Muhammad Azizi</span>
-                        <span>10.00 – 12.00</span>
+                        <span>{{ $j->nama_tentor }}</span>
+                        <span>{{ $j->jam }}</span>
                     </div>
                 </div>
-
-                <span class="pill pill-online">Online</span>
+                <span class="pill pill-online">{{ $j->jenis }}</span>
             </div>
-
-            <div class="class">
-                <div>
-                    <h3>Basis Data</h3>
-                    <div class="meta">
-                        <span>Hapis Ahmad</span>
-                        <span>15.30 – 17.30</span>
-                    </div>
-                </div>
-
-                <span class="pill pill-online">Online</span>
-            </div>
+            @empty
+            <p>Tidak ada jadwal kelas hari ini.</p>
+            @endforelse
         </section>
 
         <section class="attandance">
@@ -341,7 +396,11 @@
                     <h2>Riwayat Presensi</h2>
                 </div>
 
-                <a class="link" href="#">Lihat Semua</a>
+                @if ($semua)
+                    <a class="link" href="{{ route('siswa.absensi') }}">Ringkas</a>
+                @elseif ($totalRiwayat > $ringkas)
+                    <a class="link" href="{{ route('siswa.absensi', ['semua' => 1]) }}">Lihat Semua</a>
+                @endif
             </div>
 
                <div class="scroll">
@@ -356,43 +415,61 @@
                     </thead>
 
                     <tbody>
+                        @forelse ($riwayat as $r)
                         <tr>
-                            <td>10 Oktober 2026</td>
-                            <td>Web Development</td>
-                            <td>10.00 – 12.00</td>
-                            <td><span class="pill pill-hadir">Hadir</span></td>
+                            <td>{{ $r->tanggal_teks }}</td>
+                            <td>{{ $r->nama_kursus }}</td>
+                            <td>{{ $r->jam }}</td>
+                            <td><span class="pill pill-{{ $r->status }}">{{ $r->status_teks }}</span></td>
                         </tr>
-
+                        @empty
                         <tr>
-                            <td>8 Oktober 2026</td>
-                            <td>Web Development</td>
-                            <td>10.00 – 12.00</td>
-                            <td><span class="pill pill-hadir">Hadir</span></td>
+                            <td colspan="4">Belum ada riwayat presensi.</td>
                         </tr>
-
-                        <tr>
-                            <td>6 Oktober 2026</td>
-                            <td>Basis Data</td>
-                            <td>15.30 – 17.30</td>
-                            <td><span class="pill pill-izin">Izin</span></td>
-                        </tr>
-
-                        <tr>
-                            <td>4 Oktober 2026</td>
-                            <td>Web Development</td>
-                            <td>10.00 – 12.00</td>
-                            <td><span class="pill pill-sakit">Sakit</span></td>
-                        </tr>
-
-                        <tr>
-                            <td>2 Oktober 2026</td>
-                            <td>Basis Data</td>
-                            <td>15.30 – 17.30</td>
-                            <td><span class="pill pill-sakit">Sakit</span></td>
-                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
+                @if ($semua && $riwayat->hasPages())
+                    <nav class="tj-pagination" aria-label="Navigasi halaman">
+                        @if ($riwayat->onFirstPage())
+                            <button type="button" class="tj-pg-btn" disabled aria-label="Sebelumnya">&lt;</button>
+                        @else
+                            <a href="{{ $riwayat->previousPageUrl() }}" class="tj-pg-btn" aria-label="Sebelumnya">&lt;</a>
+                        @endif
+
+                        @php
+                            $__cur = $riwayat->currentPage();
+                            $__last = $riwayat->lastPage();
+                            if ($__last <= 7) {
+                                $__pages = range(1, $__last);
+                            } else {
+                                $__pages = collect([1, $__last, $__cur, $__cur - 1, $__cur + 1, $__cur - 2, $__cur + 2])
+                                    ->filter(fn ($n) => $n >= 1 && $n <= $__last)
+                                    ->unique()->sort()->values()->all();
+                            }
+                            $__prev = 0;
+                        @endphp
+
+                        @foreach ($__pages as $__i)
+                            @if ($__prev && $__i - $__prev > 1)
+                                <span class="tj-pg-dots">…</span>
+                            @endif
+                            @if ($__i == $__cur)
+                                <button type="button" class="tj-pg-btn is-active" aria-current="page">{{ $__i }}</button>
+                            @else
+                                <a href="{{ $riwayat->url($__i) }}" class="tj-pg-btn">{{ $__i }}</a>
+                            @endif
+                            @php $__prev = $__i; @endphp
+                        @endforeach
+
+                        @if ($riwayat->hasMorePages())
+                            <a href="{{ $riwayat->nextPageUrl() }}" class="tj-pg-btn" aria-label="Berikutnya">&gt;</a>
+                        @else
+                            <button type="button" class="tj-pg-btn" disabled aria-label="Berikutnya">&gt;</button>
+                        @endif
+                    </nav>
+                @endif
         </section>
     </main>
 @endsection

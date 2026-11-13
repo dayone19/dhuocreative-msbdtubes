@@ -10,6 +10,8 @@ use App\Http\Controllers\Tentor\SertifikatController as TentorSertifikatControll
 use App\Http\Controllers\Tentor\TugasController as TentorTugasController;
 use App\Http\Controllers\Tentor\PengumumanController as TentorPengumumanController;
 use App\Http\Controllers\Tentor\JadwalController as TentorJadwalController;
+use App\Http\Controllers\Siswa\DashboardController as SiswaDashboardController;
+use App\Http\Controllers\Siswa\SertifikatController as SertifikatController;
 
 
 // login
@@ -96,14 +98,6 @@ Route::middleware(['auth', 'prevent.back'])->prefix('tentor')->name('tentor.')->
         ->whereNumber('sertifikat')->name('sertifikat.file');
 
     Route::get('/pengumuman', [TentorPengumumanController::class, 'index'])->name('pengumuman');
-   
-    Route::post('/pengumuman', [TentorPengumumanController::class, 'simpan'])->name('pengumuman.simpan');
-   
-    Route::put('/pengumuman/{pengumuman}', [TentorPengumumanController::class, 'update'])
-        ->whereNumber('pengumuman')->name('pengumuman.update');
-   
-    Route::delete('/pengumuman/{pengumuman}', [TentorPengumumanController::class, 'hapus'])
-        ->whereNumber('pengumuman')->name('pengumuman.hapus');
 
     // Route::get('/kursus/absensi/{kursus}', function ($kursus) {
     //     return view('tentor.absensi', compact('kursus'));
@@ -166,33 +160,51 @@ Route::middleware(['auth', 'prevent.back'])->prefix('operator')->name('operator.
 });
 
 Route::middleware(['auth', 'prevent.back'])->prefix('siswa')->name('siswa.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('siswa.dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [SiswaDashboardController::class, 'index'])->name('dashboard');
 
-    Route::get('/kursus', function () {
-        return view('siswa.kursus');
-    })->name('kursus');
+    Route::get('/kursus', [App\Http\Controllers\Siswa\KursusController::class, 'index'])->name('kursus');
 
-    Route::get('/sertifikat', function () {
-        return view('siswa.sertifikat');
-    })->name('sertifikat');
+    Route::get('/absensi', [App\Http\Controllers\Siswa\AbsensiController::class, 'index'])->name('absensi');
 
-    Route::get('/pengumpulanTugas', function () {
-        return view('siswa.pengumpulanTugas');
-    })->name('pengumpulanTugas');
+    Route::get('/pengumpulanTugas', [App\Http\Controllers\Siswa\PengumpulanTugasController::class, 'index'])->name('pengumpulanTugas');
 
-    Route::get('/nilai', function () {
-        return view('siswa.nilai');
-    })->name('nilai');
+    Route::post('/pengumpulanTugas', [App\Http\Controllers\Siswa\PengumpulanTugasController::class, 'kumpulkan'])->name('pengumpulanTugas.kumpulkan');
 
-    Route::get('/absensi', function () {
-        return view('siswa.absensi');
-    })->name('absensi');
+    Route::get('/nilai', [App\Http\Controllers\Siswa\NilaiController::class, 'index'])->name('nilai');
 
-    Route::get('/pengumuman', function () {
-        return view('siswa.pengumuman');
-    })->name('pengumuman');
+    Route::get('/sertifikat', [App\Http\Controllers\Siswa\SertifikatController::class, 'index'])->name('sertifikat');
+
+    Route::get('/sertifikat/{sertifikat}/file', [App\Http\Controllers\Siswa\SertifikatController::class, 'file'])->whereNumber('sertifikat')->name('sertifikat.file');
+
+    Route::get('/pengumuman', [App\Http\Controllers\Siswa\PengumumanController::class, 'index'])->name('pengumuman');
+
+    // Route::get('/dashboard', function () {
+    //     return view('siswa.dashboard');
+    // })->name('dashboard');
+
+    // Route::get('/kursus', function () {
+    //     return view('siswa.kursus');
+    // })->name('kursus');
+
+    // Route::get('/absensi', function () {
+    //     return view('siswa.absensi');
+    // })->name('absensi');
+
+    // Route::get('/pengumpulanTugas', function () {
+    //     return view('siswa.pengumpulanTugas');
+    // })->name('pengumpulanTugas');
+
+    // Route::get('/nilai', function () {
+    //     return view('siswa.nilai');
+    // })->name('nilai');
+
+    // Route::get('/sertifikat', function () {
+    //     return view('siswa.sertifikat');
+    // })->name('sertifikat');
+
+    // Route::get('/pengumuman', function () {
+    //     return view('siswa.pengumuman');
+    // })->name('pengumuman');
 });
 
 Route::middleware(['auth', 'prevent.back'])->prefix('admin')->name('admin.')->group(function () {
