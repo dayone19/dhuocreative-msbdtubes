@@ -29,11 +29,14 @@
                     <th>Aksi</th>
                 </tr>
             </thead>
-            <tbody></tbody>
+            <tbody id="tsBody"></tbody>
         </table>
     </div>
     <p class="ts-empty-message" id="tsEmptyMessage" hidden>Sertifikat tidak ditemukan.</p>
 </div>
+
+<!-- Komponen Paginasi -->
+<nav class="tj-pagination" id="paginasiSertifikat" aria-label="Halaman daftar sertifikat" style="margin-top: 20px;" hidden></nav>
 
 {{-- Modal Detail Sertifikat (Hanya Lihat & Download) --}}
 <div class="ts-overlay" id="tsDetailModal" hidden>
@@ -82,13 +85,70 @@
 </div>
 
 <script>
+const PER_HALAMAN_SERTIFIKAT = 10;
+let halSertifikat = 1;
+
+function renderPaginasiSertifikat(navId, total, halaman, pindah) {
+    const nav = document.getElementById(navId);
+    if (!nav) return;
+    
+    nav.replaceChildren();
+    if (!total || total <= 1) {
+        nav.hidden = true;
+        return;
+    }
+    nav.hidden = false;
+    
+    const jumlah = Math.ceil(total / PER_HALAMAN_SERTIFIKAT);
+    const awal = (halaman - 1) * PER_HALAMAN_SERTIFIKAT + 1;
+    const akhir = Math.min(halaman * PER_HALAMAN_SERTIFIKAT, total);
+
+    const info = document.createElement('span');
+    info.className = 'tj-pg-info';
+    info.textContent = `Menampilkan ${awal}–${akhir} dari ${total}`;
+    nav.appendChild(info);
+
+    const btn = (label, tujuan, { aktif = false, mati = false, aria } = {}) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'tj-pg-btn' + (aktif ? ' active' : '');
+        b.textContent = label;
+        b.disabled = mati;
+        if (aria) b.setAttribute('aria-label', aria);
+        if (aktif) b.setAttribute('aria-current', 'page');
+        b.addEventListener('click', () => pindah(tujuan));
+        return b;
+    };
+
+    const grup = document.createElement('div');
+    grup.className = 'tj-pg-list';
+    grup.appendChild(btn('‹', halaman - 1, { mati: halaman === 1, aria: 'Halaman sebelumnya' }));
+
+    let terakhir = 0;
+    for (let i = 1; i <= jumlah; i++) {
+        if (i === 1 || i === jumlah || Math.abs(i - halaman) <= 1) {
+            if (i - terakhir > 1) {
+                const t = document.createElement('span');
+                t.className = 'tj-pg-dots';
+                t.textContent = '…';
+                grup.appendChild(t);
+            }
+            grup.appendChild(btn(String(i), i, { aktif: i === halaman, aria: `Halaman ${i}` }));
+            terakhir = i;
+        }
+    }
+
+    grup.appendChild(btn('›', halaman + 1, { mati: halaman === jumlah, aria: 'Halaman berikutnya' }));
+    nav.appendChild(grup);
+}
+
 (() => {
     const byId = (id) => document.getElementById(id);
 
     const search = byId('tsSearch');
     const yearFilter = byId('tsYearFilter');
     const table = byId('tsTable');
-    const tbody = table.querySelector('tbody');
+    const tbody = byId('tsBody');
     const emptyMessage = byId('tsEmptyMessage');
     const detailModal = byId('tsDetailModal');
     const overlays = [detailModal];
@@ -132,7 +192,10 @@
         }
     ];
 
+    const rowElements = [];
+
     function addYearOption(year) {
+        if (!year) return;
         const exists = [...yearFilter.options].some(option => option.value === year);
         if (!exists) {
             const option = document.createElement('option');
@@ -142,7 +205,7 @@
         }
     }
 
-    function addRow(data) {
+    sampleCertificates.forEach(data => {
         const row = document.createElement('tr');
         row.dataset.year = data.year;
         row._certificateData = data;
@@ -206,30 +269,52 @@
 
         actionCell.appendChild(detailButton);
         row.appendChild(actionCell);
-        tbody.appendChild(row);
+        rowElements.push(row);
         addYearOption(data.year);
-    }
-
-    sampleCertificates.forEach(addRow);
+    });
 
     function filterRows() {
         const query = search.value.toLowerCase().trim();
         const year = yearFilter.value;
-        let visible = 0;
 
-        table.querySelectorAll('tbody tr[data-year]').forEach(row => {
-            const matches = row.textContent.toLowerCase().includes(query) &&
+        const visibleRows = rowElements.filter(row => {
+            return row.textContent.toLowerCase().includes(query) &&
                 (!year || row.dataset.year === year);
-            row.hidden = !matches;
-            if (matches) visible++;
         });
 
-        emptyMessage.hidden = visible > 0;
-        emptyMessage.textContent = visible ? '' : 'Sertifikat tidak ditemukan.';
+        rowElements.forEach(row => row.style.display = 'none');
+
+        const totalFiltered = visibleRows.length;
+        emptyMessage.hidden = totalFiltered > 0;
+        emptyMessage.textContent = totalFiltered ? '' : 'Sertifikat tidak ditemukan.';
+
+        if (totalFiltered === 0) {
+            renderPaginasiSertifikat('paginasiSertifikat', 0, halSertifikat, pindahHalaman);
+            return;
+        }
+
+        const maxPage = Math.ceil(totalFiltered / PER_HALAMAN_SERTIFIKAT);
+        if (halSertifikat > maxPage) halSertifikat = maxPage || 1;
+
+        const start = (halSertifikat - 1) * PER_HALAMAN_SERTIFIKAT;
+        const end = start + PER_HALAMAN_SERTIFIKAT;
+
+        visibleRows.slice(start, end).forEach(row => {
+            row.style.display = '';
+            tbody.appendChild(row);
+        });
+
+        renderPaginasiSertifikat('paginasiSertifikat', totalFiltered, halSertifikat, pindahHalaman);
     }
 
-    search.addEventListener('input', filterRows);
-    yearFilter.addEventListener('change', filterRows);
+    function pindahHalaman(tujuan) {
+        halSertifikat = tujuan;
+        filterRows();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    search.addEventListener('input', () => { halSertifikat = 1; filterRows(); });
+    yearFilter.addEventListener('change', () => { halSertifikat = 1; filterRows(); });
 
     document.querySelectorAll('[data-ts-close]').forEach(button => {
         button.addEventListener('click', () => {

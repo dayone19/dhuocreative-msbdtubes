@@ -3,6 +3,7 @@
 @section('title', 'Jadwal')
 
 @section('content')
+
 <div class="t-page tj-page">
  <div class="t-page-header">
     <h1 class="t-page-title">Jadwal Saya</h1>
@@ -42,6 +43,8 @@
     </table>
  </div>
 
+ <nav class="tj-pagination" id="paginasiJadwal" aria-label="Halaman daftar jadwal" hidden></nav>
+
  <div class="tj-section-head tj-section-gap">
     <h2 class="tj-section-title">Pengajuan Jadwal</h2>
 </div>
@@ -63,6 +66,7 @@
         </tbody>
     </table>
  </div>
+ <nav class="tj-pagination" id="paginasiPengajuan" aria-label="Halaman pengajuan jadwal" hidden></nav>
 </div>
 
 <!-- Modal Ajukan Jadwal Baru sudah dihapus, namun modal ini tetap dipakai untuk Ubah Jadwal -->
@@ -118,10 +122,61 @@ let jadwal    = @json($jadwal);
 let pengajuan = @json($pengajuan);
 let jadwalDipilihUntukDiubah = null;
 
+const PER_HALAMAN = 5;
+let halJadwal = 1, halPengajuan = 1;
+
 const el = id => document.getElementById(id);
 const safe = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const formatTanggal = s => new Date(s+'T12:00:00').toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
 const badge = s => `<span class="tj-pill tj-${safe(s)}">${safe(s.charAt(0).toUpperCase()+s.slice(1))}</span>`;
+
+function renderPaginasi(navId,total,halaman,pindah){
+    const nav=el(navId);
+    nav.replaceChildren();
+    if(!total){nav.hidden=true;return}
+    nav.hidden=false;
+    const jumlah=Math.ceil(total/PER_HALAMAN);
+    const awal=(halaman-1)*PER_HALAMAN+1, akhir=Math.min(halaman*PER_HALAMAN,total);
+
+    const info=document.createElement('span');
+    info.className='tj-pg-info';
+    info.textContent=`Menampilkan ${awal}–${akhir} dari ${total}`;
+    nav.appendChild(info);
+    if(jumlah<=1)return;
+
+    const btn=(label,tujuan,{aktif=false,mati=false,aria}={})=>{
+        const b=document.createElement('button');
+        b.type='button';
+        b.className='tj-pg-btn'+(aktif?' active':'');
+        b.textContent=label;
+        b.disabled=mati;
+        if(aria)b.setAttribute('aria-label',aria);
+        if(aktif)b.setAttribute('aria-current','page');
+        b.addEventListener('click',()=>pindah(tujuan));
+        return b;
+    };
+
+    const grup=document.createElement('div');
+    grup.className='tj-pg-list';
+    grup.appendChild(btn('‹',halaman-1,{mati:halaman===1,aria:'Halaman sebelumnya'}));
+
+    let terakhir=0;
+    for(let i=1;i<=jumlah;i++){
+        if(i===1||i===jumlah||Math.abs(i-halaman)<=1){
+            if(i-terakhir>1){
+                const t=document.createElement('span');
+                t.className='tj-pg-dots';
+                t.textContent='…';
+                grup.appendChild(t);
+            }
+            grup.appendChild(btn(String(i),i,{aktif:i===halaman,aria:`Halaman ${i}`}));
+            terakhir=i;
+        }
+    }
+
+    grup.appendChild(btn('›',halaman+1,{mati:halaman===jumlah,aria:'Halaman berikutnya'}));
+    nav.appendChild(grup);
+}
 
 function renderMingguan(){
     const names=['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
@@ -143,7 +198,10 @@ function renderJadwal(){
     const q=el('cariJadwal').value.trim().toLowerCase(),tgl=el('filterTanggal').value,sts=el('filterStatus').value;
     const rows=jadwal.filter(j=>(`${j.kursus} ${j.kelas} ${j.siswa}`.toLowerCase().includes(q))&&(!tgl||j.tanggal===tgl)&&(!sts||j.status===sts));
     
-    el('jadwalBody').innerHTML=rows.length?rows.map(j=>{
+    halJadwal=Math.min(halJadwal,Math.max(1,Math.ceil(rows.length/PER_HALAMAN)));
+    const tampil=rows.slice((halJadwal-1)*PER_HALAMAN,halJadwal*PER_HALAMAN);
+
+    el('jadwalBody').innerHTML=rows.length?tampil.map(j=>{
         const idx=jadwal.indexOf(j);
         const bolehAjukan=j.status==='terjadwal';
         return `<tr>
@@ -153,10 +211,17 @@ function renderJadwal(){
             <td>${bolehAjukan?`<button type="button" class="tj-btn-detail tj-btn-ajukan-perubahan" data-ubah-jadwal="${idx}">Ubah Jadwal</button>`:'<span class="tj-ket">—</span>'}</td>
         </tr>`;
     }).join(''):'<tr><td colspan="8" class="tj-empty">Tidak ada jadwal yang cocok.</td></tr>';
+
+    renderPaginasi('paginasiJadwal',rows.length,halJadwal,h=>{halJadwal=h;renderJadwal();});
 }
 
 function renderPengajuan(){
-    el('pengajuanBody').innerHTML=pengajuan.length?pengajuan.map(p=>`<tr><td>${safe(p.kursus)}</td><td>${safe(p.siswa)}</td><td>${p.lamaTanggal?`${formatTanggal(p.lamaTanggal)} · ${safe(p.lamaMulai)}–${safe(p.lamaSelesai)}`:'Jadwal baru'}</td><td>${formatTanggal(p.tanggal)} · ${safe(p.mulai)}–${safe(p.selesai)}</td><td>${badge(p.status)}</td><td class="tj-ket">${safe(p.ket)}</td></tr>`).join(''):'<tr><td colspan="6" class="tj-empty">Belum ada pengajuan.</td></tr>';
+    halPengajuan=Math.min(halPengajuan,Math.max(1,Math.ceil(pengajuan.length/PER_HALAMAN)));
+    const tampil=pengajuan.slice((halPengajuan-1)*PER_HALAMAN,halPengajuan*PER_HALAMAN);
+
+    el('pengajuanBody').innerHTML=pengajuan.length?tampil.map(p=>`<tr><td>${safe(p.kursus)}</td><td>${safe(p.siswa)}</td><td>${p.lamaTanggal?`${formatTanggal(p.lamaTanggal)} · ${safe(p.lamaMulai)}–${safe(p.lamaSelesai)}`:'Jadwal baru'}</td><td>${formatTanggal(p.tanggal)} · ${safe(p.mulai)}–${safe(p.selesai)}</td><td>${badge(p.status)}</td><td class="tj-ket">${safe(p.ket)}</td></tr>`).join(''):'<tr><td colspan="6" class="tj-empty">Belum ada pengajuan.</td></tr>';
+
+    renderPaginasi('paginasiPengajuan',pengajuan.length,halPengajuan,h=>{halPengajuan=h;renderPengajuan();});
 }
 
 function toast(msg){
@@ -187,7 +252,7 @@ function bukaModalUbah(index){
 el('jadwalBody').addEventListener('click',e=>{const b=e.target.closest('[data-ubah-jadwal]');if(b)bukaModalUbah(Number(b.dataset.ubahJadwal));});
 document.querySelectorAll('[data-tutup]').forEach(b=>b.addEventListener('click',()=>b.closest('.t-modal').hidden=true));
 document.querySelectorAll('.t-modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.hidden=true}));
-['cariJadwal','filterTanggal','filterStatus'].forEach(id=>el(id).addEventListener(id==='cariJadwal'?'input':'change',renderJadwal));
+['cariJadwal','filterTanggal','filterStatus'].forEach(id=>el(id).addEventListener(id==='cariJadwal'?'input':'change',()=>{halJadwal=1;renderJadwal();}));
 
 el('tanggal').min=offsetDate(0);
 el('formAjukan').addEventListener('submit',async e=>{

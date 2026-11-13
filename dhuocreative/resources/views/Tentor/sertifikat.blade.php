@@ -1,5 +1,7 @@
 @extends('layouts.Tentor')
+
 @section('title', 'Sertifikat Siswa')
+
 @section('content')
 <div class="ts-page">
     <div class="ts-header">
@@ -11,9 +13,9 @@
         </button>
     </div>
 
-     @if (session('sukses'))
+    @if (session('sukses'))
         <p class="ts-flash ts-flash-sukses" role="status"
-           style="padding:12px 16px;border-radius:12px;margin:0 0 16px;background:#e6f4f1;color:#14524b">
+            style="padding:12px 16px;border-radius:12px;margin:0 0 16px;background:#e6f4f1;color:#14524b">
             {{ session('sukses') }}
         </p>
     @endif
@@ -49,9 +51,11 @@
             </thead>
             <tbody></tbody>
         </table>
-    </div>
+    </div>    
     <p class="ts-empty-message" id="tsEmptyMessage" hidden>Sertifikat tidak ditemukan.</p>
 </div>
+
+<nav class="tj-pagination" id="paginasiSertifikat" aria-label="Halaman daftar sertifikat" hidden></nav>
 
 {{-- Modal Upload --}}
 <div class="ts-overlay" id="tsUploadModal" hidden>
@@ -149,7 +153,7 @@
     </section>
 </div>
 
-{{-- Modal Edit Sertifikat (Menggunakan template/gaya yang sama dengan Upload) --}}
+{{-- Modal Edit Sertifikat --}}
 <div class="ts-overlay" id="tsEditModal" hidden>
     <section class="ts-modal" role="dialog" aria-modal="true" aria-labelledby="tsEditTitle">
         <div class="ts-modal-header">
@@ -199,6 +203,60 @@
 </div>
 
 <script>
+const PER_HALAMAN = 10;
+let halSertifikat = 1;
+
+function renderPaginasi(navId, total, halaman, pindah) {
+    const nav = document.getElementById(navId);
+    if (!nav) return;
+    nav.replaceChildren();
+    if (!total) { nav.hidden = true; return; }
+    nav.hidden = false;
+ 
+    const jumlah = Math.ceil(total / PER_HALAMAN);
+    const awal = (halaman - 1) * PER_HALAMAN + 1;
+    const akhir = Math.min(halaman * PER_HALAMAN, total);
+ 
+    const info = document.createElement('span');
+    info.className = 'tj-pg-info';
+    info.textContent = `Menampilkan ${awal}–${akhir} dari ${total}`;
+    nav.appendChild(info);
+    if (jumlah <= 1) return;
+ 
+    const btn = (label, tujuan, { aktif = false, mati = false, aria } = {}) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'tj-pg-btn' + (aktif ? ' active' : '');
+        b.textContent = label;
+        b.disabled = mati;
+        if (aria) b.setAttribute('aria-label', aria);
+        if (aktif) b.setAttribute('aria-current', 'page');
+        b.addEventListener('click', () => pindah(tujuan));
+        return b;
+    };
+ 
+    const grup = document.createElement('div');
+    grup.className = 'tj-pg-list';
+    grup.appendChild(btn('‹', halaman - 1, { mati: halaman === 1, aria: 'Halaman sebelumnya' }));
+ 
+    let terakhir = 0;
+    for (let i = 1; i <= jumlah; i++) {
+        if (i === 1 || i === jumlah || Math.abs(i - halaman) <= 1) {
+            if (i - terakhir > 1) {
+                const t = document.createElement('span');
+                t.className = 'tj-pg-dots';
+                t.textContent = '…';
+                grup.appendChild(t);
+            }
+            grup.appendChild(btn(String(i), i, { aktif: i === halaman, aria: `Halaman ${i}` }));
+            terakhir = i;
+        }
+    }
+ 
+    grup.appendChild(btn('›', halaman + 1, { mati: halaman === jumlah, aria: 'Halaman berikutnya' }));
+    nav.appendChild(grup);
+}
+
 (() => {
     const byId = (id) => document.getElementById(id);
  
@@ -218,10 +276,11 @@
     const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
     const maxSize = 5 * 1024 * 1024;
  
-    // data dari database (SertifikatController@index)
     const certificates = @json($sertifikat);
- 
+    const rowElements = [];
+
     function addYearOption(year) {
+        if (!year) return;
         const exists = [...yearFilter.options].some(option => option.value === year);
         if (!exists) {
             const option = document.createElement('option');
@@ -231,7 +290,8 @@
         }
     }
  
-    function addRow(data) {
+    // Buat elemen baris dari data sertifikat sekali saja di awal
+    certificates.forEach(data => {
         const row = document.createElement('tr');
         row.dataset.year = data.year;
         row._certificateData = data;
@@ -279,9 +339,9 @@
                 img.style.objectFit = 'contain';
                 preview.appendChild(img);
             } else {
-                const message = document.createElement('p');
-                message.textContent = 'Preview tidak tersedia untuk file ini.';
-                preview.appendChild(message);
+                const msg = document.createElement('p');
+                msg.textContent = 'Preview tidak tersedia untuk file ini.';
+                preview.appendChild(msg);
             }
  
             if (data.fileUrl) {
@@ -296,32 +356,47 @@
  
         actionCell.appendChild(detailButton);
         row.appendChild(actionCell);
-        tbody.appendChild(row);
+        rowElements.push(row);
         addYearOption(data.year);
-    }
+    });
  
-    certificates.forEach(addRow);
- 
-    function filterRows() {
+    function filterRows(resetPage = true) {
+        if (resetPage) halSertifikat = 1;
+
         const query = search.value.toLowerCase().trim();
         const year = yearFilter.value;
-        let visible = 0;
- 
-        table.querySelectorAll('tbody tr[data-year]').forEach(row => {
+        
+        // Filter baris berdasarkan pencarian dan tahun
+        const visibleRows = rowElements.filter(row => {
             const matches = row.textContent.toLowerCase().includes(query) &&
                 (!year || row.dataset.year === year);
-            row.hidden = !matches;
-            if (matches) visible++;
+            return matches;
         });
  
-        emptyMessage.hidden = visible > 0;
-        emptyMessage.textContent = visible
+        tbody.replaceChildren();
+
+        const maxPage = Math.ceil(visibleRows.length / PER_HALAMAN) || 1;
+        if (halSertifikat > maxPage) halSertifikat = maxPage;
+
+        const start = (halSertifikat - 1) * PER_HALAMAN;
+        const end = start + PER_HALAMAN;
+        const paginatedRows = visibleRows.slice(start, end);
+
+        paginatedRows.forEach(row => tbody.appendChild(row));
+ 
+        emptyMessage.hidden = visibleRows.length > 0;
+        emptyMessage.textContent = visibleRows.length
             ? ''
             : (certificates.length ? 'Sertifikat tidak ditemukan.' : 'Belum ada sertifikat yang diupload.');
+ 
+        renderPaginasi('paginasiSertifikat', visibleRows.length, halSertifikat, h => { 
+            halSertifikat = h; 
+            filterRows(false); 
+        });
     }
  
-    search.addEventListener('input', filterRows);
-    yearFilter.addEventListener('change', filterRows);
+    search.addEventListener('input', () => filterRows(true));
+    yearFilter.addEventListener('change', () => filterRows(true));
  
     byId('tsOpenUpload').addEventListener('click', () => {
         form.reset();
@@ -337,7 +412,6 @@
         byId('tsEditFileName').textContent = byId('tsEditFile').files[0]?.name || 'Pilih file baru jika ingin mengganti';
     });
  
-    // Tombol Edit di modal detail -> buka modal edit
     byId('tsEditButton').addEventListener('click', () => {
         const row = detailModal._activeRow;
         if (!row) return;
@@ -354,7 +428,6 @@
         editModal.hidden = false;
     });
  
-    // Cek di browser dulu; kalau lolos, form dikirim ke server (validasi ulang di controller)
     function cekFile(file) {
         if (!allowedTypes.includes(file.type)) {
             alert('Format file harus PDF, JPG, JPEG, atau PNG.');
@@ -381,7 +454,7 @@
             event.preventDefault();
             return;
         }
-        editForm.querySelector('[type=submit]').disabled = true; // cegah klik ganda
+        editForm.querySelector('[type=submit]').disabled = true;
     });
  
     form.addEventListener('submit', event => {
@@ -399,7 +472,7 @@
             event.preventDefault();
             return;
         }
-        form.querySelector('[type=submit]').disabled = true; // cegah klik ganda
+        form.querySelector('[type=submit]').disabled = true;
     });
  
     document.querySelectorAll('[data-ts-close]').forEach(button => {
@@ -420,7 +493,7 @@
         }
     });
  
-    filterRows();
+    filterRows(true);
 })();
 </script>
 @endsection

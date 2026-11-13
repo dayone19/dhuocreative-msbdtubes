@@ -1,5 +1,7 @@
 @extends('layouts.Operator')
+
 @section('title', 'Manajemen Jadwal')
+
 @section('content')
 <style>
 .o-approval-actions { display:flex; justify-content:center; gap:7px; flex-wrap:wrap; }
@@ -14,7 +16,7 @@
         <h1 class="o-page-title">Manajemen Jadwal</h1>
     </div>
 
-    <!-- Ringkasan 1 minggu (contoh: minggu 26–31 Okt 2026) -->
+    <!-- Ringkasan 1 minggu -->
     <div class="o-schedule-panel">
         <div class="o-week-grid">
             <div class="o-week-day">
@@ -66,7 +68,6 @@
         </div>
     </div>
 
-    <!-- 1 tentor = 1 siswa + 1 kursus, kelasnya tetap sama -->
     <div class="j-table-wrap">
         <table class="j-table" id="tabelJadwal">
             <thead>
@@ -82,7 +83,7 @@
                     <th>Aksi</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="bodyJadwal">
                 <tr data-id="j1" data-tanggal="2026-10-26" data-status="terjadwal">
                     <td>Web Master</td><td>Online</td><td>Tentor C</td><td>Siswa A</td>
                     <td>2026-10-26</td><td>09:00</td><td>10:30</td>
@@ -124,8 +125,10 @@
     </div>
     <p class="o-empty" id="jadwalKosong" hidden>Jadwal tidak ditemukan.</p>
 
-    <!-- Pengajuan tentor: berlaku hanya untuk 1 pertemuan.
-         Disetujui -> jadwal lama jadi "Dibatalkan" + baris baru "Terjadwal". Minggu berikutnya tetap normal. -->
+    <!-- Komponen Paginasi Tabel Jadwal -->
+    <nav class="tj-pagination" id="paginasiJadwal" aria-label="Halaman daftar jadwal" style="margin-top: 20px;" hidden></nav>
+
+    <!-- Pengajuan tentor -->
     <div class="o-toolbar o-approval-heading" style="margin-top:42px">
         <h2>Persetujuan Pergantian Jadwal dari Tentor</h2>
     </div>
@@ -170,7 +173,7 @@
     </div>
 </div>
 
-<!-- Modal detail jadwal (Tombol edit di dalamnya diarahkan agar tidak error, atau cukup lihat detail) -->
+<!-- Modal detail jadwal -->
 <div class="o-modal" id="modalDetailJadwal" hidden>
     <div class="o-modal-box">
         <div class="o-modal-header">
@@ -193,12 +196,68 @@
 </div>
 
 <script>
+const PER_HALAMAN = 10; 
+let halJadwal = 1;
+
+function renderPaginasi(navId, total, halaman, pindah) {
+    const nav = document.getElementById(navId);
+    if (!nav) return;
+    
+    nav.replaceChildren();
+    if (!total || total <= 1) {
+        nav.hidden = true;
+        return;
+    }
+    nav.hidden = false;
+    
+    const jumlah = Math.ceil(total / PER_HALAMAN);
+    const awal = (halaman - 1) * PER_HALAMAN + 1;
+    const akhir = Math.min(halaman * PER_HALAMAN, total);
+
+    const info = document.createElement('span');
+    info.className = 'tj-pg-info';
+    info.textContent = `Menampilkan ${awal}–${akhir} dari ${total}`;
+    nav.appendChild(info);
+
+    const btn = (label, tujuan, { aktif = false, mati = false, aria } = {}) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'tj-pg-btn' + (aktif ? ' active' : '');
+        b.textContent = label;
+        b.disabled = mati;
+        if (aria) b.setAttribute('aria-label', aria);
+        if (aktif) b.setAttribute('aria-current', 'page');
+        b.addEventListener('click', () => pindah(tujuan));
+        return b;
+    };
+
+    const grup = document.createElement('div');
+    grup.className = 'tj-pg-list';
+    grup.appendChild(btn('‹', halaman - 1, { mati: halaman === 1, aria: 'Halaman sebelumnya' }));
+
+    let terakhir = 0;
+    for (let i = 1; i <= jumlah; i++) {
+        if (i === 1 || i === jumlah || Math.abs(i - halaman) <= 1) {
+            if (i - terakhir > 1) {
+                const t = document.createElement('span');
+                t.className = 'tj-pg-dots';
+                t.textContent = '…';
+                grup.appendChild(t);
+            }
+            grup.appendChild(btn(String(i), i, { aktif: i === halaman, aria: `Halaman ${i}` }));
+            terakhir = i;
+        }
+    }
+
+    grup.appendChild(btn('›', halaman + 1, { mati: halaman === jumlah, aria: 'Halaman berikutnya' }));
+    nav.appendChild(grup);
+}
+
 (()=>{
 const $=s=>document.querySelector(s),all=s=>[...document.querySelectorAll(s)];
 const detail=$('#modalDetailJadwal'),cap=s=>s[0].toUpperCase()+s.slice(1);
-let selected=null;
+const bodyJadwal=$('#bodyJadwal');
 
-// badge status (enum: terjadwal | selesai | dibatalkan)
 function setStatus(tr,st){
   tr.dataset.status=st;
   const b=tr.cells[7].querySelector('span');b.className='o-status '+st;b.textContent=cap(st);
@@ -210,17 +269,17 @@ all('[data-close]').forEach(b=>b.onclick=()=>b.closest('.o-modal').hidden=true);
 // detail jadwal
 $('#tabelJadwal').onclick=e=>{
   const b=e.target.closest('[data-detail]');if(!b)return;
-  selected=b.closest('tr');const c=selected.cells;
+  const tr=b.closest('tr');const c=tr.cells;
   $('#detailSiswa').textContent=c[3].textContent;
   $('#detailKursus').textContent=c[0].textContent+' - '+c[1].textContent;
   $('#detailTentor').textContent=c[2].textContent;
   $('#detailTanggal').textContent=c[4].textContent;
   $('#detailJam').textContent=c[5].textContent+'–'+c[6].textContent;
-  $('#detailStatus').textContent=cap(selected.dataset.status);
+  $('#detailStatus').textContent=cap(tr.dataset.status);
   detail.hidden=false;
 };
 
-// persetujuan: setuju -> jadwal lama "dibatalkan" + baris baru "terjadwal" (hanya untuk pertemuan itu)
+// persetujuan: setuju -> jadwal lama "dibatalkan" + baris baru "terjadwal"
 $('#persetujuanBody').onclick=e=>{
   const b=e.target.closest('[data-approval]');if(!b)return;
   const row=b.closest('tr'),setuju=b.dataset.approval==='setuju';
@@ -228,24 +287,64 @@ $('#persetujuanBody').onclick=e=>{
   badge.className='o-status '+(setuju?'aktif':'nonaktif');badge.textContent=setuju?'Disetujui':'Ditolak';
   row.cells[8].textContent=setuju?'Jadwal disetujui':'Pengajuan ditolak';
   if(!setuju)return;
-  const lama=$('#tabelJadwal tr[data-id="'+row.dataset.jadwal+'"]'),baru=lama.cloneNode(true);
-  setStatus(lama,'dibatalkan');
-  baru.removeAttribute('data-id');baru.dataset.tanggal=row.dataset.tanggal;
-  baru.cells[4].textContent=row.dataset.tanggal;
-  baru.cells[5].textContent=row.dataset.mulai;baru.cells[6].textContent=row.dataset.selesai;
-  setStatus(baru,'terjadwal');lama.after(baru);
+  const lama=$('#tabelJadwal tr[data-id="'+row.dataset.jadwal+'"]');
+  if (lama) {
+      const baru=lama.cloneNode(true);
+      setStatus(lama,'dibatalkan');
+      baru.removeAttribute('data-id');baru.dataset.tanggal=row.dataset.tanggal;
+      baru.cells[4].textContent=row.dataset.tanggal;
+      baru.cells[5].textContent=row.dataset.mulai;baru.cells[6].textContent=row.dataset.selesai;
+      setStatus(baru,'terjadwal');lama.after(baru);
+      filter(); // Refresh filter/paginasi setelah tambah baris baru
+  }
 };
 
-// cari + filter bulan + filter status
+// Fungsi Filter & Paginasi Jadwal
 function filter(){
-  const q=$('#cariJadwal').value.toLowerCase(),m=$('#filterTanggal').value,st=$('#filterStatus').value;let n=0;
-  all('#tabelJadwal tbody tr').forEach(r=>{
+  const q=$('#cariJadwal').value.toLowerCase(),m=$('#filterTanggal').value,st=$('#filterStatus').value;
+  const allRows=[...bodyJadwal.querySelectorAll('tr')];
+
+  const filteredRows = allRows.filter(r=>{
     const ok=r.textContent.toLowerCase().includes(q)&&(!m||r.dataset.tanggal.startsWith(m))&&(!st||r.dataset.status===st);
-    r.hidden=!ok;if(ok)n++;
+    return ok;
   });
-  $('#jadwalKosong').hidden=n>0;
+
+  allRows.forEach(r => r.style.display = 'none');
+
+  const totalFiltered = filteredRows.length;
+  $('#jadwalKosong').hidden = totalFiltered > 0;
+
+  if (totalFiltered === 0) {
+      renderPaginasi('paginasiJadwal', 0, halJadwal, pindahHalaman);
+      return;
+  }
+
+  const maxPage = Math.ceil(totalFiltered / PER_HALAMAN);
+  if (halJadwal > maxPage) halJadwal = maxPage || 1;
+
+  const start = (halJadwal - 1) * PER_HALAMAN;
+  const end = start + PER_HALAMAN;
+
+  filteredRows.slice(start, end).forEach(r => {
+      r.style.display = '';
+  });
+
+  renderPaginasi('paginasiJadwal', totalFiltered, halJadwal, pindahHalaman);
 }
-['#cariJadwal','#filterTanggal','#filterStatus'].forEach(s=>$(s).addEventListener(s==='#cariJadwal'?'input':'change',filter));
+
+function pindahHalaman(tujuanBaru) {
+    halJadwal = tujuanBaru;
+    filter();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+['#cariJadwal','#filterTanggal','#filterStatus'].forEach(s=>$(s).addEventListener(s==='#cariJadwal'?'input':'change',()=>{
+    halJadwal = 1; // Reset ke halaman 1 saat pencarian/filter diubah
+    filter();
+}));
+
+// Inisialisasi awal
+filter();
 })();
 </script>
 @endsection

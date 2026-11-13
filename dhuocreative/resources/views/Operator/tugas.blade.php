@@ -22,7 +22,6 @@
             <input type="search" id="cariTugas" placeholder="Cari judul tugas..." aria-label="Cari tugas">
         </div>
         <div class="o-schedule-filters" style="display: flex; gap: 10px; flex: 2; justify-content: flex-end;">
-            {{-- Diubah dari filterStatus menjadi filterTentor --}}
             <select class="tt-select" id="filterTentor" style="width: auto; min-width: 160px;" aria-label="Filter tentor">
                 <option value="">Semua Tentor</option>
                 <option value="Tentor C">Tentor C</option>
@@ -58,6 +57,7 @@
                     data-deskripsi="Membuat struktur tabel HTML lengkap dengan CSS styling sederhana."
                     data-file="Tugas1_SiswaA.html"
                     data-nilai="85"
+                    data-feedback="Hasil baik, tingkatkan lagi!"
                     data-status-pengumpulan="Terkumpul">
                     <td>Membuat Tabel HTML</td>
                     <td>Web Master</td>
@@ -76,6 +76,7 @@
                     data-deskripsi="Membuat halaman portofolio pribadi menggunakan HTML & CSS."
                     data-file="-"
                     data-nilai="-"
+                    data-feedback="-"
                     data-status-pengumpulan="Belum Mengumpulkan">
                     <td>Projek Portofolio</td>
                     <td>Web Master</td>
@@ -90,8 +91,11 @@
             </tbody>
         </table>
     </div>
+    
     <p class="o-empty" id="kosongTugas" hidden>Tugas tidak ditemukan.</p>
 </div>
+
+<nav class="tj-pagination" id="paginasiTugas" aria-label="Halaman daftar tugas" style="margin-top: 20px;"></nav>
 
 {{-- MODAL DETAIL TUGAS & NILAI (READ ONLY FOR OPERATOR) --}}
 <div class="tt-modal-overlay" id="modalDetailTugas" hidden>
@@ -144,50 +148,141 @@
                 <span>Nilai Akhir</span>
                 <strong id="detNilai" style="font-size:18px;">-</strong>
             </div>
+            <div>
+                <span>Feedback</span>
+                <strong id="detFeedback">-</strong>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
+const PER_HALAMAN = 5; 
+let halTugas = 1;
+
+function renderPaginasi(navId, total, halaman, pindah) {
+    const nav = document.getElementById(navId);
+    if (!nav) return;
+    
+    nav.replaceChildren();
+    
+    if (!total || total <= 1) {
+        nav.style.display = 'none';
+        return;
+    }
+    nav.style.display = 'flex';
+    
+    const jumlah = Math.ceil(total / PER_HALAMAN);
+    const awal = (halaman - 1) * PER_HALAMAN + 1;
+    const akhir = Math.min(halaman * PER_HALAMAN, total);
+
+    const info = document.createElement('span');
+    info.className = 'tj-pg-info';
+    info.textContent = `Menampilkan ${awal}–${akhir} dari ${total}`;
+    nav.appendChild(info);
+
+    const btn = (label, tujuan, { aktif = false, mati = false, aria } = {}) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'tj-pg-btn' + (aktif ? ' active' : '');
+        b.textContent = label;
+        b.disabled = mati;
+        if (aria) b.setAttribute('aria-label', aria);
+        if (aktif) b.setAttribute('aria-current', 'page');
+        b.addEventListener('click', () => pindah(tujuan));
+        return b;
+    };
+
+    const grup = document.createElement('div');
+    grup.className = 'tj-pg-list';
+    grup.appendChild(btn('‹', halaman - 1, { mati: halaman === 1, aria: 'Halaman sebelumnya' }));
+
+    let terakhir = 0;
+    for (let i = 1; i <= jumlah; i++) {
+        if (i === 1 || i === jumlah || Math.abs(i - halaman) <= 1) {
+            if (i - terakhir > 1) {
+                const t = document.createElement('span');
+                t.className = 'tj-pg-dots';
+                t.textContent = '…';
+                grup.appendChild(t);
+            }
+            grup.appendChild(btn(String(i), i, { aktif: i === halaman, aria: `Halaman ${i}` }));
+            terakhir = i;
+        }
+    }
+
+    grup.appendChild(btn('›', halaman + 1, { mati: halaman === jumlah, aria: 'Halaman berikutnya' }));
+    nav.appendChild(grup);
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     const el = id => document.getElementById(id);
     const modalDetail = el('modalDetailTugas');
     const cariInput = el('cariTugas');
     const filterKursus = el('filterKursus');
-    const filterTentor = el('filterTentor'); // Diubah dari filterStatus ke filterTentor
+    const filterTentor = el('filterTentor');
+    const bodyTugas = el('bodyTugas');
 
-    // Menangkap parameter query URL (misal: ?siswa=Siswa+A) untuk menyesuaikan judul halaman privat
+    // Menangkap parameter query URL (misal: ?siswa=Siswa+A)
     const urlParams = new URLSearchParams(window.location.search);
     const siswaParam = urlParams.get('siswa');
     if (siswaParam) {
         el('judulHalamanSiswa').textContent = `Daftar Tugas ${siswaParam}`;
     }
 
-    // Fungsi Filter & Pencarian
-    function filter() {
+    // Fungsi Filter & Paginasi Terpadu
+    function filterTabel() {
         const q = cariInput.value.toLowerCase().trim();
         const kursus = filterKursus.value;
         const tentor = filterTentor.value;
-        let count = 0;
 
-        document.querySelectorAll('#bodyTugas tr').forEach(row => {
+        const allRows = [...bodyTugas.querySelectorAll('tr')];
+        
+        // Saring baris berdasarkan kriteria pencarian dan dropdown
+        const filteredRows = allRows.filter(row => {
             const textMatch = row.textContent.toLowerCase().includes(q);
             const kursusMatch = !kursus || row.dataset.kursus === kursus;
             const tentorMatch = !tentor || row.dataset.tentor === tentor;
-
-            const show = textMatch && kursusMatch && tentorMatch;
-            row.hidden = !show;
-            if (show) count++;
+            return textMatch && kursusMatch && tentorMatch;
         });
 
-        el('kosongTugas').hidden = count > 0;
+        // Sembunyikan semua baris terlebih dahulu
+        allRows.forEach(row => row.style.display = 'none');
+
+        const totalFiltered = filteredRows.length;
+        el('kosongTugas').hidden = totalFiltered > 0;
+
+        if (totalFiltered === 0) {
+            renderPaginasi('paginasiTugas', 0, halTugas, pindahHalaman);
+            return;
+        }
+
+        const maxPage = Math.ceil(totalFiltered / PER_HALAMAN);
+        if (halTugas > maxPage) halTugas = maxPage || 1;
+
+        const start = (halTugas - 1) * PER_HALAMAN;
+        const end = start + PER_HALAMAN;
+
+        filteredRows.slice(start, end).forEach(row => {
+            row.style.display = '';
+        });
+
+        renderPaginasi('paginasiTugas', totalFiltered, halTugas, pindahHalaman);
+    }
+
+    function pindahHalaman(tujuanBaru) {
+        halTugas = tujuanBaru;
+        filterTabel();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     [cariInput, filterKursus, filterTentor].forEach(item => {
-        item.addEventListener(item === cariInput ? 'input' : 'change', filter);
+        item.addEventListener(item === cariInput ? 'input' : 'change', () => {
+            halTugas = 1; // Reset ke halaman 1 saat filter diubah
+            filterTabel();
+        });
     });
 
-    // Fungsi Buka Modal Detail
     window.lihatDetailTugas = function (btn) {
         const row = btn.closest('tr');
         el('detJudul').textContent = row.cells[0].textContent.trim();
@@ -208,10 +303,12 @@ document.addEventListener('DOMContentLoaded', function () {
         const nilai = row.dataset.nilai;
         el('detNilai').textContent = (nilai && nilai !== '-') ? `${nilai} / 100` : 'Belum Dinilai';
 
+        const feedback = row.dataset.feedback;
+        el('detFeedback').textContent = feedback || 'Belum ada feedback.';
+
         modalDetail.hidden = false;
     };
 
-    // Event penutup modal
     document.querySelectorAll('[data-close]').forEach(btn => {
         btn.addEventListener('click', () => modalDetail.hidden = true);
     });
@@ -219,7 +316,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (e.target === modalDetail) modalDetail.hidden = true;
     });
 
-    filter();
+    filterTabel();
 });
 </script>
 @endsection

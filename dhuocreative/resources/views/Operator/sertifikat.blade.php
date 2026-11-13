@@ -35,6 +35,8 @@
     <p class="ts-empty-message" id="tsEmptyMessage" hidden>Sertifikat tidak ditemukan.</p>
 </div>
 
+<nav class="tj-pagination" id="paginasiSertifikat" aria-label="Halaman daftar sertifikat" hidden></nav>
+
 {{-- Modal Detail Sertifikat (Hanya Lihat & Download) --}}
 <div class="ts-overlay" id="tsDetailModal" hidden>
     <section class="ts-modal ts-detail-modal" role="dialog" aria-modal="true" aria-labelledby="tsDetailTitle">
@@ -82,6 +84,60 @@
 </div>
 
 <script>
+const PER_HALAMAN = 10;
+let halSertifikat = 1;
+
+function renderPaginasi(navId, total, halaman, pindah) {
+    const nav = document.getElementById(navId);
+    if (!nav) return;
+    nav.replaceChildren();
+    if (!total) { nav.hidden = true; return; }
+    nav.hidden = false;
+ 
+    const jumlah = Math.ceil(total / PER_HALAMAN);
+    const awal = (halaman - 1) * PER_HALAMAN + 1;
+    const akhir = Math.min(halaman * PER_HALAMAN, total);
+ 
+    const info = document.createElement('span');
+    info.className = 'tj-pg-info';
+    info.textContent = `Menampilkan ${awal}–${akhir} dari ${total}`;
+    nav.appendChild(info);
+    if (jumlah <= 1) return;
+ 
+    const btn = (label, tujuan, { aktif = false, mati = false, aria } = {}) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'tj-pg-btn' + (aktif ? ' active' : '');
+        b.textContent = label;
+        b.disabled = mati;
+        if (aria) b.setAttribute('aria-label', aria);
+        if (aktif) b.setAttribute('aria-current', 'page');
+        b.addEventListener('click', () => pindah(tujuan));
+        return b;
+    };
+ 
+    const grup = document.createElement('div');
+    grup.className = 'tj-pg-list';
+    grup.appendChild(btn('‹', halaman - 1, { mati: halaman === 1, aria: 'Halaman sebelumnya' }));
+ 
+    let terakhir = 0;
+    for (let i = 1; i <= jumlah; i++) {
+        if (i === 1 || i === jumlah || Math.abs(i - halaman) <= 1) {
+            if (i - terakhir > 1) {
+                const t = document.createElement('span');
+                t.className = 'tj-pg-dots';
+                t.textContent = '…';
+                grup.appendChild(t);
+            }
+            grup.appendChild(btn(String(i), i, { aktif: i === halaman, aria: `Halaman ${i}` }));
+            terakhir = i;
+        }
+    }
+ 
+    grup.appendChild(btn('›', halaman + 1, { mati: halaman === jumlah, aria: 'Halaman berikutnya' }));
+    nav.appendChild(grup);
+}
+
 (() => {
     const byId = (id) => document.getElementById(id);
 
@@ -215,21 +271,41 @@
     function filterRows() {
         const query = search.value.toLowerCase().trim();
         const year = yearFilter.value;
-        let visible = 0;
+        const rows = [...table.querySelectorAll('tbody tr[data-year]')];
 
-        table.querySelectorAll('tbody tr[data-year]').forEach(row => {
-            const matches = row.textContent.toLowerCase().includes(query) &&
-                (!year || row.dataset.year === year);
-            row.hidden = !matches;
-            if (matches) visible++;
+        const filteredRows = rows.filter(row =>
+            row.textContent.toLowerCase().includes(query) &&
+            (!year || row.dataset.year === year)
+        );
+
+        const jumlahHalaman = Math.ceil(filteredRows.length / PER_HALAMAN);
+        if (halSertifikat > jumlahHalaman) halSertifikat = Math.max(1, jumlahHalaman);
+
+        // Sembunyikan semua baris, lalu tampilkan hanya data pada halaman aktif.
+        rows.forEach(row => { row.hidden = true; });
+
+        const awal = (halSertifikat - 1) * PER_HALAMAN;
+        const halamanRows = filteredRows.slice(awal, awal + PER_HALAMAN);
+        halamanRows.forEach(row => { row.hidden = false; });
+
+        emptyMessage.hidden = filteredRows.length > 0;
+        emptyMessage.textContent = filteredRows.length ? '' : 'Sertifikat tidak ditemukan.';
+
+        renderPaginasi('paginasiSertifikat', filteredRows.length, halSertifikat, halaman => {
+            halSertifikat = halaman;
+            filterRows();
         });
-
-        emptyMessage.hidden = visible > 0;
-        emptyMessage.textContent = visible ? '' : 'Sertifikat tidak ditemukan.';
     }
 
-    search.addEventListener('input', filterRows);
-    yearFilter.addEventListener('change', filterRows);
+    search.addEventListener('input', () => {
+        halSertifikat = 1;
+        filterRows();
+    });
+
+    yearFilter.addEventListener('change', () => {
+        halSertifikat = 1;
+        filterRows();
+    });
 
     document.querySelectorAll('[data-ts-close]').forEach(button => {
         button.addEventListener('click', () => {

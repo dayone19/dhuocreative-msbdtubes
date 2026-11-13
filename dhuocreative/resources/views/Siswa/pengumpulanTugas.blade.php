@@ -72,7 +72,7 @@
 
         .pt-grid {
             display: grid;
-            grid-template-columns: 1.3fr 1fr .75fr;
+            grid-template-columns: 1.2fr 1.5fr 1fr .85fr;
             align-items: center;
             column-gap: 16px;
         }
@@ -307,6 +307,13 @@
             outline-offset: 2px;
         }
 
+        .pt-description {
+            font-size: 13px;
+            line-height: 1.7;
+            color: var(--teal-muted);
+            padding-right: 8px;
+        }
+
         @media (max-width: 1100px) {
             .pt-upload-row {
                 grid-template-columns: 130px minmax(0, 1fr) auto;
@@ -391,6 +398,7 @@
     <section aria-label="Daftar tugas">
         <div class="pt-grid pt-thead">
             <span>Nama Tugas</span>
+            <span>Deskripsi</span>
             <span>Deadline</span>
             <span>Status</span>
         </div>
@@ -402,6 +410,10 @@
                     <strong>Latihan HTML</strong>
                     <span>Web Development</span>
                 </div>
+                <div class="pt-description">
+                    Membuat halaman HTML sederhana dengan struktur heading,
+                    paragraf, gambar, dan hyperlink.
+                </div>
                 <div class="pt-deadline">
                     12 Oktober 2026<br>23:59
                 </div>
@@ -412,6 +424,9 @@
                 <div class="pt-name">
                     <strong>Membuat Halaman Profil</strong>
                     <span>Web Development</span>
+                </div>
+                <div class="pt-description">
+                    Membuat halaman profil sederhana dengan informasi pribadi dan foto.
                 </div>
                 <div class="pt-deadline">
                     19 Oktober 2026<br>23:59
