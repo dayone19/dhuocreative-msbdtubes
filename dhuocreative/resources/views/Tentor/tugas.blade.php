@@ -24,38 +24,50 @@
 
     <form method="GET" action="{{ route('tentor.tugas') }}" class="tmt-toolbar" id="formFilterTugas">
 
-        <div class="tmt-search">
-            <input type="text" name="q" value="{{ $q }}" id="searchTugas"
-                   placeholder="Cari tugas...">
-            <span>
-                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="#ae9154" class="bi bi-search" viewBox="0 0 16 16">
-                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-                </svg>
-            </span>
+        <div class="tmt-search-group">
+            <div class="tmt-search">
+                <input type="text" name="q" value="{{ $q }}" id="inputCariTugas"
+                       placeholder="Cari judul, kursus, atau siswa..." autocomplete="off">
+                <span onclick="document.getElementById('formFilterTugas').submit()" style="cursor:pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="#ae9154" class="bi bi-search" viewBox="0 0 16 16">
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                    </svg>
+                </span>
+            </div>
+
+            @if ($q !== '' || $kursus !== '' || $sort !== 'terbaru')
+                <a href="{{ route('tentor.tugas') }}" class="tmt-btn-aksi">Reset</a>
+            @endif
         </div>
 
-        <select name="kursus" id="filterKelas" class="tmt-select" onchange="this.form.submit()">
+        <select name="kursus" id="selectFilterKursus" class="tmt-select" onchange="this.form.submit()">
             <option value="">Semua Kursus</option>
             @foreach ($kursusFilter as $k)
                 <option value="{{ $k }}" @selected($kursus === $k)>{{ $k }}</option>
             @endforeach
         </select>
 
-        <select name="sort" id="sortTugas" class="tmt-select" onchange="this.form.submit()">
+        <select name="sort" id="selectUrutTugas" class="tmt-select" onchange="this.form.submit()">
             <option value="terbaru" @selected($sort === 'terbaru')>Terbaru</option>
             <option value="terlama" @selected($sort === 'terlama')>Terlama</option>
             <option value="az" @selected($sort === 'az')>Nama A-Z</option>
         </select>
 
-        <button type="submit" class="tmt-view-btn" style="align-self:center">Cari</button>
-
-        <button type="button" class="tmt-upload-btn"
-                onclick="bukaUpload()">
-            <span class="t-plus">+</span>
-            <span>Upload<br>Tugas</span>
+        <button type="submit" class="tmt-btn-aksi">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+            </svg>
+            <span>Cari</span>
         </button>
 
     </form>
+
+    <div class="tmt-upload-row">
+        <button type="button" class="tmt-btn-aksi" onclick="bukaUpload()">
+            <span class="t-plus">+</span>
+            <span>Upload Tugas</span>
+        </button>
+    </div>
 
     <div class="tmt-table-container">
         <table class="tmt-table">
@@ -69,7 +81,7 @@
               </tr>
           </thead>
 
-          <tbody id="tugasTable">
+          <tbody id="tbodyTugas">
 
             @forelse ($tugas as $t)
             <tr data-id="{{ $t['id'] }}"
@@ -209,6 +221,58 @@
         font-size: 15px;
         user-select: none;
     }
+    .tmt-toolbar .tmt-search-group {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex: 0 1 auto;
+        min-width: 0;
+    }
+    .tmt-toolbar .tmt-search-group .tmt-search {
+        flex: 0 1 600px;
+        width: auto;
+        min-width: 220px;
+        max-width: 600px;
+    }
+
+    /* Pengaman: hasil search dari server tidak boleh disembunyikan script lain */
+    #tbodyTugas tr { display: table-row !important; }
+
+    .tmt-upload-row {
+        display: flex;
+        justify-content: flex-start; /* ganti flex-end kalau mau di kanan */
+        margin: 0 0 16px;
+    }
+    /* Tombol Cari & Upload Tugas: ukuran dan desain sama, tidak ikut melebar */
+    .tmt-page .tmt-btn-aksi {
+        flex: 0 0 auto;
+        width: auto !important;
+        min-width: 0;
+        max-width: max-content;
+        height: 54px;
+        margin: 0;
+        padding: 0 26px;
+        box-sizing: border-box;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: 0;
+        border-radius: 999px;
+        background: #b29458;
+        color: #fff;
+        font: inherit;
+        font-size: 15px;
+        font-weight: 700;
+        white-space: nowrap;
+        text-decoration: none;
+        cursor: pointer;
+        box-shadow: 0 2px 6px rgba(0,0,0,.12);
+        transition: background .15s;
+    }
+    .tmt-page .tmt-btn-aksi:hover { background: #9c7f45; }
+    .tmt-page .tmt-btn-aksi .t-plus { font-size: 20px; line-height: 1; }
+    .tmt-page .tmt-upload-row { display: block; margin: 0 0 16px; }
     </style>
 
 </div>
@@ -256,8 +320,8 @@
                     {{-- hanya untuk memfilter pilihan siswa, tidak ikut terkirim --}}
                     <select id="kelasBaru" required>
                         <option value="">Pilih kursus</option>
-                        @foreach ($kelasOptions->pluck('kursus')->unique() as $kursus)
-                            <option value="{{ $kursus }}">{{ $kursus }}</option>
+                        @foreach ($kelasOptions->pluck('kursus')->unique() as $namaKursus)
+                            <option value="{{ $namaKursus }}">{{ $namaKursus }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -444,6 +508,14 @@
 
 <script>
 
+// Refresh (F5) = balik ke halaman awal tanpa search/filter/halaman
+(function () {
+    const nav = performance.getEntriesByType('navigation')[0];
+    if (nav && nav.type === 'reload' && location.search) {
+        location.replace(location.pathname);
+    }
+})();
+
 const kelasOptions = @json($kelasOptions);
 const updateUrlTemplate = "{{ route('tentor.tugas.update', ['tugas' => '__ID__']) }}";
 const nilaiUrlTemplate = "{{ route('tentor.tugas.nilai', ['pengumpulan' => '__ID__']) }}";
@@ -455,6 +527,22 @@ function bukaUpload() {
 
 function tutupUpload() {
     document.getElementById('modalUpload').hidden = true;
+}
+
+// --- SEARCH: hanya jalan saat tekan Enter atau klik ikon kaca pembesar ---
+const formFilter = document.getElementById('formFilterTugas');
+const inputCari  = document.getElementById('inputCariTugas');
+
+inputCari.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        formFilter.submit();
+    }
+});
+
+if (inputCari.value) {
+    inputCari.focus();
+    inputCari.setSelectionRange(inputCari.value.length, inputCari.value.length);
 }
 
 document.getElementById('kelasBaru').addEventListener('change', function () {

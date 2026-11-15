@@ -20,9 +20,11 @@ class TugasController extends Controller
         $idTentor    = auth()->id();
         $kolomStatus = $this->kolomStatus();
 
-        $q      = trim((string) $request->get('q', ''));
-        $kursus = $request->get('kursus', '');
-        $sort   = $request->get('sort', 'terbaru');
+        // PENTING: Laravel mengubah parameter kosong (?kursus=) menjadi null.
+        // Tanpa (string), filter kursus jadi "IS NULL" dan semua hasil kosong.
+        $q      = trim((string) $request->query('q', ''));
+        $kursus = trim((string) $request->query('kursus', ''));
+        $sort   = (string) ($request->query('sort') ?: 'terbaru');
 
         $kelasOptions = $this->kelasTentor($idTentor)->get();
 
@@ -33,10 +35,11 @@ class TugasController extends Controller
             ->join('users as siswa', 'kelas.id_siswa', '=', 'siswa.id_user')
             ->where('tugas.id_tentor', $idTentor)
             ->when($q !== '', function ($query) use ($q) {
-                $query->where(function ($w) use ($q) {
-                    $w->where('tugas.judul', 'ilike', "%{$q}%")
-                      ->orWhere('kursus.nama_kursus', 'ilike', "%{$q}%")
-                      ->orWhere('siswa.nama', 'ilike', "%{$q}%");
+                $like = '%' . addcslashes($q, '%_\\') . '%';
+                $query->where(function ($w) use ($like) {
+                    $w->where('tugas.judul', 'ilike', $like)
+                      ->orWhere('kursus.nama_kursus', 'ilike', $like)
+                      ->orWhere('siswa.nama', 'ilike', $like);
                 });
             })
             ->when($kursus !== '', fn ($query) => $query->where('kursus.nama_kursus', $kursus));
