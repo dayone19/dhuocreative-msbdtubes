@@ -235,15 +235,14 @@
         max-width: 600px;
     }
 
-    /* Pengaman: hasil search dari server tidak boleh disembunyikan script lain */
     #tbodyTugas tr { display: table-row !important; }
 
     .tmt-upload-row {
         display: flex;
-        justify-content: flex-start; /* ganti flex-end kalau mau di kanan */
+        justify-content: flex-start; 
         margin: 0 0 16px;
     }
-    /* Tombol Cari & Upload Tugas: ukuran dan desain sama, tidak ikut melebar */
+
     .tmt-page .tmt-btn-aksi {
         flex: 0 0 auto;
         width: auto !important;
@@ -376,7 +375,6 @@
             <h2 id="detailJudulModal">Detail<br>Tugas</h2>
         </div>
 
-        {{-- action diisi JS (butuh id tugas) --}}
         <form id="formEditTugas" class="tmt-upload-form" method="POST" action="#">
             @csrf
             @method('PUT')
@@ -394,7 +392,6 @@
                     </select>
                 </div>
 
-                {{-- Kursus & siswa tidak bisa diganti (tugas terikat ke kelas); opsi diisi JS --}}
                 <div class="tmt-form-group">
                     <label for="detailKursus">Kursus</label>
                     <select id="detailKursus" disabled></select>
@@ -508,7 +505,6 @@
 
 <script>
 
-// Refresh (F5) = balik ke halaman awal tanpa search/filter/halaman
 (function () {
     const nav = performance.getEntriesByType('navigation')[0];
     if (nav && nav.type === 'reload' && location.search) {
@@ -529,7 +525,6 @@ function tutupUpload() {
     document.getElementById('modalUpload').hidden = true;
 }
 
-// --- SEARCH: hanya jalan saat tekan Enter atau klik ikon kaca pembesar ---
 const formFilter = document.getElementById('formFilterTugas');
 const inputCari  = document.getElementById('inputCariTugas');
 

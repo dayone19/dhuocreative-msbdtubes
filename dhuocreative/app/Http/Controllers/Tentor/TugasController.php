@@ -20,15 +20,12 @@ class TugasController extends Controller
         $idTentor    = auth()->id();
         $kolomStatus = $this->kolomStatus();
 
-        // PENTING: Laravel mengubah parameter kosong (?kursus=) menjadi null.
-        // Tanpa (string), filter kursus jadi "IS NULL" dan semua hasil kosong.
         $q      = trim((string) $request->query('q', ''));
         $kursus = trim((string) $request->query('kursus', ''));
         $sort   = (string) ($request->query('sort') ?: 'terbaru');
 
         $kelasOptions = $this->kelasTentor($idTentor)->get();
 
-        // Query dasar tugas milik tentor
         $base = DB::table('tugas')
             ->join('kelas', 'tugas.id_kelas', '=', 'kelas.id_kelas')
             ->join('kursus', 'kelas.id_kursus', '=', 'kursus.id_kursus')
@@ -69,7 +66,6 @@ class TugasController extends Controller
             ->paginate(self::PER_PAGE)
             ->withQueryString();
 
-        // Ambil pengumpulan hanya untuk halaman ini (hemat)
         $idsTugas = $tugas->getCollection()->pluck('id_tugas');
 
         $kirim = DB::table('pengumpulan_tugas')
@@ -115,10 +111,8 @@ class TugasController extends Controller
             ];
         });
 
-        // Ganti collection di paginator supaya view tetap bisa pakai $tugas->links() dll
         $tugas->setCollection($daftarTugas);
 
-        // Filter kursus untuk dropdown (dari semua tugas tentor, bukan hanya halaman ini)
         $kursusFilter = DB::table('tugas')
             ->join('kelas', 'tugas.id_kelas', '=', 'kelas.id_kelas')
             ->join('kursus', 'kelas.id_kursus', '=', 'kursus.id_kursus')
