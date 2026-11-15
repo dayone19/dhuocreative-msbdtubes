@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class AbsensiSiswa extends Model
 {
-    protected $table = absensi_siswa;
-    protected $primaryKey = id_absensi;
+    protected $table = 'absensi_siswa';
+    protected $primaryKey = 'id_absensi';
 
     public $timestamps = false;
     

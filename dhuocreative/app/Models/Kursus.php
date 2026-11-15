@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Kursus extends Model
 {
-    protected $table = kursus;
-    protected $primaryKey = id_kurus;
+    protected $table = 'kursus';
+    protected $primaryKey = 'id_kursus';
 
     public $timestamps = false;
     const CREATED_AT = 'created_at';

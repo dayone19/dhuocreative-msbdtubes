@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Nilai extends Model
 {
-    protected $table = nilai;
-    protected $primaryKey = id_nilai;
+    protected $table = 'nilai';
+    protected $primaryKey = 'id_nilai';
 
     public $timestamps = false;
 

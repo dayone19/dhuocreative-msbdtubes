@@ -2,114 +2,49 @@
 
 @section('content')
 
-@php
-    $ringkasan = [
-        ['judul' => 'Jadwal Hari Ini', 'angka' => 8, 'satuan' => 'Kelas'],
-        ['judul' => 'Total Siswa', 'angka' => 22, 'satuan' => 'Siswa'],
-        ['judul' => 'Total Kursus Siswa Aktif', 'angka' => 17, 'satuan' => 'Kursus'],
-        ['judul' => 'Total Tentor', 'angka' => 6, 'satuan' => 'Tentor'],
-    ];
-
-    $dataKursus = [
-        ['id' => 1, 'kursus' => 'Web Master', 'siswa' => 'Siswa A', 'tentor' => 'Tentor C', 'kelas' => 'Offline'],
-        ['id' => 2, 'kursus' => 'Web Master', 'siswa' => 'Siswa B', 'tentor' => 'Tentor A', 'kelas' => 'Offline Rumah'],
-        ['id' => 3, 'kursus' => 'Office Master', 'siswa' => 'Siswa A', 'tentor' => 'Tentor A', 'kelas' => 'Online'],
-        ['id' => 4, 'kursus' => 'Web Master', 'siswa' => 'Siswa C', 'tentor' => 'Tentor C', 'kelas' => 'Online'],
-        ['id' => 5, 'kursus' => 'Web Master', 'siswa' => 'Siswa D', 'tentor' => 'Tentor B', 'kelas' => 'Offline'],
-        ['id' => 6, 'kursus' => 'Office Master', 'siswa' => 'Siswa E', 'tentor' => 'Tentor A', 'kelas' => 'Online'],
-        ['id' => 7, 'kursus' => 'Office Master', 'siswa' => 'Siswa F', 'tentor' => 'Tentor D', 'kelas' => 'Offline'],
-        ['id' => 8, 'kursus' => 'Python Master', 'siswa' => 'Siswa G', 'tentor' => 'Tentor B', 'kelas' => 'Offline Rumah'],
-        ['id' => 9, 'kursus' => 'Python Master', 'siswa' => 'Siswa H', 'tentor' => 'Tentor E', 'kelas' => 'Online'],
-    ];
-
-    $dataPertambahanSiswaBulanIni = [
-        'Web Master'    => ['sekarang' => 4, 'lalu' => 3],
-        'Office Master' => ['sekarang' => 3, 'lalu' => 2],
-        'Python Master' => ['sekarang' => 2, 'lalu' => 1],
-    ];
-
-    $statistikPerKursus = [];
-    foreach ($dataKursus as $d) {
-        $k = $d['kursus'];
-        if (!isset($statistikPerKursus[$k])) {
-            $statistikPerKursus[$k] = [
-                'nama' => $k,
-                'siswa_set' => [],
-                'tentor_set' => [],
-            ];
-        }
-        $statistikPerKursus[$k]['siswa_set'][$d['siswa']] = true;
-        $statistikPerKursus[$k]['tentor_set'][$d['tentor']] = true;
-    }
-
-    $grafikBatangData = [];
-    foreach ($statistikPerKursus as $k => $info) {
-        $grafikBatangData[$k] = [
-            'nama' => $k,
-            'siswa' => count($info['siswa_set']),
-            'tentor' => count($info['tentor_set']),
-        ];
-    }
-
-    // Konfigurasi Sumbu Y Grafik Batang dimulai dari 1 sampai 5
-    $minY = 1;
-    $maxY = 5;
-    $rangeY = $maxY - $minY; // 4 tingkat (1, 2, 3, 4, 5)
-
-    $totalPertambahanSiswa = 0;
-    foreach ($dataPertambahanSiswaBulanIni as $val) {
-        $totalPertambahanSiswa += max(0, $val['sekarang'] - $val['lalu']);
-    }
-
-    $distribusiKursus = [];
-    $warnaDonut = ['#f27640', '#ffb83f', '#286c65', '#ffdc59', '#8aaea9'];
-    $donutGradient = [];
-    $akumulasiPersen = 0;
-    $idx = 0;
-
-    foreach ($dataPertambahanSiswaBulanIni as $namaKursus => $item) {
-        $selisih = max(0, $item['sekarang'] - $item['lalu']);
-        $persen = $totalPertambahanSiswa > 0 ? ($selisih / $totalPertambahanSiswa) * 100 : 0;
-        $warna = $warnaDonut[$idx % count($warnaDonut)];
-
-        $distribusiKursus[] = [
-            'nama' => $namaKursus,
-            'jumlah' => $selisih,
-            'persen' => round($persen, 1),
-            'warna' => $warna
-        ];
-
-        $batasAkhir = $akumulasiPersen + $persen;
-        $donutGradient[] = "{$warna} {$akumulasiPersen}% {$batasAkhir}%";
-        $akumulasiPersen = $batasAkhir;
-        $idx++;
-    }
-
-    $donutBackground = count($donutGradient) > 0
-        ? 'conic-gradient(' . implode(', ', $donutGradient) . ')'
-        : '#e4e8e4';
-@endphp
-
 <div class="dashboard admin-dashboard">
 
     {{-- RINGKASAN DAN LAPORAN --}}
     <section class="summary admin-summary">
-        @foreach ($ringkasan as $item)
-            <div class="summary-card">
-                <h3>{{ $item['judul'] }}</h3>
-                <div class="summary-bottom">
-                    <div class="summary-number">
-                        {{ $item['angka'] }}
-                        <span>{{ $item['satuan'] }}</span>
-                    </div>
-                    <button type="button" class="arrow-button" aria-label="Lihat {{ $item['judul'] }}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
-                        </svg>
-                    </button>
+                <div class="summary-card">
+            <h3>Jadwal Hari Ini</h3>
+            <div class="summary-bottom">
+                <div class="summary-number">
+                    {{ $totalJadwalHariIni }}
+                    <span>Kelas</span>
                 </div>
             </div>
-        @endforeach
+        </div>
+
+        <div class="summary-card">
+            <h3>Total Siswa</h3>
+            <div class="summary-bottom">
+                <div class="summary-number">
+                    {{ $totalSiswa }}
+                    <span>Siswa</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="summary-card">
+            <h3>Total Kursus Siswa Aktif</h3>
+            <div class="summary-bottom">
+                <div class="summary-number">
+                    {{ $totalKursusAktif }}
+                    <span>Kursus</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="summary-card">
+            <h3>Total Tentor</h3>
+            <div class="summary-bottom">
+                <div class="summary-number">
+                    {{ $totalTentor }}
+                    <span>Tentor</span>
+                </div>
+            </div>
+        </div>
 
         {{-- CARD LAPORAN ABSENSI --}}
         <article class="admin-report-card">
@@ -172,50 +107,50 @@
                         <span><i class="legend-tentor"></i> Tentor</span>
                     </div>
                 </div>
-
-                <div class="admin-bar-chart">
-                    {{-- SUMBU Y (Mulai dari 5 turun ke 1) --}}
-                    <div class="admin-chart-y-labels">
-                        @for ($i = $maxY; $i >= $minY; $i--)
-                            <span>{{ $i }}</span>
-                        @endfor
-                    </div>
-
-                    <div class="admin-chart-plot">
-                        {{-- GRID LINES --}}
-                        <div class="admin-chart-gridlines">
-                            @for ($i = 0; $i <= $rangeY; $i++)
-                                <i></i>
+                
+                <div class="admin-chart-area">
+                    <div class="admin-bar-chart">
+                        <div class="admin-chart-y-labels">
+                            @for ($i = $rangeY; $i >= 0; $i--)
+                                <span>{{ $i * $intervalY }}</span>
                             @endfor
                         </div>
 
-                        {{-- BATANG GRAFIK --}}
-                        <div class="admin-chart-bars">
-                            @forelse ($grafikBatangData as $item)
-                                @php
-                                    $valSiswa = max($minY, min($maxY, $item['siswa']));
-                                    $valTentor = max($minY, min($maxY, $item['tentor']));
+                        <div class="admin-chart-plot">
+                            {{-- GRID LINES --}}
+                            <div class="admin-chart-gridlines">
+                                @for ($i = 0; $i <= $rangeY; $i++)
+                                    <i></i>
+                                @endfor
+                            </div>
 
-                                    $hSiswa = (($valSiswa - $minY) / $rangeY) * 100;
-                                    $hTentor = (($valTentor - $minY) / $rangeY) * 100;
-                                @endphp
-                                <div class="admin-chart-month">
-                                    <div class="admin-bar-pair">
-                                        <span class="admin-bar admin-bar-siswa"
-                                              style="height: {{ max(6, $hSiswa) }}%;"
-                                              title="{{ $item['nama'] }} - Siswa: {{ $item['siswa'] }}">
-                                        </span>
-                                        <span class="admin-bar admin-bar-tentor"
-                                              style="height: {{ max(6, $hTentor) }}%;"
-                                              title="{{ $item['nama'] }} - Tentor: {{ $item['tentor'] }}">
-                                        </span>
-                                    </div>
-                                    <small>{{ $item['nama'] }}</small>
+                            {{-- BATANG GRAFIK --}}
+                            <div class="admin-chart-viewport" id="kursusChartViewport">
+                                <div class="admin-chart-bars">
+                                    @forelse ($statistikKursus as $item)
+                                        <div class="admin-chart-month">
+                                            <div class="admin-bar-pair">
+                                            <span class="admin-bar admin-bar-siswa"
+                                                    style="height: {{ $maxY > 0 ? ($item->total_siswa / $maxY) * 100 : 0 }}%;"
+                                                    title="{{ $item->nama_kursus }} - Siswa: {{ $item->total_siswa }}">
+                                                </span>
+                                                <span class="admin-bar admin-bar-tentor"
+                                                    style="height: {{ $maxY > 0 ? ($item->total_tentor / $maxY) * 100 : 0 }}%;"
+                                                    title="{{ $item->nama_kursus }} - Tentor: {{ $item->total_tentor }}">
+                                                </span>
+                                            </div>
+                                            <small>{{ $item->nama_kursus }}</small>
+                                        </div>
+                                    @empty
+                                        <p>Belum ada data kursus.</p>
+                                    @endforelse
                                 </div>
-                            @empty
-                                <p>Belum ada data kursus.</p>
-                            @endforelse
+                            </div>
                         </div>
+                            <div class="admin-chart-controls">
+                                <button type="button" id="kursusChartPrev" disabled>&lsaquo;</button>
+                                <button type="button" id="kursusChartNext">&rsaquo;</button>
+                            </div>
                     </div>
                 </div>
             </article>
@@ -239,21 +174,27 @@
                         </div>
                     </div>
 
-                    <div class="admin-donut-legend">
-                        @forelse ($distribusiKursus as $item)
-                            <div class="admin-donut-item">
-                                <span class="admin-donut-name">
-                                    <i style="background: {{ $item['warna'] }}"></i>
-                                    {{ $item['nama'] }}
-                                </span>
-                                <strong>
-                                    +{{ $item['jumlah'] }} Siswa
-                                    <small>({{ $item['persen'] }}%)</small>
-                                </strong>
-                            </div>
-                        @empty
-                            <p>Belum ada data pertumbuhan siswa.</p>
-                        @endforelse
+                    <div class="admin-donut-legend" id="adminDonutLegend">
+                            @forelse ($distribusiKursus as $item)
+                                <div class="admin-donut-item">
+                                    <span class="admin-donut-name">
+                                        <i style="background: {{ $item['warna'] }}"></i>
+                                        {{ $item['nama'] }}
+                                    </span>
+                                    <strong>
+                                        +{{ $item['jumlah'] }} Siswa
+                                        <small>({{ $item['persen'] }}%)</small>
+                                    </strong>
+                                </div>
+                            @empty
+                                <p>Belum ada data pertumbuhan siswa.</p>
+                            @endforelse
+                        </div>
+
+                        <div class="admin-donut-controls">
+                            <button type="button" id="donutPrev" aria-label="Sebelumnya">&lsaquo;</button>
+                            <button type="button" id="donutNext" aria-label="Berikutnya">&rsaquo;</button>
+                        </div>
                     </div>
                 </div>
             </article>
@@ -263,26 +204,68 @@
 
 </div>
 
+@php
+    $dataAbsensi = $laporanAbsensi->values()->map(function ($item, $index) {
+        return [
+            $index + 1,
+            $item->nama_siswa,
+            $item->nama_kursus,
+            $item->jenis_kelas,
+            $item->nama_tentor,
+            $item->total_pertemuan,
+            $item->hadir,
+            $item->izin,
+            $item->sakit,
+            $item->alpa,
+            rtrim(rtrim(number_format((float) $item->persentase_kehadiran, 1, '.', ''), '0'), '.') . '%'
+        ];
+    });
+
+    $dataSiswa = $laporanSiswa->values()->map(function ($item, $index) {
+        return [
+            $index + 1,
+            $item->nama_kursus,
+            $item->total_siswa_aktif,
+            $item->siswa_baru,
+            ucfirst($item->status_kursus)
+        ];
+    });
+@endphp
+
 <script>
 const dataLaporanAdmin = {
     absensi: {
-        nama: 'Laporan_Absensi_Bulanan',
+        nama: 'Laporan_Rekap_Absensi',
         judul: 'Laporan Rekap Absensi Bulanan',
-        header: ['No', 'Nama Siswa', 'Kursus', 'Jenis Kelas', 'Tentor', 'Total Pertemuan', 'Hadir', 'Izin', 'Sakit', 'Alpa', 'Persentase Kehadiran'],
-        rows: [
-            [1, 'Siswa A', 'Web Master', 'Online', 'Tentor C', 12, 11, 1, 0, 0, '91.7%'],
-            [2, 'Siswa B', 'MS Office', 'Offline', 'Tentor D', 8, 8, 0, 0, 0, '100%'],
-            [3, 'Siswa C', 'Web Master', 'Offline Rumah', 'Tentor B', 12, 10, 1, 0, 1, '83.3%']
-        ]
+        periode: @json($periodeAwal->locale('id')->translatedFormat('F Y')),
+        header: [
+            'No',
+            'Nama Siswa',
+            'Kursus',
+            'Jenis Kelas',
+            'Tentor',
+            'Total Pertemuan',
+            'Hadir',
+            'Izin',
+            'Sakit',
+            'Alpa',
+            'Persentase Kehadiran'
+        ],
+        rows: @json($dataAbsensi)
     },
+
     siswa: {
         nama: 'Laporan_Siswa_dan_Kursus',
         judul: 'Laporan Rekap Siswa & Kursus',
-        header: ['No', 'Nama Kursus', 'Jumlah Siswa Aktif', 'Siswa Baru Bulan Ini', 'Jenis Kelas Dominan', 'Status Kursus'],
-        rows: [
-            [1, 'Web Master', 14, 3, 'Online (8 Siswa)', 'Aktif'],
-            [2, 'MS Office', 8, 2, 'Offline (5 Siswa)', 'Aktif']
-        ]
+        periode: @json($periodeAwal->locale('id')->translatedFormat('F Y')),
+        header: [
+            'No',
+            'Nama Kursus',
+            'Jumlah Siswa Aktif',
+            'Siswa Baru Bulan Ini',
+            'Status Kursus'
+        ],
+        rows: @json($dataSiswa)
     }
 };
 
@@ -342,7 +325,11 @@ function cetakLaporanAdmin(jenis) {
             <h1>${data.judul}</h1>
             <p>Periode: ${bulan}</p>
             <table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>
-            <p style="text-align:right;margin-top:28px">Dicetak pada: ${new Date().toLocaleDateString('id-ID')}</p>
+            <p style="text-align:right;margin-top:28px">Dicetak pada: ${new Date().toLocaleDateString('id-ID', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            })}</p>
         </body>
         </html>
     `);
@@ -350,6 +337,75 @@ function cetakLaporanAdmin(jenis) {
     popup.focus();
     popup.print();
 }
+
+// statistik diagram
+const kursusViewport = document.getElementById('kursusChartViewport');
+const kursusPrev = document.getElementById('kursusChartPrev');
+const kursusNext = document.getElementById('kursusChartNext');
+
+function updateKursusChart() {
+    kursusPrev.disabled = kursusViewport.scrollLeft <= 0;
+
+    kursusNext.disabled =
+        kursusViewport.scrollLeft + kursusViewport.clientWidth >=
+        kursusViewport.scrollWidth - 1;
+}
+
+kursusNext.addEventListener('click', () => {
+    kursusViewport.scrollBy({
+        left: kursusViewport.clientWidth,
+        behavior: 'smooth'
+    });
+});
+
+kursusPrev.addEventListener('click', () => {
+    kursusViewport.scrollBy({
+        left: -kursusViewport.clientWidth,
+        behavior: 'smooth'
+    });
+});
+
+kursusViewport.addEventListener('scroll', updateKursusChart);
+
+updateKursusChart();
+// panah di statistik donat
+const donutItems = document.querySelectorAll('#adminDonutLegend .admin-donut-item');
+const donutPrev = document.getElementById('donutPrev');
+const donutNext = document.getElementById('donutNext');
+
+let donutPage = 0;
+const donutPerPage = 5;
+
+function tampilkanDonut() {
+    const totalPage = Math.ceil(donutItems.length / donutPerPage);
+
+    donutItems.forEach((item, index) => {
+        item.hidden = index < donutPage * donutPerPage ||
+                      index >= (donutPage + 1) * donutPerPage;
+    });
+
+    donutPrev.disabled = donutPage === 0;
+    donutNext.disabled = donutPage >= totalPage - 1;
+
+    donutPrev.style.display = totalPage > 1 ? 'grid' : 'none';
+    donutNext.style.display = totalPage > 1 ? 'grid' : 'none';
+}
+
+donutPrev.addEventListener('click', () => {
+    if (donutPage > 0) {
+        donutPage--;
+        tampilkanDonut();
+    }
+});
+
+donutNext.addEventListener('click', () => {
+    if ((donutPage + 1) * donutPerPage < donutItems.length) {
+        donutPage++;
+        tampilkanDonut();
+    }
+});
+
+tampilkanDonut();
 </script>
 
 @endsection

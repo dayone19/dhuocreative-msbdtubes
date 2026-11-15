@@ -1,7 +1,10 @@
+```blade
 @extends('layouts.admin')
 
 @section('content')
 <div class="akun-page">
+
+    {{-- HEADER --}}
     <div class="akun-header">
         <h1 class="akun-title">Manajemen Akun</h1>
         <a href="{{ route('admin.buatAkun') }}" class="t-btn t-btn-orange akun-btn-buat">
@@ -9,21 +12,42 @@
         </a>
     </div>
 
-    <div class="akun-toolbar">
+    {{-- PESAN VALIDASI --}}
+    @if ($errors->any())
+        <div class="akun-alert">
+            @foreach ($errors->all() as $error)
+                <p>{{ $error }}</p>
+            @endforeach
+        </div>
+    @endif
+
+    {{-- SEARCH DAN FILTER --}}
+    <form action="{{ route('admin.manajemenAkun') }}" method="GET" class="akun-toolbar">
         <div class="t-search-wrap">
-            <input type="text" class="t-search" id="cariAkun" placeholder="Cari nama">
-            <svg viewBox="0 0 24 24"><circle cx="10" cy="10" r="7"/><path d="M15.5 15.5 21 21"/></svg>
+            <input
+                type="text"
+                class="t-search"
+                name="search"
+                id="cariAkun"
+                placeholder="Cari nama"
+                value="{{ request('search') }}"
+            >
+            <svg viewBox="0 0 24 24">
+                <circle cx="10" cy="10" r="7"/>
+                <path d="M15.5 15.5 21 21"/>
+            </svg>
         </div>
 
-        <select class="t-filter akun-select" id="filterRole">
-            <option value="">Pilih role</option>
-            <option value="Admin">Admin</option>
-            <option value="Operator">Operator</option>
-            <option value="Tentor">Tentor</option>
-            <option value="Siswa">Siswa</option>
+        <select class="t-filter akun-select" name="role" id="filterRole">
+            <option value="">Semua Role</option>
+            <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+            <option value="operator" {{ request('role') == 'operator' ? 'selected' : '' }}>Operator</option>
+            <option value="tentor" {{ request('role') == 'tentor' ? 'selected' : '' }}>Tentor</option>
+            <option value="siswa" {{ request('role') == 'siswa' ? 'selected' : '' }}>Siswa</option>
         </select>
-    </div>
+    </form>
 
+    {{-- TABEL AKUN --}}
     <div class="akun-table-container">
         <table class="akun-table">
             <thead>
@@ -34,68 +58,106 @@
                     <th>Aksi</th>
                 </tr>
             </thead>
+
             <tbody id="akunBody">
-                <tr>
-                    <td>Syalikha</td>
-                    <td>Operator</td>
-                    <td>Aktif</td>
-                    <td>
-                        <div class="akun-aksi">
-                            <a href="#"
-                                class="akun-btn-detail"
-                                data-detail-akun
-                                data-nama="Syalikha Fara"
-                                data-role="Operator"
-                                data-status="Aktif"
-                                data-telepon="081234567890"
-                                data-tahun="2025">
+                @forelse ($akun as $item)
+                    <tr>
+                        <td>{{ $item->nama }}</td>
+                        <td>{{ ucfirst($item->role) }}</td>
+                        <td>{{ ucfirst($item->status) }}</td>
+                        <td>
+                            <div class="akun-aksi">
+                                <a href="#"
+                                    class="akun-btn-detail"
+                                    data-detail-akun
+                                    data-id="{{ $item->id_user }}"
+                                    data-nama="{{ $item->nama }}"
+                                    data-role="{{ $item->role }}"
+                                    data-status="{{ $item->status }}"
+                                    data-telepon="{{ $item->no_telp }}"
+                                    data-tahun="{{ $item->tahun_masuk }}"
+                                    data-update-url="{{ route('admin.manajemenAkun.update', $item->id_user) }}"
+                                    data-nonaktif-url="{{ route('admin.manajemenAkun.nonaktifkan', $item->id_user) }}">
                                     Lihat Detail
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Syalikha</td>
-                    <td>Operator</td>
-                    <td>Aktif</td>
-                    <td>
-                        <div class="akun-aksi">
-                            <a href="#"
-                                class="akun-btn-detail"
-                                data-detail-akun
-                                data-nama="Syalikha Fara"
-                                data-role="Operator"
-                                data-status="Aktif"
-                                data-telepon="081234567890"
-                                data-tahun="2025">
-                                    Lihat Detail
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Syalikha</td>
-                    <td>Operator</td>
-                    <td>Aktif</td>
-                    <td>
-                        <div class="akun-aksi">
-                            <a href="#"
-                                class="akun-btn-detail"
-                                data-detail-akun
-                                data-nama="Syalikha Fara"
-                                data-role="Operator"
-                                data-status="Aktif"
-                                data-telepon="081234567890"
-                                data-tahun="2025">
-                                    Lihat Detail
-                            </a>
-                        </div>
-                    </td>
-                </tr>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="4" style="text-align: center;">
+                            Belum ada akun ditemukan.
+                        </td>
+                    </tr>
+                @endforelse
             </tbody>
         </table>
     </div>
-    <!-- MODAL DETAIL AKUN -->
+
+    {{-- PAGINATION --}}
+    <div class="akun-pagination">
+
+        @php
+            $halamanAktif = $akun->currentPage();
+            $halamanTerakhir = $akun->lastPage();
+
+            if ($halamanTerakhir <= 5) {
+                $halaman = range(1, $halamanTerakhir);
+            } elseif ($halamanAktif <= 3) {
+                $halaman = [1, 2, 3, 4, $halamanTerakhir];
+            } elseif ($halamanAktif >= $halamanTerakhir - 2) {
+                $halaman = [
+                    1,
+                    $halamanTerakhir - 3,
+                    $halamanTerakhir - 2,
+                    $halamanTerakhir - 1,
+                    $halamanTerakhir
+                ];
+            } else {
+                $halaman = [
+                    1,
+                    $halamanAktif - 1,
+                    $halamanAktif,
+                    $halamanAktif + 1,
+                    $halamanTerakhir
+                ];
+            }
+        @endphp
+
+        {{-- SEBELUMNYA --}}
+        @if ($akun->onFirstPage())
+            <span class="page-disabled">‹</span>
+        @else
+            <a href="{{ $akun->previousPageUrl() }}" class="page-btn">‹</a>
+        @endif
+
+        {{-- NOMOR HALAMAN --}}
+        @foreach ($halaman as $index => $nomor)
+
+            @if ($index == 1 && $nomor - $halaman[$index - 1] > 1)
+                <span class="page-dots">…</span>
+            @endif
+
+            @if ($nomor == $halamanAktif)
+                <span class="page-btn active">{{ $nomor }}</span>
+            @else
+                <a href="{{ $akun->url($nomor) }}" class="page-btn">
+                    {{ $nomor }}
+                </a>
+            @endif
+
+        @endforeach
+
+        {{-- SELANJUTNYA --}}
+        @if ($akun->hasMorePages())
+            <a href="{{ $akun->nextPageUrl() }}" class="page-btn">›</a>
+        @else
+            <span class="page-disabled">›</span>
+        @endif
+
+    </div>
+
+    {{-- MODAL DETAIL AKUN --}}
     <div class="o-modal" id="modalDetailAkun" hidden>
         <div class="o-modal-card">
 
@@ -116,13 +178,31 @@
                 <div><span>Tahun Masuk</span><strong id="detailTahunMasuk">-</strong></div>
 
                 <div class="o-detail-action">
-                    <button type="button" class="o-btn-edit" id="btnEditAkun">Edit Akun</button>
+
+                    {{-- EDIT AKUN --}}
+                    <button type="button" class="o-btn-edit" id="btnEditAkun">
+                        Edit Akun
+                    </button>
+
+                    {{-- NONAKTIFKAN AKUN --}}
+                    <form id="formNonaktifkanAkun" method="POST">
+                        @csrf
+                        @method('PATCH')
+
+                        <button type="submit"
+                            class="o-btn-edit"
+                            onclick="return confirm('Yakin ingin menonaktifkan akun ini?')">
+                            Nonaktifkan Akun
+                        </button>
+                    </form>
+
                 </div>
             </div>
 
         </div>
     </div>
-    <!-- MODAL EDIT AKUN -->
+
+    {{-- MODAL EDIT AKUN --}}
     <div class="o-modal" id="modalEditAkun" hidden>
         <div class="o-modal-card">
 
@@ -135,66 +215,112 @@
                 <h2>Edit Akun</h2>
             </div>
 
-            <form id="formEditAkun">
+            <form id="formEditAkun" method="POST">
+                @csrf
+                @method('PUT')
 
                 <div class="o-form-list">
 
                     <div class="o-field">
                         <label for="editNamaLengkap">Nama Lengkap</label>
-                        <input type="text" id="editNamaLengkap" placeholder="Masukkan nama lengkap" required>
+                        <input
+                            type="text"
+                            id="editNamaLengkap"
+                            name="nama"
+                            placeholder="Masukkan nama lengkap"
+                            required
+                        >
                     </div>
 
                     <div class="o-field">
                         <label for="editRole">Role</label>
-                        <select id="editRole" required>
-                            <option value="Admin">Admin</option>
-                            <option value="Operator">Operator</option>
-                            <option value="Tentor">Tentor</option>
-                            <option value="Siswa">Siswa</option>
+                        <select id="editRole" name="role" required>
+                            <option value="admin">Admin</option>
+                            <option value="operator">Operator</option>
+                            <option value="tentor">Tentor</option>
+                            <option value="siswa">Siswa</option>
                         </select>
                     </div>
 
                     <div class="o-field">
                         <label for="editStatus">Status</label>
-                        <select id="editStatus" required>
-                            <option value="Aktif">Aktif</option>
-                            <option value="Tidak Aktif">Tidak Aktif</option>
+                        <select id="editStatus" name="status" required>
+                            <option value="aktif">Aktif</option>
+                            <option value="nonaktif">Tidak Aktif</option>
                         </select>
                     </div>
 
                     <div class="o-field">
                         <label for="editTelepon">No. Telepon</label>
-                        <input type="tel" id="editTelepon" placeholder="Masukkan no. telepon" required>
+                        <input
+                            type="tel"
+                            id="editTelepon"
+                            name="no_telp"
+                            placeholder="Masukkan no. telepon"
+                        >
                     </div>
 
                     <div class="o-field">
                         <label for="editTahunMasuk">Tahun Masuk</label>
-                        <input type="number" id="editTahunMasuk" placeholder="Masukkan tahun masuk" required>
+                        <input
+                            type="number"
+                            id="editTahunMasuk"
+                            name="tahun_masuk"
+                            placeholder="Masukkan tahun masuk"
+                            required
+                        >
                     </div>
 
                 </div>
 
                 <div class="o-form-action">
-                    <button type="submit" class="o-btn-simpan">Simpan Perubahan</button>
+                    <button type="submit" class="o-btn-simpan">
+                        Simpan Perubahan
+                    </button>
                 </div>
-
             </form>
 
         </div>
     </div>
-</div>
-<script>
 
+    {{-- POP-UP BERHASIL --}}
+    @if (session('success'))
+        <div class="akun-popup-overlay" id="popupBerhasil">
+            <div class="akun-popup">
+                <div class="akun-popup-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M5 12.5L10 17L19 7"/>
+                    </svg>
+                </div>
+
+                <h2>Berhasil!</h2>
+                <p>{{ session('success') }}</p>
+
+                <button type="button" id="btnTutupPopup">
+                    Oke
+                </button>
+            </div>
+        </div>
+    @endif
+
+</div>
+
+<script>
 document.addEventListener('DOMContentLoaded', function () {
 
     const el = id => document.getElementById(id);
+
     const tabel = el('akunBody');
     const modal = el('modalDetailAkun');
     const modalEdit = el('modalEditAkun');
+
     const btnEdit = el('btnEditAkun');
     const formEdit = el('formEditAkun');
+    const formNonaktifkan = el('formNonaktifkanAkun');
 
     let tombolAktif = null;
+
+    // MEMBUKA DETAIL AKUN
     tabel.addEventListener('click', function (e) {
 
         const tombol = e.target.closest('[data-detail-akun]');
@@ -202,132 +328,116 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!tombol) return;
 
         e.preventDefault();
+
         tombolAktif = tombol;
+
         el('detailNamaLengkap').textContent = tombol.dataset.nama || '-';
         el('detailRole').textContent = tombol.dataset.role || '-';
-        el('detailStatus').textContent = tombol.dataset.status || '-';
+        el('detailStatus').textContent =
+            tombol.dataset.status === 'nonaktif' ? 'Tidak Aktif' : 'Aktif';
         el('detailTelepon').textContent = tombol.dataset.telepon || '-';
         el('detailTahunMasuk').textContent = tombol.dataset.tahun || '-';
+
+        // MENENTUKAN URL NONAKTIFKAN
+        formNonaktifkan.action = tombol.dataset.nonaktifUrl;
 
         modal.hidden = false;
 
     });
 
+    // MEMBUKA EDIT AKUN
     btnEdit.addEventListener('click', function () {
 
         if (!tombolAktif) return;
+
         el('editNamaLengkap').value = tombolAktif.dataset.nama || '';
-        el('editRole').value = tombolAktif.dataset.role || 'Siswa';
-        el('editStatus').value = tombolAktif.dataset.status || 'Aktif';
+        el('editRole').value = tombolAktif.dataset.role || 'siswa';
+        el('editStatus').value = tombolAktif.dataset.status || 'aktif';
         el('editTelepon').value = tombolAktif.dataset.telepon || '';
         el('editTahunMasuk').value = tombolAktif.dataset.tahun || '';
+
+        // MENENTUKAN URL UPDATE
+        formEdit.action = tombolAktif.dataset.updateUrl;
 
         modal.hidden = true;
         modalEdit.hidden = false;
 
     });
 
-    formEdit.addEventListener('submit', function (e) {
-
-        e.preventDefault();
-
-        if (!tombolAktif) return;
-
-        const nama = el('editNamaLengkap').value.trim();
-        const role = el('editRole').value;
-        const status = el('editStatus').value;
-        const telepon = el('editTelepon').value.trim();
-        const tahun = el('editTahunMasuk').value;
-
-        if (!nama || !telepon || !tahun) {
-            alert('Semua data harus diisi!');
-            return;
-        }
-
-        tombolAktif.dataset.nama = nama;
-        tombolAktif.dataset.role = role;
-        tombolAktif.dataset.status = status;
-        tombolAktif.dataset.telepon = telepon;
-        tombolAktif.dataset.tahun = tahun;
-
-        const baris = tombolAktif.closest('tr');
-
-        baris.cells[0].textContent = nama;
-        baris.cells[1].textContent = role;
-        baris.cells[2].textContent = status;
-
-        modalEdit.hidden = true;
-
-        alert('Data akun berhasil diperbarui!');
-
+    // MENUTUP MODAL DETAIL
+    modal.querySelector('[data-close]').addEventListener('click', function () {
+        modal.hidden = true;
     });
-    modal.querySelector('[data-close]')
-        .addEventListener('click', function () {
 
-            modal.hidden = true;
-
-        });
     modal.addEventListener('click', function (e) {
-
         if (e.target === modal) {
             modal.hidden = true;
         }
-
     });
 
-    modalEdit.querySelector('[data-close-edit]')
-        .addEventListener('click', function () {
-
-            modalEdit.hidden = true;
-
-        });
-
+    // MENUTUP MODAL EDIT
+    modalEdit.querySelector('[data-close-edit]').addEventListener('click', function () {
+        modalEdit.hidden = true;
+    });
 
     modalEdit.addEventListener('click', function (e) {
-
         if (e.target === modalEdit) {
             modalEdit.hidden = true;
         }
-
     });
 
+    // TOMBOL ESC
     document.addEventListener('keydown', function (e) {
-
         if (e.key === 'Escape') {
             modal.hidden = true;
             modalEdit.hidden = true;
         }
-
     });
 
-    const cariAkun = el('cariAkun');
+    // PENCARIAN OTOMATIS
+    const formCari = document.querySelector('.akun-toolbar');
+    const inputCari = el('cariAkun');
     const filterRole = el('filterRole');
 
-    function filterAkun() {
+    let waktuCari;
 
-        const keyword = cariAkun.value.toLowerCase().trim();
-        const role = filterRole.value.toLowerCase();
+    inputCari.addEventListener('input', function () {
+        clearTimeout(waktuCari);
 
-        const baris = tabel.querySelectorAll('tr');
+        waktuCari = setTimeout(function () {
+            formCari.submit();
+        }, 500);
+    });
 
-        baris.forEach(tr => {
+    filterRole.addEventListener('change', function () {
+        formCari.submit();
+    });
 
-            const nama = tr.cells[0].textContent.toLowerCase();
-            const roleAkun = tr.cells[1].textContent.toLowerCase();
+    // POP-UP BERHASIL
+    const popup = el('popupBerhasil');
+    const btnTutupPopup = el('btnTutupPopup');
 
-            const cocokNama = nama.includes(keyword);
-            const cocokRole = role === '' || roleAkun === role;
+    if (popup) {
 
-            tr.style.display = cocokNama && cocokRole ? '' : 'none';
-
+        btnTutupPopup.addEventListener('click', function () {
+            popup.remove();
         });
 
+        popup.addEventListener('click', function (e) {
+            if (e.target === popup) {
+                popup.remove();
+            }
+        });
+
+        // OTOMATIS TERTUTUP SETELAH 3 DETIK
+        setTimeout(function () {
+            if (popup) {
+                popup.remove();
+            }
+        }, 3000);
+
     }
-
-    cariAkun.addEventListener('input', filterAkun);
-    filterRole.addEventListener('change', filterAkun);
-
 });
-
 </script>
 @endsection
+```

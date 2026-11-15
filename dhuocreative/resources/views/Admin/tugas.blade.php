@@ -1,3 +1,4 @@
+
 @extends('layouts.Admin')
 
 @section('title', 'Daftar Tugas Siswa')
@@ -13,12 +14,11 @@
 
     <!-- TOOLBAR FILTER & CARI -->
     <div class="at-toolbar">
-        <!-- 1. Search Utama (Judul Tugas) -->
         <div class="at-search at-search-main">
             <input type="search" id="cariTugas" placeholder="Cari judul tugas..." aria-label="Cari tugas">
         </div>
 
-        <!-- 2. Dropdown Filter Siswa -->
+        <!-- DROPDOWN FILTER SISWA -->
         <div class="at-siswa-filter" id="siswaFilter">
             <button type="button" class="at-select at-siswa-trigger" id="siswaTrigger"
                     aria-haspopup="listbox" aria-expanded="false" aria-controls="siswaDropdown">
@@ -34,20 +34,21 @@
             </div>
         </div>
 
-        <!-- 3. Select Tentor -->
+        <!-- FILTER TENTOR -->
         <select class="at-select" id="filterTentor" aria-label="Filter tentor">
             <option value="">Semua Tentor</option>
-            <option value="Tentor C">Tentor C</option>
-            <option value="Tentor D">Tentor D</option>
+            @foreach ($daftarTentor as $tentor)
+                <option value="{{ $tentor }}">{{ $tentor }}</option>
+            @endforeach
         </select>
 
-        <!-- 4. Select Kursus -->
+        <!-- FILTER KURSUS -->
         <select class="at-select" id="filterKursus" aria-label="Filter kursus">
             <option value="">Semua Kursus</option>
-            <option value="Web Master">Web Master</option>
-            <option value="MS Office">MS Office</option>
+            @foreach ($daftarKursus as $kursus)
+                <option value="{{ $kursus }}">{{ $kursus }}</option>
+            @endforeach
         </select>
-
     </div>
 
     <!-- TABEL TUGAS -->
@@ -65,56 +66,69 @@
                     <th>Aksi</th>
                 </tr>
             </thead>
+
             <tbody id="bodyTugas">
-                <tr data-kursus="Web Master"
-                    data-siswa="Siswa A"  
-                    data-tentor="Tentor C" 
-                    data-status="sudah"
-                    data-jenis="Tugas"
-                    data-deskripsi="Membuat struktur tabel HTML lengkap dengan CSS styling sederhana."
-                    data-file="Tugas1_SiswaA.html"
-                    data-nilai="85"
-                    data-feedback="Hasil baik, tingkatkan lagi!"
-                    data-status-pengumpulan="Tepat Waktu">
-                    <td>Membuat Tabel HTML</td>
-                    <td>Web Master</td>
-                    <td>Siswa A</td>
-                    <td>Tentor C</td>
-                    <td>30 Sep 2026 · 23:59</td>
-                    <td><span class="at-status kmpl">Terkumpul</span></td>
-                    <td><span class="at-nilai-badge">85</span></td>
-                    <td>
-                        <button type="button" class="at-view-btn" onclick="lihatDetailTugas(this)">Detail</button>
-                    </td>
-                </tr>
-                <tr data-kursus="Web Master" 
-                    data-siswa="Siswa B" 
-                    data-tentor="Tentor C" 
-                    data-status="belum"
-                    data-jenis="Projek"
-                    data-deskripsi="Membuat halaman portofolio pribadi menggunakan HTML & CSS."
-                    data-file="-"
-                    data-nilai="-"
-                    data-feedback="-"
-                    data-status-pengumpulan="Belum Mengumpulkan">
-                    <td>Projek Portofolio</td>
-                    <td>Web Master</td>
-                    <td>Siswa B</td>
-                    <td>Tentor C</td>
-                    <td>10 Okt 2026 · 23:59</td>
-                    <td><span class="at-status tdk">Tidak Kumpul</span></td>
-                    <td><span class="at-nilai-empty">-</span></td>
-                    <td>
-                        <button type="button" class="at-view-btn" onclick="lihatDetailTugas(this)">Detail</button>
-                    </td>
-                </tr>
+                @forelse ($daftarTugas as $item)
+                    <tr
+                        data-kursus="{{ $item->nama_kursus }}"
+                        data-siswa="{{ $item->nama_siswa ?? '-' }}"
+                        data-tentor="{{ $item->nama_tentor }}"
+                        data-jenis="{{ $item->jenis_label }}"
+                        data-deskripsi="{{ $item->deskripsi ?? '-' }}"
+                        data-file="{{ $item->file_jawaban ?? '' }}"
+                        data-file-url="{{ $item->file_url ?? '' }}"
+                        data-nilai="{{ $item->nilai ?? '' }}"
+                        data-feedback="{{ $item->feedback ?? '' }}"
+                        data-status-pengumpulan="{{ $item->status_label }}"
+                    >
+                        <td>{{ $item->judul }}</td>
+                        <td>{{ $item->nama_kursus }}</td>
+                        <td>{{ $item->nama_siswa ?? '-' }}</td>
+                        <td>{{ $item->nama_tentor }}</td>
+                        <td>{{ $item->deadline_label }}</td>
+
+                        <td>
+                            @if (!$item->id_pengumpulan)
+                                <span class="at-status tdk">Belum Mengumpulkan</span>
+                            @elseif ($item->status_pengumpulan === 'terlambat')
+                                <span class="at-status tdk">Terlambat</span>
+                            @else
+                                <span class="at-status kmpl">{{ $item->status_label }}</span>
+                            @endif
+                        </td>
+
+                        <td>
+                            @if (!is_null($item->nilai))
+                                <span class="at-nilai-badge">{{ $item->nilai }}</span>
+                            @else
+                                <span class="at-nilai-empty">-</span>
+                            @endif
+                        </td>
+
+                        <td>
+                            <button type="button" class="at-view-btn" onclick="lihatDetailTugas(this)">
+                                Detail
+                            </button>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="8" style="text-align: center;">
+                            Belum ada data tugas.
+                        </td>
+                    </tr>
+                @endforelse
             </tbody>
         </table>
     </div>
+
     <p class="at-empty" id="kosongTugas" hidden>Tugas tidak ditemukan.</p>
 
-    <!-- Komponen Paginasi -->
-    <nav class="tj-pagination" id="paginasiTugasAdmin" aria-label="Halaman daftar tugas" style="margin-top: 20px;" hidden></nav>
+    <!-- PAGINASI -->
+    <nav class="tj-pagination" id="paginasiTugasAdmin"
+         aria-label="Halaman daftar tugas"
+         style="margin-top: 20px;" hidden>
+    </nav>
 </div>
 
 <!-- MODAL DETAIL TUGAS & NILAI -->
@@ -134,44 +148,54 @@
                 <span>Judul Tugas</span>
                 <strong id="detJudul">-</strong>
             </div>
+
             <div>
                 <span>Jenis Tugas</span>
                 <strong id="detJenis">-</strong>
             </div>
+
             <div>
                 <span>Kursus</span>
                 <strong id="detKursus">-</strong>
             </div>
+
             <div>
                 <span>Nama Siswa</span>
                 <strong id="detSiswa">-</strong>
             </div>
+
             <div>
                 <span>Nama Tentor</span>
                 <strong id="detTentor">-</strong>
             </div>
+
             <div>
                 <span>Deadline</span>
                 <strong id="detDeadline">-</strong>
             </div>
+
             <div>
                 <span>Status Pengumpulan</span>
                 <strong id="detStatus">-</strong>
             </div>
+
             <div>
                 <span>Deskripsi</span>
                 <strong id="detDeskripsi" style="font-weight:400; text-align:right;">-</strong>
             </div>
+
             <div>
                 <span>File Tugas Siswa</span>
                 <span id="detFileWrap">
                     <strong id="detFile">-</strong>
                 </span>
             </div>
+
             <div>
                 <span>Nilai Akhir</span>
                 <strong id="detNilai" style="font-size:18px;">-</strong>
             </div>
+
             <div>
                 <span>Feedback</span>
                 <strong id="detFeedback">-</strong>
@@ -187,14 +211,16 @@ let halTugasAdmin = 1;
 function renderPaginasiTugasAdmin(navId, total, halaman, pindah) {
     const nav = document.getElementById(navId);
     if (!nav) return;
-    
+
     nav.replaceChildren();
+
     if (!total || total <= 1) {
         nav.hidden = true;
         return;
     }
+
     nav.hidden = false;
-    
+
     const jumlah = Math.ceil(total / PER_HALAMAN_TUGAS_ADMIN);
     const awal = (halaman - 1) * PER_HALAMAN_TUGAS_ADMIN + 1;
     const akhir = Math.min(halaman * PER_HALAMAN_TUGAS_ADMIN, total);
@@ -210,17 +236,25 @@ function renderPaginasiTugasAdmin(navId, total, halaman, pindah) {
         b.className = 'tj-pg-btn' + (aktif ? ' active' : '');
         b.textContent = label;
         b.disabled = mati;
+
         if (aria) b.setAttribute('aria-label', aria);
         if (aktif) b.setAttribute('aria-current', 'page');
+
         b.addEventListener('click', () => pindah(tujuan));
+
         return b;
     };
 
     const grup = document.createElement('div');
     grup.className = 'tj-pg-list';
-    grup.appendChild(btn('‹', halaman - 1, { mati: halaman === 1, aria: 'Halaman sebelumnya' }));
+
+    grup.appendChild(btn('‹', halaman - 1, {
+        mati: halaman === 1,
+        aria: 'Halaman sebelumnya'
+    }));
 
     let terakhir = 0;
+
     for (let i = 1; i <= jumlah; i++) {
         if (i === 1 || i === jumlah || Math.abs(i - halaman) <= 1) {
             if (i - terakhir > 1) {
@@ -229,17 +263,27 @@ function renderPaginasiTugasAdmin(navId, total, halaman, pindah) {
                 t.textContent = '…';
                 grup.appendChild(t);
             }
-            grup.appendChild(btn(String(i), i, { aktif: i === halaman, aria: `Halaman ${i}` }));
+
+            grup.appendChild(btn(String(i), i, {
+                aktif: i === halaman,
+                aria: `Halaman ${i}`
+            }));
+
             terakhir = i;
         }
     }
 
-    grup.appendChild(btn('›', halaman + 1, { mati: halaman === jumlah, aria: 'Halaman berikutnya' }));
+    grup.appendChild(btn('›', halaman + 1, {
+        mati: halaman === jumlah,
+        aria: 'Halaman berikutnya'
+    }));
+
     nav.appendChild(grup);
 }
 
 document.addEventListener('DOMContentLoaded', function () {
     const el = id => document.getElementById(id);
+
     const modalDetail = el('modalDetailTugas');
     const cariInput = el('cariTugas');
     const filterKursus = el('filterKursus');
@@ -247,55 +291,74 @@ document.addEventListener('DOMContentLoaded', function () {
     const judulHalaman = el('judulHalamanSiswa');
     const bodyTugas = el('bodyTugas');
 
-    // Elemen Dropdown Siswa
-    const siswaFilter   = el('siswaFilter');
-    const siswaTrigger  = el('siswaTrigger');
+    // DROPDOWN SISWA
+    const siswaFilter = el('siswaFilter');
+    const siswaTrigger = el('siswaTrigger');
     const siswaDropdown = el('siswaDropdown');
     const siswaTerpilih = el('siswaTerpilih');
-    const siswaOptions  = el('siswaOptions');
+    const siswaOptions = el('siswaOptions');
     const siswaNoResult = el('siswaNoResult');
-    const cariSiswa     = el('cariSiswa');
+    const cariSiswa = el('cariSiswa');
 
-    const semuaBaris = () => [...bodyTugas.querySelectorAll('tr')];
+    const semuaBaris = () => [
+        ...bodyTugas.querySelectorAll('tr[data-kursus]')
+    ];
 
     let siswaAktif = new URLSearchParams(window.location.search).get('siswa') || '';
 
     function updateLabelSiswa() {
         siswaTerpilih.textContent = siswaAktif || 'Semua Siswa';
-        judulHalaman.textContent = siswaAktif ? `Daftar Tugas ${siswaAktif}` : 'Daftar Tugas';
+
+        judulHalaman.textContent = siswaAktif
+            ? `Daftar Tugas ${siswaAktif}`
+            : 'Daftar Tugas';
     }
 
     function buatOpsi(label, nilai) {
         const btn = document.createElement('button');
         const aktif = siswaAktif === nilai;
+
         btn.type = 'button';
         btn.className = 'at-siswa-option' + (aktif ? ' selected' : '');
         btn.setAttribute('role', 'option');
         btn.setAttribute('aria-selected', String(aktif));
         btn.textContent = label;
+
         btn.addEventListener('click', () => pilihSiswa(nilai));
+
         return btn;
     }
 
     function renderOpsiSiswa() {
         const keyword = cariSiswa.value.toLowerCase().trim();
-        const daftarSiswa = [...new Set(semuaBaris().map(r => r.dataset.siswa).filter(Boolean))]
-            .sort((a, b) => a.localeCompare(b))
-            .filter(nama => nama.toLowerCase().includes(keyword));
+
+        const daftarSiswa = [
+            ...new Set(
+                semuaBaris()
+                    .map(r => r.dataset.siswa)
+                    .filter(nama => nama && nama !== '-')
+            )
+        ]
+        .sort((a, b) => a.localeCompare(b))
+        .filter(nama => nama.toLowerCase().includes(keyword));
 
         siswaOptions.replaceChildren();
 
-        if (!keyword || "semua siswa".includes(keyword)) {
+        if (!keyword || 'semua siswa'.includes(keyword)) {
             siswaOptions.appendChild(buatOpsi('Semua Siswa', ''));
         }
 
-        daftarSiswa.forEach(nama => siswaOptions.appendChild(buatOpsi(nama, nama)));
-        siswaNoResult.hidden = (siswaOptions.children.length > 0);
+        daftarSiswa.forEach(nama => {
+            siswaOptions.appendChild(buatOpsi(nama, nama));
+        });
+
+        siswaNoResult.hidden = siswaOptions.children.length > 0;
     }
 
     function bukaDropdown() {
         siswaDropdown.hidden = false;
         siswaTrigger.setAttribute('aria-expanded', 'true');
+
         cariSiswa.value = '';
         renderOpsiSiswa();
         cariSiswa.focus();
@@ -308,9 +371,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function pilihSiswa(nama) {
         siswaAktif = nama;
+
         updateLabelSiswa();
         tutupDropdown();
         siswaTrigger.focus();
+
         halTugasAdmin = 1;
         filter();
     }
@@ -320,11 +385,13 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     cariSiswa.addEventListener('input', renderOpsiSiswa);
-    
+
     cariSiswa.addEventListener('keydown', e => {
         if (e.key === 'Enter') {
             e.preventDefault();
+
             const pertama = siswaOptions.querySelector('.at-siswa-option');
+
             if (pertama) pertama.click();
         }
     });
@@ -335,18 +402,23 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    // FILTER DAN PENCARIAN
     function filter() {
         const q = cariInput.value.toLowerCase().trim();
         const kursus = filterKursus.value;
         const tentor = filterTentor.value;
-        
+
         const allRows = semuaBaris();
 
         const filteredRows = allRows.filter(row => {
-            const textMatch = row.cells[0].textContent.toLowerCase().includes(q); 
+            const judul = row.cells[0].textContent.toLowerCase();
+
+            const textMatch = judul.includes(q);
             const kursusMatch = !kursus || row.dataset.kursus === kursus;
             const tentorMatch = !tentor || row.dataset.tentor === tentor;
-            const siswaMatch = !siswaAktif || row.dataset.siswa.toLowerCase() === siswaAktif.toLowerCase();
+
+            const siswaMatch = !siswaAktif ||
+                row.dataset.siswa.toLowerCase() === siswaAktif.toLowerCase();
 
             return textMatch && kursusMatch && tentorMatch && siswaMatch;
         });
@@ -354,15 +426,24 @@ document.addEventListener('DOMContentLoaded', function () {
         allRows.forEach(row => row.style.display = 'none');
 
         const totalFiltered = filteredRows.length;
+
         el('kosongTugas').hidden = totalFiltered > 0;
 
         if (totalFiltered === 0) {
-            renderPaginasiTugasAdmin('paginasiTugasAdmin', 0, halTugasAdmin, pindahHalaman);
+            renderPaginasiTugasAdmin(
+                'paginasiTugasAdmin',
+                0,
+                halTugasAdmin,
+                pindahHalaman
+            );
             return;
         }
 
         const maxPage = Math.ceil(totalFiltered / PER_HALAMAN_TUGAS_ADMIN);
-        if (halTugasAdmin > maxPage) halTugasAdmin = maxPage || 1;
+
+        if (halTugasAdmin > maxPage) {
+            halTugasAdmin = maxPage || 1;
+        }
 
         const start = (halTugasAdmin - 1) * PER_HALAMAN_TUGAS_ADMIN;
         const end = start + PER_HALAMAN_TUGAS_ADMIN;
@@ -371,47 +452,94 @@ document.addEventListener('DOMContentLoaded', function () {
             row.style.display = '';
         });
 
-        renderPaginasiTugasAdmin('paginasiTugasAdmin', totalFiltered, halTugasAdmin, pindahHalaman);
+        renderPaginasiTugasAdmin(
+            'paginasiTugasAdmin',
+            totalFiltered,
+            halTugasAdmin,
+            pindahHalaman
+        );
     }
 
     function pindahHalaman(tujuanBaru) {
         halTugasAdmin = tujuanBaru;
         filter();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
     }
 
-    cariInput.addEventListener('input', () => { halTugasAdmin = 1; filter(); });
-    filterKursus.addEventListener('change', () => { halTugasAdmin = 1; filter(); });
-    filterTentor.addEventListener('change', () => { halTugasAdmin = 1; filter(); });
+    cariInput.addEventListener('input', () => {
+        halTugasAdmin = 1;
+        filter();
+    });
 
+    filterKursus.addEventListener('change', () => {
+        halTugasAdmin = 1;
+        filter();
+    });
+
+    filterTentor.addEventListener('change', () => {
+        halTugasAdmin = 1;
+        filter();
+    });
+
+    // MODAL DETAIL TUGAS
     window.lihatDetailTugas = function (btn) {
         const row = btn.closest('tr');
+
         el('detJudul').textContent = row.cells[0].textContent.trim();
         el('detKursus').textContent = row.cells[1].textContent.trim();
         el('detSiswa').textContent = row.cells[2].textContent.trim();
         el('detTentor').textContent = row.cells[3].textContent.trim();
         el('detDeadline').textContent = row.cells[4].textContent.trim();
+
         el('detStatus').textContent = row.dataset.statusPengumpulan || '-';
         el('detJenis').textContent = row.dataset.jenis || 'Tugas';
         el('detDeskripsi').textContent = row.dataset.deskripsi || '-';
-        
+
+        // FILE JAWABAN SISWA
         const fileName = row.dataset.file;
-        if (fileName && fileName !== '-') {
-            el('detFileWrap').innerHTML = `<a href="#" class="at-file-link" target="_blank">${fileName}</a>`;
+        const fileUrl = row.dataset.fileUrl;
+
+        const fileWrap = el('detFileWrap');
+        fileWrap.replaceChildren();
+
+        if (fileName && fileUrl) {
+            const link = document.createElement('a');
+
+            link.href = fileUrl;
+            link.className = 'at-file-link';
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            link.textContent = fileName;
+
+            fileWrap.appendChild(link);
         } else {
-            el('detFileWrap').innerHTML = '<strong>Belum ada file</strong>';
+            const strong = document.createElement('strong');
+
+            strong.textContent = 'Belum ada file';
+            fileWrap.appendChild(strong);
         }
 
+        // NILAI
         const nilai = row.dataset.nilai;
-        el('detNilai').textContent = (nilai && nilai !== '-') ? `${nilai} / 100` : 'Belum Dinilai';
 
+        el('detNilai').textContent =
+            nilai !== '' ? `${nilai} / 100` : 'Belum Dinilai';
+
+        // FEEDBACK
         const feedback = row.dataset.feedback;
-        el('detFeedback').textContent = feedback || 'Belum ada feedback.';
+
+        el('detFeedback').textContent =
+            feedback || 'Belum ada feedback.';
 
         modalDetail.hidden = false;
         document.body.style.overflow = 'hidden';
     };
 
+    // TUTUP MODAL
     function tutupModal() {
         modalDetail.hidden = true;
         document.body.style.overflow = '';
@@ -420,15 +548,20 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('[data-close]').forEach(btn => {
         btn.addEventListener('click', tutupModal);
     });
-    
+
     modalDetail.addEventListener('click', e => {
-        if (e.target === modalDetail) tutupModal();
+        if (e.target === modalDetail) {
+            tutupModal();
+        }
     });
 
     document.addEventListener('keydown', e => {
         if (e.key === 'Escape') {
-            if (!modalDetail.hidden) tutupModal();
-            else if (!siswaDropdown.hidden) tutupDropdown();
+            if (!modalDetail.hidden) {
+                tutupModal();
+            } else if (!siswaDropdown.hidden) {
+                tutupDropdown();
+            }
         }
     });
 

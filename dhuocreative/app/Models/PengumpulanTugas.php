@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class PengumpulanTugas extends Model
 {
-    protected $table = pengumpulan_tugas;
+    protected $table = 'pengumpulan_tugas';
     protected $primaryKey = id_pengumpulan;
 
     public $timestamps = true;
@@ -15,7 +15,7 @@ class PengumpulanTugas extends Model
         'id_pengumpulan',
         'id_tugas',
         'id_siswa',
-        'dile_jawaban',
+        'file_jawaban',
         'waktu_pengumpulan',
         'status'
     ];

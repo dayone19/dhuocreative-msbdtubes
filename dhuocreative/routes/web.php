@@ -13,6 +13,16 @@ use App\Http\Controllers\Tentor\JadwalController as TentorJadwalController;
 use App\Http\Controllers\Siswa\DashboardController as SiswaDashboardController;
 use App\Http\Controllers\Siswa\SertifikatController as SertifikatController;
 
+// controller admin
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ManajemenAkunController;
+use App\Http\Controllers\Admin\DataPenggunaController;
+use App\Http\Controllers\Admin\KursusController;
+use App\Http\Controllers\Admin\JadwalController as AdminJadwalController;
+use App\Http\Controllers\Admin\RiwayatAbsensiController;
+use App\Http\Controllers\Admin\TugasDanNilaiController;
+use App\Http\Controllers\Admin\SertifikatController as AdminSertifikatController;
+use App\Http\Controllers\Admin\PengumumanController as AdminPengumumanController;
 
 // login
 Route::get('/', function () {
@@ -55,69 +65,30 @@ Route::post('/forgotPass/reset-password', [ForgotPasswordController::class, 'res
 // tentor
 Route::middleware(['auth', 'prevent.back'])->prefix('tentor')->name('tentor.')->group(function () {
     Route::get('/dashboard', [TentorDashboardController::class, 'index'])->name('dashboard'); 
-
     Route::get('/jadwal', [TentorJadwalController::class, 'index'])->name('jadwal');
-   
     Route::post('/jadwal/ajukan', [TentorJadwalController::class, 'ajukan'])->name('jadwal.ajukan');
-
-    Route::get('/kursus', [TentorKursusController::class, 'index'])
-    ->name('kursus');
-
+    Route::get('/kursus', [TentorKursusController::class, 'index'])->name('kursus');
     Route::get('/kursus/absensi/{kursus}', [TentorAbsensiController::class, 'show'])
         ->whereNumber('kursus')->name('absensi');
-
     Route::post('/kursus/absensi/jadwal/{jadwal}', [TentorAbsensiController::class, 'updateStatus'])
         ->whereNumber('jadwal')->name('absensi.status');
-
-    Route::get('/tugas', [App\Http\Controllers\Tentor\TugasController::class, 'index'])
-        ->name('tugas');
-
-    Route::post('/tugas', [App\Http\Controllers\Tentor\TugasController::class, 'simpan'])
-        ->name('tugas.simpan');
-
+    Route::get('/tugas', [App\Http\Controllers\Tentor\TugasController::class, 'index'])->name('tugas');
+    Route::post('/tugas', [App\Http\Controllers\Tentor\TugasController::class, 'simpan'])->name('tugas.simpan');
     Route::put('/tugas/{tugas}', [App\Http\Controllers\Tentor\TugasController::class, 'update'])
         ->whereNumber('tugas')->name('tugas.update');
-
-    Route::post('/tugas/pengumpulan/{pengumpulan}/nilai',
-    [TentorTugasController::class, 'nilai'])
-    ->whereNumber('pengumpulan')
-    ->name('tugas.nilai');
-
+    Route::post('/tugas/pengumpulan/{pengumpulan}/nilai', [TentorTugasController::class, 'nilai'])
+        ->whereNumber('pengumpulan')
+        ->name('tugas.nilai');
     Route::get('/tugas/pengumpulan/{pengumpulan}/file', [TentorTugasController::class, 'fileJawaban'])
-    ->whereNumber('pengumpulan')
-    ->name('tugas.file');
-
+        ->whereNumber('pengumpulan')
+        ->name('tugas.file');
     Route::get('/sertifikat', [TentorSertifikatController::class, 'index'])->name('sertifikat');
-
     Route::post('/sertifikat', [TentorSertifikatController::class, 'simpan'])->name('sertifikat.simpan');
-
     Route::put('/sertifikat/{sertifikat}', [TentorSertifikatController::class, 'update'])
         ->whereNumber('sertifikat')->name('sertifikat.update');
-
     Route::get('/sertifikat/file/{sertifikat}', [TentorSertifikatController::class, 'file'])
         ->whereNumber('sertifikat')->name('sertifikat.file');
-
     Route::get('/pengumuman', [TentorPengumumanController::class, 'index'])->name('pengumuman');
-
-    // Route::get('/kursus/absensi/{kursus}', function ($kursus) {
-    //     return view('tentor.absensi', compact('kursus'));
-    // })->name('absensi');
-
-    // Route::get('/tugas', function () {
-    //     return view('tentor.tugas');
-    // })->name('tugas'); 
-
-    // Route::get('/nilai', function () {
-    //     return view('tentor.nilai');
-    // })->name('nilai'); 
-
-    // Route::get('/sertifikat', function () {
-    //     return view('tentor.sertifikat');
-    // })->name('sertifikat');
-
-    // Route::get('/pengumuman', function () {
-    //     return view('tentor.pengumuman');
-    // })->name('pengumuman'); 
 });
 
 // operator
@@ -159,105 +130,60 @@ Route::middleware(['auth', 'prevent.back'])->prefix('operator')->name('operator.
     })->name('pengumuman'); 
 });
 
+// siswa
 Route::middleware(['auth', 'prevent.back'])->prefix('siswa')->name('siswa.')->group(function () {
     Route::get('/dashboard', [SiswaDashboardController::class, 'index'])->name('dashboard');
-
     Route::get('/kursus', [App\Http\Controllers\Siswa\KursusController::class, 'index'])->name('kursus');
-
     Route::get('/absensi', [App\Http\Controllers\Siswa\AbsensiController::class, 'index'])->name('absensi');
-
     Route::get('/pengumpulanTugas', [App\Http\Controllers\Siswa\PengumpulanTugasController::class, 'index'])->name('pengumpulanTugas');
-
     Route::post('/pengumpulanTugas', [App\Http\Controllers\Siswa\PengumpulanTugasController::class, 'kumpulkan'])->name('pengumpulanTugas.kumpulkan');
-
     Route::get('/nilai', [App\Http\Controllers\Siswa\NilaiController::class, 'index'])->name('nilai');
-
     Route::get('/sertifikat', [App\Http\Controllers\Siswa\SertifikatController::class, 'index'])->name('sertifikat');
-
-    Route::get('/sertifikat/{sertifikat}/file', [App\Http\Controllers\Siswa\SertifikatController::class, 'file'])->whereNumber('sertifikat')->name('sertifikat.file');
-
+    Route::get('/sertifikat/{sertifikat}/file', [App\Http\Controllers\Siswa\SertifikatController::class, 'file'])
+        ->whereNumber('sertifikat')
+        ->name('sertifikat.file');
     Route::get('/pengumuman', [App\Http\Controllers\Siswa\PengumumanController::class, 'index'])->name('pengumuman');
-
-    // Route::get('/dashboard', function () {
-    //     return view('siswa.dashboard');
-    // })->name('dashboard');
-
-    // Route::get('/kursus', function () {
-    //     return view('siswa.kursus');
-    // })->name('kursus');
-
-    // Route::get('/absensi', function () {
-    //     return view('siswa.absensi');
-    // })->name('absensi');
-
-    // Route::get('/pengumpulanTugas', function () {
-    //     return view('siswa.pengumpulanTugas');
-    // })->name('pengumpulanTugas');
-
-    // Route::get('/nilai', function () {
-    //     return view('siswa.nilai');
-    // })->name('nilai');
-
-    // Route::get('/sertifikat', function () {
-    //     return view('siswa.sertifikat');
-    // })->name('sertifikat');
-
-    // Route::get('/pengumuman', function () {
-    //     return view('siswa.pengumuman');
-    // })->name('pengumuman');
 });
 
+// admin
 Route::middleware(['auth', 'prevent.back'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('dashboard');
-
-    Route::get('/manajemenAkun', function () {
-        return view('admin.manajemenAkun');
-    })->name('manajemenAkun');
-
-    Route::get('/dataPengguna', function () {
-        return view('admin.dataPengguna');
-    })->name('dataPengguna');
-
-    Route::get('/manajemenKursus', function () {
-        return view('admin.manajemenKursus');
-    })->name('manajemenKursus');
-
-    Route::get('/jadwalAbsensi', function () {
-        return view('admin.jadwalAbsensi');
-    })->name('jadwalAbsensi');
-
-    Route::get('/riwayatAbsen', function () {
-        return view('admin.riwayatAbsen');
-    })->name('riwayatAbsen');
-
-    Route::get('/riwayatPresensi', function () {
-        return view('admin.riwayatPresensi');
-    })->name('riwayatPresensi');
-
-    Route::get('/tugas', function () {
-        return view('admin.tugas');
-    })->name('tugas');
-
-    Route::get('/nilaiSertifikat', function () {
-        return view('admin.nilaiSertifikat');
-    })->name('nilaiSertifikat');
-
-    Route::get('/pengumuman', function () {
-        return view('admin.pengumuman');
-    })->name('pengumuman');
+    // dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
-    Route::get('/buatAkun', function () {
-        return view('admin.buatAkun');
-    })->name('buatAkun');
-});
+    // manajemen akun
+    Route::get('/manajemenAkun', [ManajemenAkunController::class, 'index'])->name('manajemenAkun');
+    Route::put('/manajemenAkun/{id}', [ManajemenAkunController::class, 'update'])->name('manajemenAkun.update');
+    Route::patch('/manajemenAkun/{id}/nonaktifkan', [ManajemenAkunController::class, 'nonaktifkan'])->name('manajemenAkun.nonaktifkan');
+    Route::post('/buatAkun', [ManajemenAkunController::class, 'store'])->name('buatAkun.store');
+    
+    // data pengguna
+    Route::get('/dataPengguna', [DataPenggunaController::class, 'index'])->name('dataPengguna');
+    
+    // kursus
+    Route::get('/manajemenKursus', [KursusController::class, 'index'])->name('manajemenKursus');
+    Route::post('/manajemenKursus', [KursusController::class, 'store'])->name('manajemenKursus.store');
+    Route::put('/manajemenKursus/{id}', [KursusController::class, 'update'])->name('manajemenKursus.update');
+    Route::patch('/manajemenKursus/{id}/nonaktifkan', [KursusController::class, 'nonaktifkan'])->name('manajemenKursus.nonaktifkan');
+    Route::patch('/manajemenKursus/{id}/aktifkan', [KursusController::class, 'aktifkan'])->name('manajemenKursus.aktifkan');
+    
+    // jadwal
+    Route::get('/jadwal', [AdminJadwalController::class, 'index'])->name('jadwal');
+    Route::get('/jadwalAbsensi', function () {return view('admin.jadwalAbsensi');})->name('jadwalAbsensi');
+    
+    // riwayat absensi
+    Route::get('/riwayatAbsen', [RiwayatAbsensiController::class, 'index'])->name('riwayatAbsen');
+    Route::get('/riwayatPresensi/{id_kelas}/{id_siswa}', [RiwayatAbsensiController::class, 'detail'])->name('riwayatPresensi');
+    Route::patch('/riwayatPresensi/{id_kelas}/{id_siswa}/{id_jadwal}',[RiwayatAbsensiController::class, 'updateStatus'])->name('riwayatPresensi.updateStatus');
+    
+    // tugas dan nilai
+    Route::get('/tugasDanNilai', [TugasDanNilaiController::class, 'index'])->name('tugasDanNilai');
+    
+    // sertifikat
+    Route::get('/nilaiSertifikat', [AdminSertifikatController::class, 'index'])->name('nilaiSertifikat');
 
-Route::middleware(['auth', 'prevent-back-history'])->group(function () {
-    Route::post('/admin/users', [UserController::class, 'store'])
-   ->name('admin.users.store');
-    // admin
-    // operator
-    // tentor
-    // siswa
+    // pengumuman
+    Route::get('/pengumuman', [AdminPengumumanController::class, 'index'])->name('pengumuman');
+    Route::post('/pengumuman', [AdminPengumumanController::class, 'store'])->name('pengumuman.store');
+    Route::put('/pengumuman/{id}', [AdminPengumumanController::class, 'update'])->name('pengumuman.update');
+    Route::delete('/pengumuman/{id}', [AdminPengumumanController::class, 'destroy'])->name('pengumuman.destroy');
 });

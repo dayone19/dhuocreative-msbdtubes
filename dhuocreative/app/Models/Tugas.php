@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Tugas extends Model
 {
-    protected $table = tugas;
-    protected $primaryKey = id_tugas;
+    protected $table = 'tugas';
+    protected $primaryKey = 'id_tugas';
 
     public $timestamps = true;
     const CREATED_AT = 'created_at';
@@ -22,7 +22,6 @@ class Tugas extends Model
         'deskripsi',
         'deadline',
         'file_tugas',
-        'tipe'
     ];
 
     public function pengumpulanTugas() {

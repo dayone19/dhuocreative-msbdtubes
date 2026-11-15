@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class PasswordResertCode extends Model
 {
-    protected $table = password_reset_code;
-    protected $primaryKey = email;
+    protected $table = 'password_reset_code';
+    protected $primaryKey = 'email';
 
     public $incrementing = false;
     protected $keyType = 'string';

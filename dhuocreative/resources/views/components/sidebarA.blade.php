@@ -1,3 +1,4 @@
+
 <aside class="sidebar">
 
     <div class="profile" id="profileTrigger">
@@ -9,19 +10,21 @@
         </button>
 
         <div class="profile-name">
-            {{ Auth::user()->name ?? 'Admin A' }}
+            {{ Auth::user()->nama ?? 'Admin A' }}
         </div>
 
         <!-- Popup profil -->
         <div class="profile-popup" id="profilePopup" role="menu">
             <div class="popup-row">
                 <span class="popup-label">Nama</span>
-                <span class="popup-value">{{ Auth::user()->name ?? 'Admin A' }}</span>
+                <span class="popup-value">{{ Auth::user()->nama ?? 'Admin A' }}</span>
             </div>
+
             <div class="popup-row">
                 <span class="popup-label">Email</span>
                 <span class="popup-value">{{ Auth::user()->email ?? '-' }}</span>
             </div>
+
             <div class="popup-row">
                 <span class="popup-label">No. Telp</span>
                 <span class="popup-value">{{ Auth::user()->no_telp ?? '-' }}</span>
@@ -41,36 +44,26 @@
         </a>
 
         <a href="{{ route('admin.manajemenAkun') }}" class="sidebar-item {{ request()->routeIs('admin.manajemenAkun') ? 'active' : '' }}">
-            <span>
-                Manajemen Akun
-            </span>
+            <span>Manajemen Akun</span>
         </a>
 
         <a href="{{ route('admin.dataPengguna') }}" class="sidebar-item {{ request()->routeIs('admin.dataPengguna') ? 'active' : '' }}">
-            <span>
-                Data Pengguna
-            </span>
+            <span>Data Pengguna</span>
         </a>
 
         <a href="{{ route('admin.manajemenKursus') }}" class="sidebar-item {{ request()->routeIs('admin.manajemenKursus') ? 'active' : '' }}">
-            <span>
-                Kursus
-            </span>
+            <span>Kursus</span>
         </a>
 
         <a href="{{ route('admin.jadwalAbsensi') }}" class="sidebar-item {{ request()->routeIs('admin.jadwalAbsensi') ? 'active' : '' }}">
-            <span>
-                Jadwal
-            </span>
+            <span>Jadwal</span>
         </a>
 
         <a href="{{ route('admin.riwayatAbsen') }}" class="sidebar-item {{ request()->routeIs('admin.riwayatAbsen') ? 'active' : '' }}">
-            <span>
-                Riwayat Absensi
-            </span>
+            <span>Riwayat Absensi</span>
         </a>
 
-        <a href="{{ route('admin.tugas') }}" class="sidebar-item {{ request()->routeIs('admin.tugas') ? 'active' : '' }}">
+        <a href="{{ route('admin.tugasDanNilai') }}" class="sidebar-item {{ request()->routeIs('admin.tugasDanNilai') ? 'active' : '' }}">
             <span>Tugas & Nilai</span>
         </a>
 
@@ -97,12 +90,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
     btn.addEventListener('click', function (e) {
         e.stopPropagation();
+
         const open = popup.classList.toggle('show');
         btn.setAttribute('aria-expanded', open);
     });
 
     popup.addEventListener('click', e => e.stopPropagation());
     document.addEventListener('click', closePopup);
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closePopup(); });
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closePopup();
+    });
 });
 </script>
