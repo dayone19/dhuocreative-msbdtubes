@@ -27,7 +27,7 @@ class PengumumanController extends Controller
             ->map(function ($p) {
                 
                 $p->tanggal_iso = Carbon::parse($p->tanggal)->toDateString();
-                $p->tanggal_teks = Carbon::parse($p->tanggal)->locale('id');
+                $p->tanggal_teks = Carbon::parse($p->tanggal)->locale('id')->translatedFormat('j F Y');
                 $p->pembuat_teks = $p->nama . ' (' . ucfirst($p->role) . ')';
                 return $p;
             });

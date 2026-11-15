@@ -135,6 +135,10 @@ Route::middleware(['auth', 'prevent.back'])->prefix('siswa')->name('siswa.')->gr
     Route::get('/dashboard', [SiswaDashboardController::class, 'index'])->name('dashboard');
     Route::get('/kursus', [App\Http\Controllers\Siswa\KursusController::class, 'index'])->name('kursus');
     Route::get('/absensi', [App\Http\Controllers\Siswa\AbsensiController::class, 'index'])->name('absensi');
+
+    Route::post('/absensi', [App\Http\Controllers\Siswa\AbsensiController::class, 'absen'])->name('absensi.absen');
+
+
     Route::get('/pengumpulanTugas', [App\Http\Controllers\Siswa\PengumpulanTugasController::class, 'index'])->name('pengumpulanTugas');
     Route::post('/pengumpulanTugas', [App\Http\Controllers\Siswa\PengumpulanTugasController::class, 'kumpulkan'])->name('pengumpulanTugas.kumpulkan');
     Route::get('/nilai', [App\Http\Controllers\Siswa\NilaiController::class, 'index'])->name('nilai');

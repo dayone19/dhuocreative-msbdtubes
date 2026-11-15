@@ -47,8 +47,8 @@ class AbsensiController extends Controller
             ->select(
                 'jadwal.id_jadwal',
                 DB::raw("to_char(jadwal.tanggal, 'YYYY-MM-DD') as tanggal"),
-                DB::raw("to_char(jadwal.jam_mulai, 'HH24.MI') as mulai"),
-                DB::raw("to_char(jadwal.jam_selesai, 'HH24.MI') as selesai"),
+                DB::raw("to_char(jadwal.jam_mulai, 'HH24:MI') as mulai"),
+                DB::raw("to_char(jadwal.jam_selesai, 'HH24:MI') as selesai"),
                 DB::raw('jadwal.status::text as status_jadwal'),
                 DB::raw('a.status::text as status_absen')
             )
