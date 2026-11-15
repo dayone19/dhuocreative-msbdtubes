@@ -374,6 +374,14 @@
 
         <section class="attandance today">
             <h2>Jadwal Hari Ini</h2>
+
+            @if (session('sukses'))
+                <p style="background:#e3f6e8;color:#1d6b35;padding:10px 14px;border-radius:12px;margin:0 0 12px;">{{ session('sukses') }}</p>
+            @endif
+            @if ($errors->any())
+                <p style="background:#fde8e8;color:#a12222;padding:10px 14px;border-radius:12px;margin:0 0 12px;">{{ $errors->first() }}</p>
+            @endif
+
             @forelse ($jadwalHariIni as $j)
             <div class="class {{ $j->berlangsung ? 'active' : '' }}">
                 <div>
@@ -384,6 +392,20 @@
                     </div>
                 </div>
                 <span class="pill pill-online">{{ $j->jenis }}</span>
+
+                @if ($j->sudah_absen)
+                    <span class="btn done">Sudah: {{ ucfirst($j->status_absen) }}</span>
+                @elseif ($j->bisa_absen)
+                    <form method="POST" action="{{ route('siswa.absensi.absen') }}" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+                        @csrf
+                        <input type="hidden" name="id_jadwal" value="{{ $j->id_jadwal }}">
+                        <button type="submit" name="status" value="hadir" class="btn go">Hadir</button>
+                        <button type="submit" name="status" value="izin" class="btn" style="background:#fff3cd;color:#856404;">Izin</button>
+                        <button type="submit" name="status" value="sakit" class="btn" style="background:#f8d7da;color:#721c24;">Sakit</button>
+                    </form>
+                @elseif ($j->berlangsung === false)
+                    <span class="btn done" style="opacity:.7;">Di luar jam kelas</span>
+                @endif
             </div>
             @empty
             <p>Tidak ada jadwal kelas hari ini.</p>
