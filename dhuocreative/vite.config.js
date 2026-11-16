@@ -6,20 +6,22 @@ export default defineConfig({
     plugins: [
         laravel({
             input: [
-                    'resources/css/app.css',
-                    'resources/css/login.css',
-                    'resources/css/sidebar.css',
-                    'resources/css/tentor.css',
-                    'resources/css/siswa.css',
-                    'resources/js/app.js',
-                   ],
+                "resources/css/app.css",
+                "resources/css/login.css",
+                "resources/css/sidebar.css",
+                "resources/css/tentor.css",
+                "resources/css/siswa.css",
+                "resources/css/operator.css",
+                "resources/js/app.js",
+            ],
+
             refresh: true,
         }),
         tailwindcss(),
     ],
     server: {
         watch: {
-            ignored: ['**/storage/framework/views/**'],
+            ignored: ["**/storage/framework/views/**"],
         },
     },
 });

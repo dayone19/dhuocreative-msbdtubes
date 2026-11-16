@@ -3,6 +3,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Operator\JadwalController;
 
 // login
 Route::get('/', function () {
@@ -95,9 +96,16 @@ Route::middleware(['auth', 'prevent.back'])->prefix('operator')->name('operator.
         return view('operator.kursus');
     })->name('kursus'); 
 
-    Route::get('/jadwal', function () {
-        return view('operator.jadwal');
-    })->name('jadwal'); 
+    Route::get('/jadwal', [JadwalController::class, 'index'])
+    ->name('jadwal'); 
+
+    Route::post('/jadwal', [JadwalController::class, 'store'])
+    ->name('jadwal.store'); 
+
+    Route::post('/jadwal/persetujuan', [JadwalController::class, 'approveReschedule'])
+    ->name('jadwal.approve');
+  
+
 
     Route::get('/absensi', function () {
         return view('operator.absensi');
