@@ -6,15 +6,15 @@ export default defineConfig({
     plugins: [
         laravel({
             input: [
-                "resources/css/app.css",
-                "resources/css/login.css",
-                "resources/css/sidebar.css",
-                "resources/css/tentor.css",
-                "resources/css/siswa.css",
-                "resources/css/operator.css",
-                "resources/js/app.js",
-            ],
-
+                    'resources/css/app.css',
+                    'resources/css/login.css',
+                    'resources/css/sidebar.css',
+                    'resources/css/tentor.css',
+                    'resources/css/siswa.css',
+                    'resources/css/operator.css',
+                    'resources/css/admin.css',
+                    'resources/js/app.js',
+                ],
             refresh: true,
         }),
         tailwindcss(),

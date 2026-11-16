@@ -233,8 +233,9 @@ body {
 
 .forgot-card {
     position: absolute;
-    top: 150px;
-    right: 500px;
+    top: 20%;
+    left: 40%;
+    right: auto;
     width: 290px;
     padding: 25px 18px 22px;
     background: white;
@@ -281,4 +282,29 @@ body {
     font-size: 14px;
     line-height: 1.5;
     text-align: left;
+}
+
+/* =====================================
+   RESPONSIVE DESKTOP
+===================================== */
+@media (max-width: 1200px) {
+    .main-section {height: 100vh;min-height: 650px;}
+    .brand {left: 3%;top: 50%;transform: translateY(-50%);width: 40%;max-width: 450px;}
+    .login-card {right: 5%;top: 50%;transform: translateY(-50%);width: clamp(270px, 27vw, 300px);}
+    .main-section::after {width: 120%;height: 85%;left: -10%;bottom: -28%;}
+}
+@media (max-width: 900px) {
+    .brand {left: 2%;width: 42%;}
+    .login-card {right: 3%;width: 270px;}
+    .main-section::after {height: 75%;bottom: -25%;}
+    .forgot-card {width: 290px;}
+}
+@media (max-width: 700px) {
+    .main-section {min-height: 620px;height: 100vh;}
+    .brand {left: 2%;width: 43%;}
+    .login-card {right: 3%;width: 260px;}
+}
+@media (max-width: 480px) {
+    .main-section {min-height: 100vh;height: 100vh;}
+    .forgot-card {width: calc(100% - 36px);max-width: 340px;padding: 22px 18px;}
 }

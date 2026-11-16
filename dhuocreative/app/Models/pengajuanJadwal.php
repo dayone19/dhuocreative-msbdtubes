@@ -9,7 +9,12 @@ class PengajuanJadwal extends Model
     protected $table = 'pengajuan_jadwal';
     protected $primaryKey = 'id_pengajuan';
 
+    public $timestamps = true;
+    const CREATED_AT = 'created_at';
+    const UPDATED_AT = 'updated_at';
+
     protected $fillable = [
+        'id_pengajuan',
         'id_jadwal_lama',
         'id_kelas',
         'id_tentor',
@@ -35,4 +40,3 @@ class PengajuanJadwal extends Model
         return $this->belongsTo(User::class, 'id_tentor', 'id_user');
     }
 }
-

@@ -6,16 +6,22 @@ use Illuminate\Database\Eloquent\Model;
 
 class Tugas extends Model
 {
-    protected $table = tugas;
-    protected $primaryKey = id_tugas;
+    protected $table = 'tugas';
+    protected $primaryKey = 'id_tugas';
+
+    public $timestamps = true;
+    const CREATED_AT = 'created_at';
+    const UPDATED_AT = 'updated_at';
+
     protected $fillable = [
         'id_tugas',
         'id_kelas',
         'id_tentor',
+        'tipe',
         'judul',
         'deskripsi',
         'deadline',
-        'file_tugas'
+        'file_tugas',
     ];
 
     public function pengumpulanTugas() {

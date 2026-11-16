@@ -6,14 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class Sertifikat extends Model
 {
-    protected $table = sertifikat;
-    protected $primaryKey = id_sertifikat;
+    protected $table = 'sertifikat';
+    protected $primaryKey = 'id_sertifikat';
+
+    public $timestamps = true;
+
     protected $fillable = [
         'id_sertifikat',
         'id_siswa',
         'id_tentor',
-        'nama_ujian',
-        'tanggal_ujian',
+        'nama_projek',
+        'tanggal_pengumpulan',
         'file_sertifikat',
         'tanggal_upload'
     ];

@@ -9,13 +9,16 @@ class Kelas extends Model
     protected $table = 'kelas';
     protected $primaryKey = 'id_kelas';
     public $incrementing = false;
-
+    public $timestamps = false;
+    const CREATED_AT = 'created_at';
+    const UPDATED_AT = 'updated_at';
+    
     protected $fillable = [
         'id_kelas',
         'id_kursus',
-        'status',
-        'kelas',
         'id_siswa',
+        'kelas',
+        'status'
     ];
 
     // Relasi ke Kursus

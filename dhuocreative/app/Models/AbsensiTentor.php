@@ -6,8 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class AbsensiTentor extends Model
 {
-    protected $table = absensi_tentor;
-    protected $primaryKey = id_absensi_tentor;
+    protected $table = 'absensi_tentor';
+    protected $primaryKey = 'id_absensi_tentor';
+
+    public $timestamps = false;
     protected $fillable = [
         'id_absensi_tentor',
         'id_jadwal',

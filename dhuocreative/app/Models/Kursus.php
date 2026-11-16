@@ -9,6 +9,9 @@ class Kursus extends Model
     protected $table = 'kursus';
     protected $primaryKey = 'id_kursus';
 
+    public $timestamps = false;
+    const CREATED_AT = 'created_at';
+    const UPDATED_AT = 'updated_at';
     protected $fillable = [
         'nama_kursus',
         'deskripsi',

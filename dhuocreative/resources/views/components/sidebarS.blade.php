@@ -9,14 +9,14 @@
         </button>
 
         <div class="profile-name">
-            {{ Auth::user()->name ?? 'Siswa A' }}
+            {{ Auth::user()->nama ?? 'Siswa A' }}
         </div>
 
         <!-- Popup profil -->
         <div class="profile-popup" id="profilePopup" role="menu">
             <div class="popup-row">
                 <span class="popup-label">Nama</span>
-                <span class="popup-value">{{ Auth::user()->name ?? 'Siswa A' }}</span>
+                <span class="popup-value">{{ Auth::user()->nama ?? 'Siswa A' }}</span>
             </div>
             <div class="popup-row">
                 <span class="popup-label">Email</span>
@@ -66,14 +66,14 @@
             </span>
         </a>
 
-        <!-- Aktivitas Belajar -->
-        <a href="{{ route('siswa.aktivitas') }}" class="sidebar-item {{ request()->routeIs('siswa.aktivitas') ? 'active' : '' }}">
-            <span>Aktivitas Belajar</span>
-        </a>
-
         <!-- Sertifikat -->
         <a href="{{ route('siswa.sertifikat') }}" class="sidebar-item {{ request()->routeIs('siswa.sertifikat') ? 'active' : '' }}">
             <span>Sertifikat</span>
+        </a>
+
+        <!-- Pengumuman -->
+        <a href="{{ route('siswa.pengumuman') }}" class="sidebar-item {{ request()->routeIs('siswa.pengumuman') ? 'active' : '' }}">
+            <span>Pengumuman</span>
         </a>
 
     </nav>

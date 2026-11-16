@@ -17,7 +17,8 @@ class Jadwal extends Model
         'tanggal', 
         'jam_mulai',
         'jam_selesai',
-        'status'
+        'status',
+        'pertemuan_ke',
     ];
 
     public function kelas() {
@@ -34,5 +35,9 @@ class Jadwal extends Model
 
     public function absensiTentor() {
         return $this->hasOne(AbsensiTentor::class, 'id_jadwal', 'id_jadwal');
+    }
+
+    public function pengajuanJadwal() {
+        return $this->hasMany(PengajuanJadwal::class, 'id_jadwal_lama', 'id_jadwal');
     }
 }

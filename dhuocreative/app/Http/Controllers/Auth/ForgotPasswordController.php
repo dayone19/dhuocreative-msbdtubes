@@ -128,7 +128,7 @@ class ForgotPasswordController extends Controller
             'confirm_password' => 'required|string',
         ]);
 
-        // Pastikan OTP sudah diverifikasi oleh server
+        // memastikan OTP sudah diverifikasi oleh server
         $email = $request->session()->get('password_reset_verified_email');
         $verifiedAt = $request->session()->get('password_reset_verified_at');
 
@@ -142,7 +142,7 @@ class ForgotPasswordController extends Controller
             ], 422);
         }
 
-        // Pastikan kode OTP masih tersedia dan belum kedaluwarsa
+        // memastikan kode OTP masih tersedia dan belum kedaluwarsa
         $resetCode = DB::table('password_reset_codes')
             ->where('email', $email)
             ->first();
@@ -153,7 +153,6 @@ class ForgotPasswordController extends Controller
             ], 422);
         }
 
-        // SQL: UPDATE users SET pasword = ... WHERE email = ...
         $user = User::where('email', $email)->first();
 
         if (! $user) {
@@ -165,7 +164,7 @@ class ForgotPasswordController extends Controller
         $user->pasword = Hash::make($request->new_password);
         $user->save();
 
-        // Hapus OTP agar tidak dapat digunakan kembali
+        // Hapus OTP supaya gabisa dipakai lagi
         DB::table('password_reset_codes')
             ->where('email', $email)
             ->delete();

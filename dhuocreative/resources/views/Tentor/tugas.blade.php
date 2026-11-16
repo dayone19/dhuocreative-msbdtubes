@@ -4,84 +4,271 @@
 
 @section('content')
 <div class="tmt-page">
+    <div class="ts-header">
+        <h1 class="tmt-title">Daftar Tugas</h1>
+        <div class="tmt-upload-row">
+            <button type="button" class="tmt-btn-aksi" onclick="bukaUpload()">
+                <span class="t-plus">+</span>
+                <span>Upload Tugas</span>
+            </button>
+        </div>
+    </div>
 
-    <h1 class="tmt-title">Daftar Tugas</h1>
-    <div class="tmt-toolbar">
+    @if (session('sukses'))
+        <p class="tmt-flash tmt-flash-sukses" role="status"
+           style="padding:12px 16px;border-radius:12px;margin:0 0 16px;background:#e6f4f1;color:#14524b">
+            {{ session('sukses') }}
+        </p>
+    @endif
+    @if ($errors->any())
+        <div class="tmt-flash tmt-flash-error" role="alert"
+             style="padding:12px 16px;border-radius:12px;margin:0 0 16px;background:#fdeceb;color:#8a1f17">
+            @foreach ($errors->all() as $error)
+                <div>{{ $error }}</div>
+            @endforeach
+        </div>
+    @endif
 
-        <div class="tmt-search">
-            <input type="text" id="searchTugas"
-                   placeholder="Cari tugas...">
-            <span>
-                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="#ae9154" class="bi bi-search" viewBox="0 0 16 16">
-                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-                </svg>
-            </span>
+    <form method="GET" action="{{ route('tentor.tugas') }}" class="tmt-toolbar" id="formFilterTugas">
+
+        <div class="tmt-search-group">
+            <div class="tmt-search">
+                <input type="text" name="q" value="{{ $q }}" id="inputCariTugas"
+                       placeholder="Cari judul, kursus, atau siswa..." autocomplete="off">
+                <span onclick="document.getElementById('formFilterTugas').submit()" style="cursor:pointer"></span>
+            </div>
+
+            @if ($q !== '' || $kursus !== '' || $sort !== 'terbaru')
+                <a href="{{ route('tentor.tugas') }}" class="tmt-btn-aksi">Reset</a>
+            @endif
         </div>
 
-        <select id="filterKelas" class="tmt-select">
-            <option value="">Kelas</option>
-            <option value="Web Master">Web Master</option>
-            <option value="Desain Grafis">Desain Grafis</option>
-            <option value="Microsoft Office">Microsoft Office</option>
-            <option value="Pemrograman Web">Pemrograman Web</option>
-        </select>
-
-        <select id="sortTugas" class="tmt-select">
-            <option value="terbaru">Terbaru</option>
-            <option value="terlama">Terlama</option>
-            <option value="az">Nama A-Z</option>
-        </select>
-
-        <button type="button" class="tmt-upload-btn"
-                onclick="bukaUpload()">
-            <span class="t-plus">+</span>
-            <span>Upload<br>Tugas</span>
+        <button type="submit" class="tmt-btn-aksi">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+            </svg>
+            <span>Cari</span>
         </button>
 
-    </div>
+        <select name="kursus" id="selectFilterKursus" class="tmt-select" onchange="this.form.submit()">
+            <option value="">Semua Kursus</option>
+            @foreach ($kursusFilter as $k)
+                <option value="{{ $k }}" @selected($kursus === $k)>{{ $k }}</option>
+            @endforeach
+        </select>
+
+        <select name="sort" id="selectUrutTugas" class="tmt-select" onchange="this.form.submit()">
+            <option value="terbaru" @selected($sort === 'terbaru')>Terbaru</option>
+            <option value="terlama" @selected($sort === 'terlama')>Terlama</option>
+            <option value="az" @selected($sort === 'az')>Nama A-Z</option>
+        </select>
+
+    </form>
 
     <div class="tmt-table-container">
         <table class="tmt-table">
-            <thead>
-                <tr>
-                    <th>Judul Tugas</th>
-                    <th>Kursus</th>
-                    <th>Siswa</th>
-                    <th>Tanggal<br>Upload</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
+          <thead>
+              <tr>
+                <th>Judul Tugas</th>
+                <th>Kursus</th>
+                <th>Siswa</th>
+                <th>Tanggal<br>Upload</th>
+                <th>Aksi</th>
+              </tr>
+          </thead>
 
-            <tbody id="tugasTable">
+          <tbody id="tbodyTugas">
 
-                <tr data-kelas="Web Master"
-                    data-judul="membuat tabel html"
-                    data-tanggal="2026-09-25"
-                    data-deadline="2026-09-30T23:59"
-                    data-status-pengumpulan="terlambat"
-                    data-jenis="tugas"
-                    data-deskripsi="-">
-                    <td>Membuat tabel html</td>
-                    <td>Web Master</td>
-                    <td>Siswa A</td>
-                    <td>9/25/26</td>
-                    <td class="tmt-action-group">
-                        <button type="button" class="tmt-view-btn" onclick="bukaDetail(this)">Detail</button>
-                        <button type="button" class="tmt-view-btn" onclick="lihatTugas(this)">Lihat</button>
-                    </td>
-                </tr>
+            @forelse ($tugas as $t)
+            <tr data-id="{{ $t['id'] }}"
+                data-id-kelas="{{ $t['id_kelas'] }}"
+                data-kelas="{{ $t['kursus'] }}"
+                data-judul="{{ $t['judul_lower'] }}"
+                data-tanggal="{{ $t['tanggal'] }}"
+                data-deadline="{{ $t['deadline'] }}"
+                data-status-pengumpulan="{{ $t['status'] }}"
+                data-jenis="{{ $t['tipe'] }}"
+                data-deskripsi="{{ $t['deskripsi'] }}"
+                data-id-pengumpulan="{{ $t['id_pengumpulan'] }}"
+                data-nilai="{{ $t['nilai'] }}"
+                data-feedback="{{ $t['feedback'] ?? '' }}"
+                data-file-nama="{{ $t['file_nama'] }}"
+                data-file-url="{{ $t['file_url'] }}">
+                <td>{{ $t['judul'] }}</td>
+                <td>{{ $t['kursus'] }}</td>
+                <td>{{ $t['siswa'] }}</td>
+                <td>{{ $t['tanggal_tampil'] }}</td>
+                <td class="tmt-action-group">
+                    <button type="button" class="tmt-view-btn" onclick="bukaDetail(this)">Detail</button>
+                    <button type="button" class="tmt-view-btn" onclick="lihatTugas(this)">Lihat</button>
+                </td>
+            </tr>
+            @empty
+            <tr>
+                <td colspan="5" class="tmt-empty" style="text-align:center;padding:24px">
+                    {{ ($q || $kursus) ? 'Tugas tidak ditemukan.' : 'Belum ada tugas.' }}
+                </td>
+            </tr>
+            @endforelse
 
-            </tbody>
+          </tbody>
         </table>
 
-        <div class="tmt-empty" id="tugasKosong" hidden>
-            Tugas tidak ditemukan.
-        </div>
+        @if ($tugas->hasPages())
+        <nav class="tmt-pagination" aria-label="Navigasi halaman">
+            @if ($tugas->onFirstPage())
+                <button type="button" disabled aria-label="Sebelumnya">&lt;</button>
+            @else
+                <a href="{{ $tugas->previousPageUrl() }}" style="text-decoration:none">
+                    <button type="button" aria-label="Sebelumnya">&lt;</button>
+                </a>
+            @endif
+
+            @php
+                $current = $tugas->currentPage();
+                $last    = $tugas->lastPage();
+                $pages   = collect([1, $last, $current]);
+                for ($i = $current - 1; $i <= $current + 1; $i++) {
+                    if ($i >= 1 && $i <= $last) $pages->push($i);
+                }
+                if ($current <= 4) {
+                    foreach ([2, 3, 4] as $n) if ($n < $last) $pages->push($n);
+                }
+                if ($current >= $last - 3) {
+                    foreach ([$last - 1, $last - 2, $last - 3] as $n) if ($n > 1) $pages->push($n);
+                }
+                $pages = $pages->unique()->sort()->values();
+                $prev = 0;
+            @endphp
+
+            @foreach ($pages as $n)
+                @if ($prev && $n - $prev > 1)
+                    <span class="tmt-page-ellipsis">…</span>
+                @endif
+                @if ($n == $current)
+                    <button type="button" class="is-active" aria-current="page">{{ $n }}</button>
+                @else
+                    <a href="{{ $tugas->url($n) }}" style="text-decoration:none">
+                        <button type="button">{{ $n }}</button>
+                    </a>
+                @endif
+                @php $prev = $n; @endphp
+            @endforeach
+
+            @if ($tugas->hasMorePages())
+                <a href="{{ $tugas->nextPageUrl() }}" style="text-decoration:none">
+                    <button type="button" aria-label="Berikutnya">&gt;</button>
+                </a>
+            @else
+                <button type="button" disabled aria-label="Berikutnya">&gt;</button>
+            @endif
+        </nav>
+        @endif
     </div>
+
+    <style>
+    .tmt-pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        margin-top: 22px;
+        flex-wrap: wrap;
+        padding: 4px 0;
+    }
+    .tmt-pagination button {
+        min-width: 40px;
+        height: 40px;
+        padding: 0 12px;
+        border: 1.5px solid #e8d9b8;
+        border-radius: 12px;
+        background: #fffaf0;
+        color: #5a4a2a;
+        font: inherit;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background .15s, color .15s, border-color .15s, transform .1s;
+        box-shadow: 0 1px 2px rgba(0,0,0,.04);
+    }
+    .tmt-pagination button:hover:not(:disabled):not(.is-active) {
+        background: #f5e9cf;
+        border-color: #b29458;
+        color: #3d321c;
+    }
+    .tmt-pagination button.is-active {
+        background: #f27640;
+        border-color: #f27640;
+        color: #fff;
+        box-shadow: 0 2px 8px rgba(242,118,64,.35);
+    }
+    .tmt-pagination button:disabled {
+        opacity: .45;
+        cursor: not-allowed;
+    }
+    .tmt-pagination .tmt-page-ellipsis {
+        min-width: 28px;
+        height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #b29458;
+        font-weight: 700;
+        font-size: 15px;
+        user-select: none;
+    }
+    .tmt-toolbar .tmt-search-group {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex: 0 1 auto;
+        min-width: 0;
+    }
+    .tmt-toolbar .tmt-search-group .tmt-search {
+        flex: 0 1 600px;
+        width: auto;
+        min-width: 220px;
+        max-width: 600px;
+    }
+
+    #tbodyTugas tr { display: table-row !important; }
+
+    .tmt-upload-row {
+        display: flex;
+        justify-content: flex-start; 
+    }
+
+    .tmt-page .tmt-btn-aksi {
+        flex: 0 0 auto;
+        width: auto !important;
+        min-width: 0;
+        max-width: max-content;
+        height: 54px;
+        padding: 0 26px;
+        box-sizing: border-box;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: 0;
+        border-radius: 999px;
+        background: #b29458;
+        color: #fff;
+        font: inherit;
+        font-size: 15px;
+        font-weight: 700;
+        white-space: nowrap;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background .15s;
+    }
+    .tmt-page .tmt-btn-aksi:hover { background: #9c7f45; }
+    .tmt-page .tmt-btn-aksi .t-plus { font-size: 20px; line-height: 1; }
+    .tmt-page .tmt-upload-row { display: block; }
+    </style>
 
 </div>
 
-{{-- modal upload tgs --}}
 <div class="tmt-modal-overlay" id="modalUpload" hidden>
     <div class="tmt-upload-modal">
 
@@ -98,19 +285,22 @@
             <h2>Upload<br>Tugas</h2>
         </div>
 
-        <form id="formUpload" class="tmt-upload-form">
+        <form id="formUpload" class="tmt-upload-form" method="POST" action="{{ route('tentor.tugas.simpan') }}">
+            @csrf
             <div class="tmt-upload-left">
                 <div class="tmt-form-group">
                     <label for="judulBaru">Judul Tugas</label>
                     <input type="text"
                            id="judulBaru"
+                           name="judul"
+                           maxlength="150"
                            placeholder="Masukkan judul tugas"
                            required>
                 </div>
 
                 <div class="tmt-form-group">
                     <label for="jenisTgs">Jenis Tugas</label>
-                    <select id="jenisTgs" required>
+                    <select id="jenisTgs" name="tipe" required>
                         <option value="">Pilih jenis tugas</option>
                         <option value="tugas">Tugas</option>
                         <option value="projek">Projek</option>
@@ -119,20 +309,20 @@
 
                 <div class="tmt-form-group">
                     <label for="kelasBaru">Kursus</label>
+                    {{-- hanya untuk memfilter pilihan siswa, tidak ikut terkirim --}}
                     <select id="kelasBaru" required>
                         <option value="">Pilih kursus</option>
-                        <option value="Web Master">Web Master</option>
-                        <option value="Desain Grafis">Desain Grafis</option>
-                        <option value="Microsoft Office">Microsoft Office</option>
-                        <option value="Pemrograman Web">Pemrograman Web</option>
+                        @foreach ($kelasOptions->pluck('kursus')->unique() as $namaKursus)
+                            <option value="{{ $namaKursus }}">{{ $namaKursus }}</option>
+                        @endforeach
                     </select>
                 </div>
 
                 <div class="tmt-form-group">
                     <label for="siswa">Nama Siswa</label>
-                    <select id="siswa" required>
-                        <option value="">Pilih kelas</option>
-                        <option value="Siswa A">Siswa A</option>
+                    {{-- value = id_kelas; opsi diisi JS sesuai kursus yang dipilih --}}
+                    <select id="siswa" name="id_kelas" required>
+                        <option value="">Pilih kursus dulu</option>
                     </select>
                 </div>
             </div>
@@ -140,12 +330,13 @@
             <div class="tmt-upload-right">
                 <div class="tmt-form-group">
                     <label for="deadlineBaru">Deadline Tugas</label>
-                    <input type="datetime-local" id="deadlineBaru" required>
+                    <input type="datetime-local" id="deadlineBaru" name="deadline" required>
                 </div>
 
                 <div class="tmt-form-group">
                     <label for="deskripsiBaru">Deskripsi Tugas</label>
                     <textarea id="deskripsiBaru"
+                              name="deskripsi"
                               placeholder="Tulis deskripsi tugas..."
                               required></textarea>
                 </div>
@@ -165,7 +356,6 @@
     </div>
 </div>
 
-{{-- Modal Detail / Edit Tugas --}}
 <div class="tmt-modal-overlay" id="modalDetail" hidden>
     <div class="tmt-upload-modal tmt-modal-wide" id="detailBox">
 
@@ -178,16 +368,18 @@
             <h2 id="detailJudulModal">Detail<br>Tugas</h2>
         </div>
 
-        <form id="formEditTugas" class="tmt-upload-form">
+        <form id="formEditTugas" class="tmt-upload-form" method="POST" action="#">
+            @csrf
+            @method('PUT')
             <div class="tmt-upload-left">
                 <div class="tmt-form-group">
                     <label for="detailNamaTugas">Nama Tugas</label>
-                    <input type="text" id="detailNamaTugas"  placeholder="Masukkan nama tugas" readonly required>
+                    <input type="text" id="detailNamaTugas" name="judul" maxlength="150" placeholder="Masukkan nama tugas" readonly required>
                 </div>
 
                 <div class="tmt-form-group">
                     <label for="detailJenisTugas">Jenis Tugas</label>
-                    <select id="detailJenisTugas" disabled required>
+                    <select id="detailJenisTugas" name="tipe" disabled required>
                         <option value="tugas">Tugas</option>
                         <option value="projek">Projek</option>
                     </select>
@@ -195,32 +387,24 @@
 
                 <div class="tmt-form-group">
                     <label for="detailKursus">Kursus</label>
-                    <select id="detailKursus" disabled required>
-                        <option value="Web Master">Web Master</option>
-                        <option value="Desain Grafis">Desain Grafis</option>
-                        <option value="Microsoft Office">Microsoft Office</option>
-                        <option value="Pemrograman Web">Pemrograman Web</option>
-                    </select>
+                    <select id="detailKursus" disabled></select>
                 </div>
 
                 <div class="tmt-form-group">
                     <label for="detailNamaSiswa">Nama Siswa</label>
-                    <select id="detailNamaSiswa" disabled required>
-                        <option value="Siswa A">Siswa A</option>
-                        <option value="Siswa B">Siswa B</option>
-                    </select>
+                    <select id="detailNamaSiswa" disabled></select>
                 </div>
             </div>
 
             <div class="tmt-upload-right">
                 <div class="tmt-form-group">
                     <label for="detailDeadline">Deadline Tugas</label>
-                    <input type="datetime-local" id="detailDeadline" readonly required>
+                    <input type="datetime-local" id="detailDeadline" name="deadline" readonly required>
                 </div>
-                
+
                 <div class="tmt-form-group">
                     <label for="detailDeskripsi">Deskripsi</label>
-                    <textarea id="detailDeskripsi" placeholder="Tulis deskripsi tugas..." readonly></textarea>
+                    <textarea id="detailDeskripsi" name="deskripsi" placeholder="Tulis deskripsi tugas..." readonly></textarea>
                 </div>
 
                 <div class="tmt-upload-actions" id="actionDetail">
@@ -238,7 +422,6 @@
 </div>
 
 
-{{-- Modal Lihat Tugas --}}
 <div class="tmt-modal-overlay" id="modalLihat" hidden>
     <div class="tmt-upload-modal tmt-modal-wide">
 
@@ -251,7 +434,8 @@
             <h2>Lihat<br>Tugas</h2>
         </div>
 
-        <form id="formNilai" class="tmt-upload-form">
+        <form id="formNilai" class="tmt-upload-form" method="POST" action="#">
+            @csrf
 
             <div class="tmt-upload-left">
                 <div class="tmt-form-group">
@@ -286,9 +470,21 @@
                 </div>
 
                 <div class="tmt-form-group">
+                    <label>File Tugas Siswa</label>
+                    <div id="containerFileSiswa">
+                        <span style="color: #666; font-style: italic;">Siswa belum mengunggah file.</span>
+                    </div>
+                </div>
+
+                <div class="tmt-form-group">
                     <label for="lihatNilai">Nilai</label>
-                    <input type="number" id="lihatNilai" min="0" max="100" step="1"
-                           placeholder="Masukkan nilai (0-100)" required>
+                    <input type="number" id="lihatNilai" name="nilai" min="0" max="100" step="1"
+                          placeholder="Masukkan nilai (0-100)" required>
+                </div>
+
+                <div class="tmt-form-group">
+                    <label for="lihatFeedback">Feedback (opsional)</label>
+                    <textarea id="lihatFeedback" name="feedback" placeholder="Tulis feedback untuk siswa"></textarea>
                 </div>
 
                 <div class="tmt-upload-actions">
@@ -301,46 +497,18 @@
 </div>
 
 <script>
-const searchTugas = document.getElementById('searchTugas');
-const filterKelas = document.getElementById('filterKelas');
-const sortTugas = document.getElementById('sortTugas');
-const tugasTable = document.getElementById('tugasTable');
-const tugasKosong = document.getElementById('tugasKosong');
 
-function filterTugas() {
-    const keyword = searchTugas.value.toLowerCase().trim();
-    const kelas = filterKelas.value;
-    const rows = [...tugasTable.querySelectorAll('tr')];
+(function () {
+    const nav = performance.getEntriesByType('navigation')[0];
+    if (nav && nav.type === 'reload' && location.search) {
+        location.replace(location.pathname);
+    }
+})();
 
-    rows.forEach(row => {
-        row.hidden = !(
-            row.dataset.judul.includes(keyword) &&
-            (!kelas || row.dataset.kelas === kelas)
-        );
-    });
+const kelasOptions = @json($kelasOptions);
+const updateUrlTemplate = "{{ route('tentor.tugas.update', ['tugas' => '__ID__']) }}";
+const nilaiUrlTemplate = "{{ route('tentor.tugas.nilai', ['pengumpulan' => '__ID__']) }}";
 
-    const visibleRows = rows.filter(row => !row.hidden);
-
-    visibleRows.sort((a, b) => {
-        if (sortTugas.value === 'terbaru') {
-            return b.dataset.tanggal.localeCompare(a.dataset.tanggal);
-        }
-
-        if (sortTugas.value === 'terlama') {
-            return a.dataset.tanggal.localeCompare(b.dataset.tanggal);
-        }
-
-        return a.dataset.judul.localeCompare(b.dataset.judul);
-    });
-
-    visibleRows.forEach(row => tugasTable.appendChild(row));
-
-    tugasKosong.hidden = visibleRows.length > 0;
-}
-
-searchTugas.addEventListener('input', filterTugas);
-filterKelas.addEventListener('change', filterTugas);
-sortTugas.addEventListener('change', filterTugas);
 
 function bukaUpload() {
     document.getElementById('modalUpload').hidden = false;
@@ -350,9 +518,34 @@ function tutupUpload() {
     document.getElementById('modalUpload').hidden = true;
 }
 
+const formFilter = document.getElementById('formFilterTugas');
+const inputCari  = document.getElementById('inputCariTugas');
 
-// ===== MODAL LIHAT TUGAS =====
-let currentNilaiRow = null;
+inputCari.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        formFilter.submit();
+    }
+});
+
+if (inputCari.value) {
+    inputCari.focus();
+    inputCari.setSelectionRange(inputCari.value.length, inputCari.value.length);
+}
+
+document.getElementById('kelasBaru').addEventListener('change', function () {
+    const sel = document.getElementById('siswa');
+    const list = kelasOptions.filter(k => k.kursus === this.value);
+
+    sel.innerHTML = '';
+    sel.add(new Option(list.length ? 'Pilih siswa' : 'Pilih kursus dulu', ''));
+
+    const hitung = {};
+    list.forEach(k => { hitung[k.siswa] = (hitung[k.siswa] || 0) + 1; });
+    list.forEach(k => {
+        sel.add(new Option(hitung[k.siswa] > 1 ? `${k.siswa} (${k.jenis})` : k.siswa, k.id_kelas));
+    });
+});
 
 function lihatTugas(btn) {
     const row = btn.closest('tr');
@@ -363,6 +556,25 @@ function lihatTugas(btn) {
     const jenis = row.dataset.jenis || 'tugas';
     const deskripsi = row.dataset.deskripsi || '-';
 
+    const namaFile = row.dataset.fileNama;
+    const urlFile = row.dataset.fileUrl;
+    const containerFile = document.getElementById('containerFileSiswa');
+    containerFile.replaceChildren();
+
+    if (namaFile && urlFile) {
+        const a = document.createElement('a');
+        a.href = urlFile;
+        a.className = 'tmt-file-pill';
+        a.target = '_blank';
+        a.textContent = namaFile;
+        containerFile.appendChild(a);
+    } else {
+        const span = document.createElement('span');
+        span.style.cssText = 'color: #666; font-style: italic;';
+        span.textContent = 'Siswa belum mengunggah file.';
+        containerFile.appendChild(span);
+    }
+
     document.getElementById('lihatNamaTugas').value = judul;
     document.getElementById('lihatJenisTugas').value = jenis;
     document.getElementById('lihatKursus').value = kursus;
@@ -370,8 +582,24 @@ function lihatTugas(btn) {
     document.getElementById('lihatStatusPengumpulan').value = row.dataset.statusPengumpulan || 'tidak kumpul';
     document.getElementById('lihatDeskripsi').value = deskripsi;
 
-    currentNilaiRow = row;
-    document.getElementById('lihatNilai').value = row.dataset.nilai || '';
+    const form = document.getElementById('formNilai');
+    const nilaiInput = document.getElementById('lihatNilai');
+    const simpanBtn = form.querySelector('[type=submit]');
+    const adaPengumpulan = !!row.dataset.idPengumpulan;
+
+    if (adaPengumpulan) {
+        form.action = nilaiUrlTemplate.replace('__ID__', row.dataset.idPengumpulan);
+    } else {
+        form.action = '#';
+    }
+    nilaiInput.disabled = !adaPengumpulan;
+    simpanBtn.disabled = !adaPengumpulan;
+    nilaiInput.placeholder = adaPengumpulan
+        ? 'Masukkan nilai (0-100)'
+        : 'Belum bisa dinilai (siswa belum mengumpulkan)';
+    nilaiInput.value = row.dataset.nilai || '';
+    const fb = document.getElementById('lihatFeedback');
+    if (fb) { fb.value = row.dataset.feedback || ''; fb.disabled = !adaPengumpulan; }
 
     document.getElementById('modalLihat').hidden = false;
 }
@@ -380,106 +608,24 @@ function tutupLihat() {
     document.getElementById('modalLihat').hidden = true;
 }
 
-// Simpan nilai (simulasi di browser, tanpa backend)
-document.getElementById('formNilai').addEventListener('submit', function(e) {
-    e.preventDefault();
-    if (!currentNilaiRow) return;
-
-    const nilai = parseInt(document.getElementById('lihatNilai').value, 10);
-    if (isNaN(nilai) || nilai < 0 || nilai > 100) return;
-
-    currentNilaiRow.dataset.nilai = nilai;
-    alert('Nilai berhasil disimpan!');
-    tutupLihat();
-});
-
-// Simulasi upload di browser, tanpa backend.
-function buatBarisTugas(data) {
-    const row = document.createElement('tr');
-    row.dataset.kelas = data.kursus;
-    row.dataset.judul = data.judul.toLowerCase();
-    row.dataset.tanggal = data.tanggalISO;
-    row.dataset.deadline = data.deadline || '';
-    row.dataset.statusPengumpulan = 'tidak kumpul';
-    row.dataset.jenis = data.jenis;
-    row.dataset.deskripsi = data.deskripsi || '-';
-
-    [data.judul, data.kursus, data.siswa, data.tanggalTampil].forEach(text => {
-        const td = document.createElement('td');
-        td.textContent = text;
-        row.appendChild(td);
-    });
-
-    const action = document.createElement('td');
-    action.className = 'tmt-action-group';
-
-    [['Detail', 'bukaDetail'], ['Lihat', 'lihatTugas']].forEach(([label, fn]) => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'tmt-view-btn';
-        btn.textContent = label;
-        btn.addEventListener('click', () => window[fn](btn));
-        action.appendChild(btn);
-    });
-
-    row.appendChild(action);
-    return row;
-}
-
-document.getElementById('formUpload').addEventListener('submit', function(e) {
-    e.preventDefault();
-
-    const judul = document.getElementById('judulBaru').value.trim();
-    const kursus = document.getElementById('kelasBaru').value;
-    const deadline = document.getElementById('deadlineBaru').value;
-
-    if (!judul || !kursus || !deadline) return;
-    const tanggal = new Date();
-    const tanggalISO = [
-        tanggal.getFullYear(),
-        String(tanggal.getMonth() + 1).padStart(2, '0'),
-        String(tanggal.getDate()).padStart(2, '0')
-    ].join('-');
-
-    const tanggalTampil =
-        (tanggal.getMonth() + 1) + '/' +
-        tanggal.getDate() + '/' +
-        String(tanggal.getFullYear()).slice(-2);
-
-    tugasTable.prepend(buatBarisTugas({
-        judul,
-        kursus,
-        siswa: document.getElementById('siswa').value,
-        jenis: document.getElementById('jenisTgs').value,
-        deskripsi: document.getElementById('deskripsiBaru').value.trim(),
-        deadline,
-        tanggalISO,
-        tanggalTampil
-    }));
-
-    filterKelas.value = '';
-    sortTugas.value = 'terbaru';
-    searchTugas.value = '';
-
-    filterTugas();
-    tutupUpload();
-    this.reset();
-
-    alert('Tugas ditambahkan untuk pratinjau.');
-});
-
 let currentEditingRow = null;
 
 // --- FUNGSI MODAL DETAIL & EDIT ---
 const detailBox = document.getElementById('detailBox');
 const detailTextFields = ['detailNamaTugas', 'detailDeskripsi', 'detailDeadline'];
-const detailSelectFields = ['detailJenisTugas', 'detailKursus', 'detailNamaSiswa'];
+const detailSelectFields = ['detailJenisTugas']; // kursus & siswa tidak bisa diubah
+
+function isiSelectTetap(id, value, label) {
+    const sel = document.getElementById(id);
+    sel.innerHTML = '';
+    sel.add(new Option(label, value, true, true));
+}
 
 function isiDetail(row) {
     document.getElementById('detailNamaTugas').value = row.children[0].textContent.trim();
     document.getElementById('detailJenisTugas').value = row.dataset.jenis || 'tugas';
-    document.getElementById('detailKursus').value = row.children[1].textContent.trim();
-    document.getElementById('detailNamaSiswa').value = row.children[2].textContent.trim();
+    isiSelectTetap('detailKursus', row.dataset.kelas, row.children[1].textContent.trim());
+    isiSelectTetap('detailNamaSiswa', row.dataset.idKelas, row.children[2].textContent.trim());
     document.getElementById('detailDeadline').value = row.dataset.deadline || '';
     document.getElementById('detailDeskripsi').value = row.dataset.deskripsi || '';
 }
@@ -487,6 +633,8 @@ function isiDetail(row) {
 function bukaDetail(btn) {
     currentEditingRow = btn.closest('tr');
     isiDetail(currentEditingRow);
+    document.getElementById('formEditTugas').action =
+        updateUrlTemplate.replace('__ID__', currentEditingRow.dataset.id);
     batalEditMode();
     document.getElementById('modalDetail').hidden = false;
 }
@@ -496,7 +644,6 @@ function tutupDetail() {
     batalEditMode();
 }
 
-// tombol panah kembali: saat edit -> keluar dari edit, saat detail -> tutup
 function kembaliDetail() {
     if (detailBox.classList.contains('is-editing')) {
         batalEditMode();
@@ -518,7 +665,6 @@ function aktifkanEditMode() {
 }
 
 function batalEditMode() {
-    // kembalikan isi ke data terakhir yang tersimpan
     if (currentEditingRow) isiDetail(currentEditingRow);
 
     detailTextFields.forEach(id => document.getElementById(id).setAttribute('readonly', true));
@@ -530,38 +676,6 @@ function batalEditMode() {
     document.getElementById('actionEdit').hidden = true;
 }
 
-
-// Handler Submit Form Edit
-document.getElementById('formEditTugas').addEventListener('submit', function(e) {
-    e.preventDefault();
-
-    if (!currentEditingRow) return;
-
-    const judulBaru = document.getElementById('detailNamaTugas').value.trim();
-    const jenisBaru = document.getElementById('detailJenisTugas').value;
-    const kursusBaru = document.getElementById('detailKursus').value;
-    const siswaBaru = document.getElementById('detailNamaSiswa').value;
-    const deskripsiBaru = document.getElementById('detailDeskripsi').value;
-    const deadlineBaru = document.getElementById('detailDeadline').value;
-
-    // Update kolom di tabel
-    currentEditingRow.children[0].textContent = judulBaru;
-    currentEditingRow.children[1].textContent = kursusBaru;
-    currentEditingRow.children[2].textContent = siswaBaru;
-
-    // Update dataset row
-    currentEditingRow.dataset.judul = judulBaru.toLowerCase();
-    currentEditingRow.dataset.kelas = kursusBaru;
-    currentEditingRow.dataset.jenis = jenisBaru;
-    currentEditingRow.dataset.deskripsi = deskripsiBaru;
-    currentEditingRow.dataset.deadline = deadlineBaru;
-
-
-    alert('Data tugas berhasil diperbarui!');
-    batalEditMode(); // muat ulang tampilan dari data yang baru disimpan
-    tutupDetail();
-    filterTugas(); // Refresh filter tabel
-});
 
 </script>
 @endsection
