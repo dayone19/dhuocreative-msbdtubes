@@ -13,12 +13,13 @@ class DashboardController extends Controller
         $namaSiswa = auth()->user()->nama;
 
         // Jadwal hari ini
+        $today = now('Asia/Jakarta')->toDateString();
         $jadwalHariIni = DB::table('jadwal')
             ->join('kelas', 'jadwal.id_kelas', '=', 'kelas.id_kelas')
             ->join('kursus', 'kelas.id_kursus', '=', 'kursus.id_kursus')
             ->join('users as tentor', 'jadwal.id_tentor', '=', 'tentor.id_user')
             ->where('kelas.id_siswa', $idSiswa)
-            ->whereDate('jadwal.tanggal', today())
+            ->whereDate('jadwal.tanggal', $today)
             ->where('jadwal.status', '!=', 'dibatalkan')
             ->orderBy('jadwal.jam_mulai')
             ->select(
@@ -50,9 +51,10 @@ class DashboardController extends Controller
                 return $j;
             });
 
+        $today = now('Asia/Jakarta')->toDateString();
         $pengumumanTerbaru = DB::table('pengumuman')
             ->join('users', 'pengumuman.id_user', '=', 'users.id_user')
-            ->whereDate('pengumuman.tanggal', today())
+            ->whereDate('pengumuman.tanggal', $today)
             ->orderByDesc('pengumuman.tanggal')
             ->orderByDesc('pengumuman.id_pengumuman')
             ->select(

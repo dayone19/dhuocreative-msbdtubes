@@ -4,8 +4,15 @@
 
 @section('content')
 <div class="tmt-page">
-
-    <h1 class="tmt-title">Daftar Tugas</h1>
+    <div class="ts-header">
+        <h1 class="tmt-title">Daftar Tugas</h1>
+        <div class="tmt-upload-row">
+            <button type="button" class="tmt-btn-aksi" onclick="bukaUpload()">
+                <span class="t-plus">+</span>
+                <span>Upload Tugas</span>
+            </button>
+        </div>
+    </div>
 
     @if (session('sukses'))
         <p class="tmt-flash tmt-flash-sukses" role="status"
@@ -28,17 +35,20 @@
             <div class="tmt-search">
                 <input type="text" name="q" value="{{ $q }}" id="inputCariTugas"
                        placeholder="Cari judul, kursus, atau siswa..." autocomplete="off">
-                <span onclick="document.getElementById('formFilterTugas').submit()" style="cursor:pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="#ae9154" class="bi bi-search" viewBox="0 0 16 16">
-                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-                    </svg>
-                </span>
+                <span onclick="document.getElementById('formFilterTugas').submit()" style="cursor:pointer"></span>
             </div>
 
             @if ($q !== '' || $kursus !== '' || $sort !== 'terbaru')
                 <a href="{{ route('tentor.tugas') }}" class="tmt-btn-aksi">Reset</a>
             @endif
         </div>
+
+        <button type="submit" class="tmt-btn-aksi">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+            </svg>
+            <span>Cari</span>
+        </button>
 
         <select name="kursus" id="selectFilterKursus" class="tmt-select" onchange="this.form.submit()">
             <option value="">Semua Kursus</option>
@@ -53,21 +63,7 @@
             <option value="az" @selected($sort === 'az')>Nama A-Z</option>
         </select>
 
-        <button type="submit" class="tmt-btn-aksi">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
-                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-            </svg>
-            <span>Cari</span>
-        </button>
-
     </form>
-
-    <div class="tmt-upload-row">
-        <button type="button" class="tmt-btn-aksi" onclick="bukaUpload()">
-            <span class="t-plus">+</span>
-            <span>Upload Tugas</span>
-        </button>
-    </div>
 
     <div class="tmt-table-container">
         <table class="tmt-table">
@@ -240,7 +236,6 @@
     .tmt-upload-row {
         display: flex;
         justify-content: flex-start; 
-        margin: 0 0 16px;
     }
 
     .tmt-page .tmt-btn-aksi {
@@ -249,7 +244,6 @@
         min-width: 0;
         max-width: max-content;
         height: 54px;
-        margin: 0;
         padding: 0 26px;
         box-sizing: border-box;
         display: inline-flex;
@@ -266,12 +260,11 @@
         white-space: nowrap;
         text-decoration: none;
         cursor: pointer;
-        box-shadow: 0 2px 6px rgba(0,0,0,.12);
         transition: background .15s;
     }
     .tmt-page .tmt-btn-aksi:hover { background: #9c7f45; }
     .tmt-page .tmt-btn-aksi .t-plus { font-size: 20px; line-height: 1; }
-    .tmt-page .tmt-upload-row { display: block; margin: 0 0 16px; }
+    .tmt-page .tmt-upload-row { display: block; }
     </style>
 
 </div>

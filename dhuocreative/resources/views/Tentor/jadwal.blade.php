@@ -12,7 +12,8 @@
     <h2 class="tj-section-title">Daftar Jadwal</h2>
 
     <form method="GET" action="{{ route('tentor.jadwal') }}" class="tj-toolbar" id="formFilterJadwal">
-        <input type="text" name="q" value="{{ $q }}" class="tj-input" placeholder="Cari kursus, kelas, atau siswa" aria-label="Cari jadwal">
+        <input type="text" name="q" value="{{ $q }}" class="tj-input" placeholder="Cari kursus, kelas, atau siswa" aria-label="Cari jadwal" style="width: 400px;">
+        <button type="submit" class="tj-btn-detail" style="margin-left:4px">Cari</button>
         <input type="date" name="tanggal" value="{{ $tanggal }}" class="tj-input" aria-label="Filter tanggal">
         <select name="status" class="tj-input tj-select" aria-label="Filter status" onchange="this.form.submit()">
             <option value="" @selected($status === '')>Semua status</option>
@@ -20,7 +21,6 @@
             <option value="selesai" @selected($status === 'selesai')>Selesai</option>
             <option value="dibatalkan" @selected($status === 'dibatalkan')>Dibatalkan</option>
         </select>
-        <button type="submit" class="tj-btn-detail" style="margin-left:4px">Cari</button>
     </form>
  </div>
 
@@ -282,19 +282,56 @@ const safe = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&l
 const formatTanggal = s => new Date(s+'T12:00:00').toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
 const badge = s => `<span class="tj-pill tj-${safe(s)}">${safe(s.charAt(0).toUpperCase()+s.slice(1))}</span>`;
 
-function renderMingguan(){
-    const names=['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
-    const today=new Date();
-    today.setHours(12,0,0,0);
-    const monday=new Date(today);
-    monday.setDate(today.getDate()-((today.getDay()+6)%7));
+function renderMingguan() {
+    const names = [
+        'Senin',
+        'Selasa',
+        'Rabu',
+        'Kamis',
+        'Jumat',
+        'Sabtu'
+    ];
 
-    el('jadwalMingguan').innerHTML=names.map((name,i)=>{
-        const d=new Date(monday);
-        d.setDate(monday.getDate()+i);
-        const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-        const items=jadwalKalender.filter(j=>j.tanggal===key&&j.status==='terjadwal');
-        return `<div class="jadwal-hari"><h3>${name} · ${d.getDate()}/${d.getMonth()+1}</h3>${items.length?items.map(j=>`<div class="jadwal-item"><p>${safe(j.kursus)} · ${safe(j.kelas)}</p><p>${safe(j.mulai)}–${safe(j.selesai)}</p></div>`).join(''):'<p>—</p>'}</div>`;
+    const today = new Date();
+    today.setHours(12, 0, 0, 0);
+
+    const monday = new Date(today);
+    monday.setDate(
+        today.getDate() - ((today.getDay() + 6) % 7)
+    );
+
+    const formatKey = date => {
+        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    };
+
+    el('jadwalMingguan').innerHTML = names.map((name, i) => {
+        const d = new Date(monday);
+        d.setDate(monday.getDate() + i);
+
+        const key = formatKey(d);
+
+        const items = jadwalKalender
+            .filter(j => j.tanggal === key && j.status === 'terjadwal')
+            .sort((a, b) => a.mulai.localeCompare(b.mulai));
+
+        return `
+            <div class="jadwal-hari">
+                <h3>${name} · ${d.getDate()}/${d.getMonth() + 1}</h3>
+
+                <div class="jadwal-list-scroll">
+                    ${
+                        items.length
+                        ? items.map(j => `
+                            <div class="jadwal-item">
+                                <p>${safe(j.kursus)} · ${safe(j.kelas)}</p>
+                                <p>${safe(j.mulai)}–${safe(j.selesai)}</p>
+                            </div>
+                        `).join('')
+                        : '<p class="jadwal-kosong">—</p>'
+                    }
+                </div>
+            </div>
+        `;
     }).join('');
 }
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Tentor;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class JadwalController extends Controller
 {
@@ -53,27 +54,32 @@ class JadwalController extends Controller
             ->withQueryString();
 
         // Data penuh (atau rentang minggu ini) khusus kalender mingguan — tanpa pagination
+        $awalMinggu = Carbon::now('Asia/Jakarta')
+            ->startOfWeek(Carbon::MONDAY);
+
+        $akhirMinggu = $awalMinggu->copy()->addDays(5);
+
         $jadwalKalender = DB::table('jadwal')
-            ->join('kelas', 'jadwal.id_kelas', '=', 'kelas.id_kelas')
-            ->join('kursus', 'kelas.id_kursus', '=', 'kursus.id_kursus')
-            ->where('jadwal.id_tentor', $idTentor)
-            ->where('jadwal.status', 'terjadwal')
-            ->whereBetween('jadwal.tanggal', [
-                now()->startOfWeek()->toDateString(),
-                now()->endOfWeek()->toDateString(),
-            ])
-            ->orderBy('jadwal.tanggal')
-            ->orderBy('jadwal.jam_mulai')
-            ->select(
-                'jadwal.id_jadwal',
-                'kursus.nama_kursus as kursus',
-                DB::raw('kelas.kelas::text as kelas'),
-                DB::raw("to_char(jadwal.tanggal, 'YYYY-MM-DD') as tanggal"),
-                DB::raw("to_char(jadwal.jam_mulai, 'HH24:MI') as mulai"),
-                DB::raw("to_char(jadwal.jam_selesai, 'HH24:MI') as selesai"),
-                DB::raw('jadwal.status::text as status')
-            )
-            ->get();
+    ->join('kelas', 'jadwal.id_kelas', '=', 'kelas.id_kelas')
+    ->join('kursus', 'kelas.id_kursus', '=', 'kursus.id_kursus')
+    ->where('jadwal.id_tentor', $idTentor)
+    ->where('jadwal.status', 'terjadwal')
+    ->whereBetween('jadwal.tanggal', [
+        $awalMinggu->toDateString(),
+        $akhirMinggu->toDateString(),
+    ])
+    ->orderBy('jadwal.tanggal')
+    ->orderBy('jadwal.jam_mulai')
+    ->select(
+        'jadwal.id_jadwal',
+        'kursus.nama_kursus as kursus',
+        DB::raw('kelas.kelas::text as kelas'),
+        DB::raw("to_char(jadwal.tanggal, 'YYYY-MM-DD') as tanggal"),
+        DB::raw("to_char(jadwal.jam_mulai, 'HH24:MI') as mulai"),
+        DB::raw("to_char(jadwal.jam_selesai, 'HH24:MI') as selesai"),
+        DB::raw('jadwal.status::text as status')
+    )
+    ->get();
 
         // riwayat pengajuan
         $pengajuan = DB::table('pengajuan_jadwal as p')

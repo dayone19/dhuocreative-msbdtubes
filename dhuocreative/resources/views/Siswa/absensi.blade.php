@@ -78,7 +78,7 @@
     }
     .class {
         display: grid;
-        grid-template-columns: minmax(0, 1fr) auto auto;
+        justify-content: space-between;
         align-items: center;
         gap: 24px;
         margin-top: 16px;
