@@ -2,7 +2,7 @@
 
 @section('content')
 
-<div class="dashboard admin-dashboard">
+
 
     {{-- RINGKASAN DAN LAPORAN --}}
     <section class="summary admin-summary">
@@ -147,10 +147,11 @@
                                 </div>
                             </div>
                         </div>
-                            <div class="admin-chart-controls">
-                                <button type="button" id="kursusChartPrev" disabled>&lsaquo;</button>
-                                <button type="button" id="kursusChartNext">&rsaquo;</button>
-                            </div>
+                        <div></div>
+                        <div class="admin-chart-controls">
+                            <button type="button" id="kursusChartPrev" disabled>&lsaquo;</button>
+                            <button type="button" id="kursusChartNext">&rsaquo;</button>
+                        </div>
                     </div>
                 </div>
             </article>
@@ -202,7 +203,6 @@
         </div>
     </section>
 
-</div>
 
 @php
     $dataAbsensi = $laporanAbsensi->values()->map(function ($item, $index) {

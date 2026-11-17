@@ -1,4 +1,3 @@
-```blade
 @extends('layouts.admin')
 
 @section('content')
@@ -7,7 +6,7 @@
     {{-- HEADER --}}
     <div class="akun-header">
         <h1 class="akun-title">Manajemen Akun</h1>
-        <a href="{{ route('admin.buatAkun') }}" class="t-btn t-btn-orange akun-btn-buat">
+        <a href="{{ route('admin.buatAkun.store') }}" class="t-btn t-btn-orange akun-btn-buat">
             <span class="t-plus">+</span> Buat Akun
         </a>
     </div>
@@ -39,7 +38,7 @@
         </div>
 
         <select class="t-filter akun-select" name="role" id="filterRole">
-            <option value="">Semua Role</option>
+            <option value=""><b>Semua Role</b></option>
             <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
             <option value="operator" {{ request('role') == 'operator' ? 'selected' : '' }}>Operator</option>
             <option value="tentor" {{ request('role') == 'tentor' ? 'selected' : '' }}>Tentor</option>
@@ -162,9 +161,9 @@
         <div class="o-modal-card">
 
             <div class="o-modal-header">
-                <button type="button" class="o-modal-close" data-close aria-label="Kembali">
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M15 5L7 12l8 7z"/>
+                <button type="button" class="ak-modal-close" data-close aria-label="Kembali">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
+                    <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
                     </svg>
                 </button>
                 <h2>Detail Akun</h2>
@@ -177,7 +176,7 @@
                 <div><span>No. Telepon</span><strong id="detailTelepon">-</strong></div>
                 <div><span>Tahun Masuk</span><strong id="detailTahunMasuk">-</strong></div>
 
-                <div class="o-detail-action">
+                
 
                     {{-- EDIT AKUN --}}
                     <button type="button" class="o-btn-edit" id="btnEditAkun">
@@ -196,7 +195,7 @@
                         </button>
                     </form>
 
-                </div>
+                
             </div>
 
         </div>
@@ -207,9 +206,9 @@
         <div class="o-modal-card">
 
             <div class="o-modal-header">
-                <button type="button" class="o-modal-close" data-close-edit aria-label="Kembali">
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M15 5L7 12l8 7z"/>
+                <button type="button" class="ak-modal-close" data-close-edit aria-label="Kembali">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
+                    <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
                     </svg>
                 </button>
                 <h2>Edit Akun</h2>
@@ -440,4 +439,3 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 @endsection
-```
