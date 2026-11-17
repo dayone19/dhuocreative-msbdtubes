@@ -68,11 +68,11 @@
 </div>
 
 <div class="o-modal" id="modalDetailJadwal" hidden>
-    <div class="o-modal-box">
+    <div class="ak-modal-box">
 
-        <div class="o-modal-header">
+        <div class="ak-modal-header">
             <button type="button"
-                class="o-modal-close"
+                class="ak-modal-close"
                 data-close-detail
                 aria-label="Tutup">
                 <svg xmlns="http://www.w3.org/2000/svg"width="35"height="35"fill="currentColor"viewBox="0 0 16 16">
@@ -83,7 +83,7 @@
             <h2>Detail Jadwal</h2>
         </div>
         
-        <div class="o-detail-list">
+        <div class="ak-detail-list">
             <div><span>Nama Siswa</span><strong id="detailSiswa">-</strong></div>
             <div><span>Kursus - Kelas</span><strong id="detailKursus">-</strong></div>
             <div><span>Nama Tentor</span><strong id="detailTentor">-</strong></div>

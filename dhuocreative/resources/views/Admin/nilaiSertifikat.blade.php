@@ -123,7 +123,7 @@
             <h3>Preview Sertifikat</h3>
 
             <div id="tsCertificatePreview" class="ts-certificate-preview">
-                <p>Preview sertifikat akan ditampilkan di sini.</p>
+               <p>Preview sertifikat akan ditampilkan di sini.</p>
             </div>
         </div>
 
@@ -251,6 +251,7 @@ document.addEventListener('DOMContentLoaded', function () {
         downloadLink.removeAttribute('href');
         downloadLink.removeAttribute('download');
 
+        const fileExtension = data.fileName ? data.fileName.split('.').pop().toLowerCase() : '';
         if (data.fileUrl && data.fileType === 'application/pdf') {
             const pdf = document.createElement('iframe');
 

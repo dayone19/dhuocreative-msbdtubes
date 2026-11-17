@@ -52,7 +52,7 @@
     </div>
 
     <!-- TABEL TUGAS -->
-    <div class="at-table-container">
+    <div class="at-table-wrap">
         <table class="at-table" id="tabelTugas">
             <thead>
                 <tr>

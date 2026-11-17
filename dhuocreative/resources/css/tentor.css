@@ -692,7 +692,7 @@ a.tj-pg-btn{line-height:1}
     scrollbar-width: none;
 }
 
-.kelas-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 39px 70px; }
+.kelas-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 39px 70px;  margin-top:25px;}
 .kelas-card {
     min-height: 180px;
     display: flex;
@@ -1640,7 +1640,7 @@ a.tj-pg-btn{line-height:1}
     overflow: visible;
     color: #5f7f7b;
     font-size: 13px;
-    line-height: 1.5;
+    line-height: 1;
     text-align: center;
     white-space: normal;
     overflow-wrap: anywhere;
@@ -1652,8 +1652,8 @@ a.tj-pg-btn{line-height:1}
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
-    line-height: 1.5;
+    white-space: normal;
+    line-height: 1;
     text-align: center;
 }
 
