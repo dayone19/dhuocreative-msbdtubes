@@ -9,7 +9,7 @@ class Kelas extends Model
     protected $table = 'kelas';
     protected $primaryKey = 'id_kelas';
     public $incrementing = false;
-    public $timestamps = false;
+    public $timestamps = true;
     const CREATED_AT = 'created_at';
     const UPDATED_AT = 'updated_at';
     
@@ -18,7 +18,9 @@ class Kelas extends Model
         'id_kursus',
         'id_siswa',
         'kelas',
-        'status'
+        'status',
+        'created_at',
+        'updated_at'
     ];
 
     // Relasi ke Kursus

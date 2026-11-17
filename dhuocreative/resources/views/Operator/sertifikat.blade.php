@@ -1,3 +1,4 @@
+{{-- Sertifikat Siswa Operator - Dhuo Creative --}}
 @extends('layouts.Operator')
 @section('title', 'Sertifikat Siswa')
 @section('content')
@@ -149,44 +150,7 @@ function renderPaginasi(navId, total, halaman, pindah) {
     const detailModal = byId('tsDetailModal');
     const overlays = [detailModal];
 
-    const sampleCertificates = [
-        {
-            studentId: '1',
-            student: 'Andi Pratama',
-            exam: 'Ujian Web Master',
-            examDate: '12/08/2026',
-            dateISO: '2026-08-12',
-            uploadDate: '13/08/2026 10:30',
-            year: '2026',
-            fileName: '',
-            fileUrl: null,
-            fileType: null
-        },
-        {
-            studentId: '2',
-            student: 'Siti Aulia',
-            exam: 'Ujian UI/UX Design',
-            examDate: '20/07/2026',
-            dateISO: '2026-07-20',
-            uploadDate: '21/07/2026 14:15',
-            year: '2026',
-            fileName: '',
-            fileUrl: null,
-            fileType: null
-        },
-        {
-            studentId: '3',
-            student: 'Budi Santoso',
-            exam: 'Ujian Database',
-            examDate: '15/12/2025',
-            dateISO: '2025-12-15',
-            uploadDate: '16/12/2025 09:00',
-            year: '2025',
-            fileName: '',
-            fileUrl: null,
-            fileType: null
-        }
-    ];
+    const sampleCertificates = @json($sertifikat ?? []);
 
     function addYearOption(year) {
         const exists = [...yearFilter.options].some(option => option.value === year);
@@ -252,7 +216,7 @@ function renderPaginasi(navId, total, halaman, pindah) {
             }
 
             if (data.fileUrl) {
-                downloadLink.href = data.fileUrl;
+                downloadLink.href = data.fileUrl + '?download=1';
                 downloadLink.download = data.fileName || 'sertifikat';
                 downloadLink.hidden = false;
             }

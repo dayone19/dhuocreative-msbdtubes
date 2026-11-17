@@ -13,9 +13,11 @@ class User extends Authenticatable
 
     protected $table = 'users';
     protected $primaryKey = 'id_user';
+    public $incrementing = false;
     const CREATED_AT = 'created_at';
     const UPDATED_AT = 'update_at';
     protected $fillable = [
+        'id_user',
         'nama',
         'email',
         'no_telp',
@@ -37,31 +39,31 @@ class User extends Authenticatable
     }
 
     public function siswaKursus() {
-        return $this->hasMany(SiswaKursus::class, 'id_user', 'id_siswa');
+        return $this->hasMany(SiswaKursus::class, 'id_siswa', 'id_user');
     }
 
     public function tentorKursus() {
-        return $this->hasMany(TentorKursus::class, 'id_user', 'id_tentor');
+        return $this->hasMany(TentorKursus::class, 'id_tentor', 'id_user');
     }
 
     public function siswaKelas() {
-        return $this->hasMany(SiswaKelas::class, 'id_user', 'id_siswa');
+        return $this->hasMany(Kelas::class, 'id_siswa', 'id_user');
     }
 
     public function pengumpulanTugas() {
-        return $this->hasMany(PengumpulanTugas::class, 'id_user', 'id_siswa');
+        return $this->hasMany(PengumpulanTugas::class, 'id_siswa', 'id_user');
     }
 
     public function jadwal() {
-        return $this->hasMany(Jadwal::class, 'id_user', 'id_tentor');
+        return $this->hasMany(Jadwal::class, 'id_tentor', 'id_user');
     }
 
     public function absensiSiswa() {
-        return $this->hasMany(AbsensiSiswa::class, 'id_user', 'id_siswa');
+        return $this->hasMany(AbsensiSiswa::class, 'id_siswa', 'id_user');
     }
 
     public function tugas() {
-        return $this->HasMany(Tugas::class, 'id_user', 'id_tentor');
+        return $this->hasMany(Tugas::class, 'id_tentor', 'id_user');
     }
 
     public function nilai() {

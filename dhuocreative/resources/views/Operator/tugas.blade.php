@@ -6,13 +6,30 @@
 
 <div class="o-page">
     <div class="o-page-header">
-        <div class="o-modal-header" style="margin-bottom: 0;">
-            <a href="{{ route('operator.siswa') }}" class="o-modal-close" aria-label="Kembali">
-                <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
-                    <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
-                </svg>
-            </a>
-            <h1 class="o-page-title" id="judulHalamanSiswa">Daftar Tugas Siswa A</h1>
+        <div class="o-modal-header" style="margin-bottom: 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <a href="{{ route('operator.siswa') }}" class="o-modal-close" aria-label="Kembali" title="Kembali ke Daftar Siswa">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
+                        <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+                    </svg>
+                </a>
+                <h1 class="o-page-title" id="judulHalamanSiswa" style="margin: 0;">
+                    Daftar Tugas: {{ $siswa ? $siswa->nama : 'Siswa' }}
+                </h1>
+            </div>
+            
+            @if(isset($siswaList) && $siswaList->isNotEmpty())
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <label for="selectSiswa" style="font-size: 14px; font-weight: 600; color: #1e293b;">Pilih Siswa:</label>
+                <select id="selectSiswa" class="tt-select" onchange="window.location.href='{{ route('operator.tugas') }}?id_siswa=' + this.value" style="width: auto; min-width: 220px; font-weight: 600;">
+                    @foreach($siswaList as $s)
+                        <option value="{{ $s->id_user }}" {{ $siswa && $siswa->id_user == $s->id_user ? 'selected' : '' }}>
+                            {{ $s->nama }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            @endif
         </div>
     </div>
 
@@ -24,13 +41,15 @@
         <div class="o-schedule-filters" style="display: flex; gap: 10px; flex: 2; justify-content: flex-end;">
             <select class="tt-select" id="filterTentor" style="width: auto; min-width: 160px;" aria-label="Filter tentor">
                 <option value="">Semua Tentor</option>
-                <option value="Tentor C">Tentor C</option>
-                <option value="Tentor D">Tentor D</option>
+                @foreach($tentorList as $tnt)
+                    <option value="{{ $tnt->nama }}">{{ $tnt->nama }}</option>
+                @endforeach
             </select>
             <select class="tt-select" id="filterKursus" style="width: auto; min-width: 160px;" aria-label="Filter kursus">
                 <option value="">Semua Kursus</option>
-                <option value="Web Master">Web Master</option>
-                <option value="MS Office">MS Office</option>
+                @foreach($kursusList as $krs)
+                    <option value="{{ $krs->nama_kursus }}">{{ $krs->nama_kursus }}</option>
+                @endforeach
             </select>
         </div>
     </div>
@@ -50,44 +69,61 @@
                 </tr>
             </thead>
             <tbody id="bodyTugas">
-                <tr data-kursus="Web Master" 
-                    data-tentor="Tentor C" 
-                    data-status="sudah"
-                    data-jenis="Tugas"
-                    data-deskripsi="Membuat struktur tabel HTML lengkap dengan CSS styling sederhana."
-                    data-file="Tugas1_SiswaA.html"
-                    data-nilai="85"
-                    data-feedback="Hasil baik, tingkatkan lagi!"
-                    data-status-pengumpulan="Terkumpul">
-                    <td>Membuat Tabel HTML</td>
-                    <td>Web Master</td>
-                    <td>Tentor C</td>
-                    <td>30 Sep 2026 · 23:59</td>
-                    <td><span class="o-status kmpl">Terkumpul</span></td>
-                    <td><span class="o-nilai-badge">85</span></td>
-                    <td>
-                        <button type="button" class="tt-view-btn" onclick="lihatDetailTugas(this)">Detail</button>
-                    </td>
-                </tr>
-                <tr data-kursus="Web Master" 
-                    data-tentor="Tentor D" 
-                    data-status="belum"
-                    data-jenis="Projek"
-                    data-deskripsi="Membuat halaman portofolio pribadi menggunakan HTML & CSS."
-                    data-file="-"
-                    data-nilai="-"
-                    data-feedback="-"
-                    data-status-pengumpulan="Belum Mengumpulkan">
-                    <td>Projek Portofolio</td>
-                    <td>Web Master</td>
-                    <td>Tentor D</td>
-                    <td>10 Okt 2026 · 23:59</td>
-                    <td><span class="o-status tdk">Tidak Kumpul</span></td>
-                    <td><span class="o-nilai-empty">-</span></td>
-                    <td>
-                        <button type="button" class="tt-view-btn" onclick="lihatDetailTugas(this)">Detail</button>
-                    </td>
-                </tr>
+                @forelse($tugasList as $t)
+                    @php
+                        $pengumpulan = $t->pengumpulanTugas->first();
+                        $statusRaw = $pengumpulan ? strtolower($pengumpulan->status) : 'belum';
+                        $statusPengumpulan = $pengumpulan ? ($statusRaw === 'terlambat' ? 'Terlambat' : 'Terkumpul') : 'Belum Mengumpulkan';
+                        $fileJawaban = $pengumpulan && $pengumpulan->file_jawaban ? $pengumpulan->file_jawaban : '-';
+                        $fileNameOnly = $fileJawaban !== '-' ? basename($fileJawaban) : '-';
+                        $fileUrl = $fileJawaban !== '-' ? route('operator.tugas.download', ['file' => $fileJawaban]) : '#';
+                        $nilaiObj = $pengumpulan ? $pengumpulan->nilai : null;
+                        $nilaiAngka = $nilaiObj && $nilaiObj->nilai !== null ? rtrim(rtrim(number_format($nilaiObj->nilai, 2, '.', ''), '0'), '.') : '-';
+                        $feedbackText = $nilaiObj && $nilaiObj->feedback ? $nilaiObj->feedback : '-';
+                    @endphp
+                    <tr data-kursus="{{ $t->kelas->kursus->nama_kursus ?? '-' }}" 
+                        data-tentor="{{ $t->tentor->nama ?? '-' }}" 
+                        data-status="{{ $pengumpulan ? 'sudah' : 'belum' }}"
+                        data-jenis="{{ ucfirst($t->tipe ?? 'Tugas') }}"
+                        data-deskripsi="{{ $t->deskripsi ?? '-' }}"
+                        data-file="{{ $fileNameOnly }}"
+                        data-file-url="{{ $fileUrl }}"
+                        data-nilai="{{ $nilaiAngka }}"
+                        data-feedback="{{ $feedbackText }}"
+                        data-status-pengumpulan="{{ $statusPengumpulan }}">
+                        <td><strong>{{ $t->judul }}</strong></td>
+                        <td>{{ $t->kelas->kursus->nama_kursus ?? '-' }}</td>
+                        <td>{{ $t->tentor->nama ?? '-' }}</td>
+                        <td>{{ \Carbon\Carbon::parse($t->deadline)->format('d M Y · H:i') }}</td>
+                        <td>
+                            @if($pengumpulan)
+                                @if($statusRaw === 'terlambat')
+                                    <span class="o-status kmpl" style="background:#f59e0b; color:#fff;">Terlambat</span>
+                                @else
+                                    <span class="o-status kmpl">Terkumpul</span>
+                                @endif
+                            @else
+                                <span class="o-status tdk">Belum Kumpul</span>
+                            @endif
+                        </td>
+                        <td>
+                            @if($nilaiAngka !== '-')
+                                <span class="o-nilai-badge">{{ $nilaiAngka }}</span>
+                            @else
+                                <span class="o-nilai-empty">-</span>
+                            @endif
+                        </td>
+                        <td>
+                            <button type="button" class="tt-view-btn" onclick="lihatDetailTugas(this)">Detail</button>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 24px; color: #888;">
+                            Belum ada tugas yang terdaftar untuk siswa ini.
+                        </td>
+                    </tr>
+                @endforelse
             </tbody>
         </table>
     </div>
@@ -157,7 +193,7 @@
 </div>
 
 <script>
-const PER_HALAMAN = 5; 
+const PER_HALAMAN = 6; 
 let halTugas = 1;
 
 function renderPaginasi(navId, total, halaman, pindah) {
@@ -166,7 +202,7 @@ function renderPaginasi(navId, total, halaman, pindah) {
     
     nav.replaceChildren();
     
-    if (!total || total <= 1) {
+    if (!total || total <= PER_HALAMAN) {
         nav.style.display = 'none';
         return;
     }
@@ -223,21 +259,20 @@ document.addEventListener('DOMContentLoaded', function () {
     const filterTentor = el('filterTentor');
     const bodyTugas = el('bodyTugas');
 
-    // Menangkap parameter query URL (misal: ?siswa=Siswa+A)
-    const urlParams = new URLSearchParams(window.location.search);
-    const siswaParam = urlParams.get('siswa');
-    if (siswaParam) {
-        el('judulHalamanSiswa').textContent = `Daftar Tugas ${siswaParam}`;
-    }
-
     // Fungsi Filter & Paginasi Terpadu
     function filterTabel() {
         const q = cariInput.value.toLowerCase().trim();
         const kursus = filterKursus.value;
         const tentor = filterTentor.value;
 
-        const allRows = [...bodyTugas.querySelectorAll('tr')];
+        // Ambil semua tr yang memiliki dataset (bukan row kosong dummy)
+        const allRows = [...bodyTugas.querySelectorAll('tr[data-kursus]')];
         
+        if (allRows.length === 0) {
+            renderPaginasi('paginasiTugas', 0, 1, pindahHalaman);
+            return;
+        }
+
         // Saring baris berdasarkan kriteria pencarian dan dropdown
         const filteredRows = allRows.filter(row => {
             const textMatch = row.textContent.toLowerCase().includes(q);
@@ -246,7 +281,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return textMatch && kursusMatch && tentorMatch;
         });
 
-        // Sembunyikan semua baris terlebih dahulu
+        // Sembunyikan semua baris 
         allRows.forEach(row => row.style.display = 'none');
 
         const totalFiltered = filteredRows.length;
@@ -294,10 +329,17 @@ document.addEventListener('DOMContentLoaded', function () {
         el('detDeskripsi').textContent = row.dataset.deskripsi || '-';
         
         const fileName = row.dataset.file;
-        if (fileName && fileName !== '-') {
-            el('detFileWrap').innerHTML = `<a href="#" class="o-file-link" target="_blank">${fileName}</a>`;
+        const fileUrl = row.dataset.fileUrl;
+        if (fileName && fileName !== '-' && fileUrl && fileUrl !== '#') {
+            el('detFileWrap').innerHTML = `<a href="${fileUrl}" class="o-file-link" target="_blank" title="Klik untuk membuka/mengunduh file" style="color:#0f172a !important; text-decoration:none;">
+                📄 <span style="color:#0f172a !important; font-weight:700;">${fileName}</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="#0f172a" viewBox="0 0 16 16" style="margin-left:4px; vertical-align:middle;">
+                    <path fill-rule="evenodd" d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                    <path fill-rule="evenodd" d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                </svg>
+            </a>`;
         } else {
-            el('detFileWrap').innerHTML = '<strong>Belum ada file</strong>';
+            el('detFileWrap').innerHTML = '<span style="color:#ffffff; font-style:italic;">Belum ada file diunggah</span>';
         }
 
         const nilai = row.dataset.nilai;

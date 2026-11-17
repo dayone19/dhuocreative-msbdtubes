@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class PengumpulanTugas extends Model
 {
     protected $table = 'pengumpulan_tugas';
-    protected $primaryKey = id_pengumpulan;
+    protected $primaryKey = 'id_pengumpulan';
 
-    public $timestamps = true;
+    public $timestamps = false;
 
     protected $fillable = [
         'id_pengumpulan',
@@ -29,6 +29,6 @@ class PengumpulanTugas extends Model
     }
 
     public function nilai() {
-        return $this->hasOne(Nilai::class, 'id_tugas', 'id_pengumpulan');
+        return $this->hasOne(Nilai::class, 'id_pengumpulan', 'id_pengumpulan');
     }
 }

@@ -1,3 +1,4 @@
+{{-- Dashboard Operator - Dhuo Creative --}}
 @extends('layouts.Operator')
 
 @section('title', 'Dashboard Operator')
@@ -5,24 +6,12 @@
 @section('content')
 
 @php
-    $ringkasan = [
-        ['judul' => 'Jadwal Hari Ini',   'angka' => 8,  'satuan' => 'Kelas', 'lebar' => 195, 'arrow' => true],
-        ['judul' => 'Total Siswa Aktif', 'angka' => 15, 'satuan' => 'Siswa',       'lebar' => 205, 'arrow' => true],
-        ['judul' => 'Total Kelas Kursus Aktif','angka' => 17,  'satuan' => 'Kursus',  'lebar' => 195, 'arrow' => false],
-        ['judul' => 'Total Tentor',      'angka' => 6,  'satuan' => 'Tentor',      'lebar' => 195, 'arrow' => false],
-    ];
-
-    $jadwalHariIni = [
-        ['kursus' => 'Web Master', 'siswa' => 'Siswa A', 'tentor' => 'Tentor A', 'jam' => '11.30 - 12.30', 'hadir' => 1, 'total' => 1],
-        ['kursus' => 'Web Master', 'siswa' => 'Siswa C', 'tentor' => 'Tentor B', 'jam' => '13.00 - 14.00', 'hadir' => 1, 'total' => 1],
-        ['kursus' => 'Office Master', 'siswa' => 'Siswa E', 'tentor' => 'Tentor C', 'jam' => '14.30 - 15.30', 'hadir' => 0, 'total' => 1],
-        ['kursus' => 'Office Master', 'siswa' => 'Siswa B', 'tentor' => 'Tentor D', 'jam' => '15.00 - 16.00', 'hadir' => 0, 'total' => 1],
-    ];
+    $ringkasan = $ringkasan ?? [];
+    $jadwalHariIni = $jadwalHariIni ?? [];
 @endphp
 
 <div class="dashboard">
 
-    {{-- RINGKASAN --}}
     <section class="o-summary">
         @foreach ($ringkasan as $item)
             <div class="o-summary-card" @if ($item['lebar'] !== 195) style="width: {{ $item['lebar'] }}px;" @endif>
@@ -34,18 +23,17 @@
                         <span>{{ $item['satuan'] }}</span>
                     </div>
                     @if ($item['arrow'])
-                        <button type="button" class="arrow-button" aria-label="Lihat {{ $item['judul'] }}">
+                        <a href="{{ $item['url'] }}" class="arrow-button" aria-label="Lihat {{ $item['judul'] }}" style="text-decoration: none; display: flex; align-items: center; justify-content: center;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-caret-right-fill" viewBox="0 0 16 16">
                                 <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
                             </svg>
-                        </button>
+                        </a>
                     @endif
                 </div>
             </div>
         @endforeach
     </section>
 
-    {{-- FITUR LAPORAN BULANAN PRIVAT (DI ATAS JADWAL HARI INI) --}}
     <section class="o-report-section" style="margin-bottom: 30px;">
         <div class="o-report-heading">
             <div>
@@ -57,7 +45,6 @@
         </div>
 
         <div class="o-report-grid">
-            {{-- Laporan 1: Absensi & Pertemuan Privat --}}
             <article class="o-report-card">
                 <div style="display: flex; gap: 15px; align-items: flex-start;">
                     <div class="o-report-icon">
@@ -81,7 +68,6 @@
                 </div>
             </article>
 
-            {{-- Laporan 2: Distribution Kursus & Tentor --}}
             <article class="o-report-card">
                 <div style="display: flex; gap: 15px; align-items: flex-start;">
                     <div class="o-report-icon">
@@ -92,7 +78,7 @@
                     </div>
                     <div class="o-report-copy">
                         <h3>Laporan Distribusi Siswa & Kursus Privat</h3>
-                        <p>Ringkasan total siswa aktif per kursus, jenis kelas, dan pendaftar baru.</p>
+                        <p>Ringkasan total siswa per kursus, jumlah kelas, dan status kursus aktif.</p>
                     </div>
                 </div>
                 <div class="o-report-actions">
@@ -107,70 +93,78 @@
         </div>
     </section>
 
-    {{-- JADWAL HARI INI --}}
-    <section class="schedule-section o-mint-theme">
-        <h2>Jadwal Hari Ini</h2>
+    <section class="schedule-section o-mint-theme" id="sectionJadwalHariIni">
+        <div class="schedule-section-head">
+            <h2>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-calendar-check" viewBox="0 0 16 16" style="color: #f27640;">
+                    <path d="M10.854 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0"/>
+                    <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z"/>
+                </svg>
+                Jadwal Hari Ini
+            </h2>
+            <span class="schedule-date-badge">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" class="bi bi-calendar3" viewBox="0 0 16 16">
+                    <path d="M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2M1 3.857C1 3.384 1.448 3 2 3h12c.552 0 1 .384 1 .857v10.286c0 .473-.448.857-1 .857H2c-.552 0-1-.384-1-.857z"/>
+                    <path d="M6.5 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>
+                </svg>
+                {{ \Carbon\Carbon::now()->format('d M Y') }}
+            </span>
+        </div>
 
-        @forelse ($jadwalHariIni as $row)
-            <div class="schedule-row">
-                <div class="schedule-name">{{ $row['kursus'] }}</div>
-                <div class="schedule-tentor">{{ $row['siswa'] }}</div>
-                <div class="schedule-tentor">{{ $row['tentor'] }}</div>
-                <div class="schedule-time">{{ $row['jam'] }}</div>
-                <div class="attendance">
-                    <span class="attendance-number">{{ $row['hadir'] }} / {{ $row['total'] }}</span>
-                    <div class="progress">
-                        <div class="progress-fill" style="width: {{ $row['total'] ? round($row['hadir'] / $row['total'] * 100) : 0 }}%"></div>
+        <div class="schedule-table-wrap">
+            <div class="schedule-row schedule-row-head">
+                <div>Kursus</div>
+                <div>Siswa</div>
+                <div>Tentor</div>
+                <div>Waktu</div>
+                <div>Status Hadir</div>
+            </div>
+
+            @forelse ($jadwalHariIni as $row)
+                <div class="schedule-row">
+                    <div class="schedule-name" title="{{ $row['kursus'] }}">{{ $row['kursus'] }}</div>
+                    <div class="schedule-siswa" title="{{ $row['siswa'] }}">{{ $row['siswa'] }}</div>
+                    <div class="schedule-tentor" title="{{ $row['tentor'] }}">{{ $row['tentor'] }}</div>
+                    <div class="schedule-time">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" class="bi bi-clock" viewBox="0 0 16 16" style="color: #f27640;">
+                            <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"/>
+                            <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0"/>
+                        </svg>
+                        {{ $row['jam'] }}
+                    </div>
+                    <div class="attendance">
+                        <span class="attendance-number">
+                            <span style="color: {{ $row['hadir'] ? '#16a34a' : '#64748b' }};">{{ $row['hadir'] ? 'Hadir' : 'Belum Hadir' }}</span>
+                        </span>
+                        <div class="progress">
+                            <div class="progress-fill" style="width: {{ $row['hadir'] ? '100%' : '0%' }}; background: {{ $row['hadir'] ? 'linear-gradient(90deg, #22c55e, #16a34a)' : '#e2e8f0' }};"></div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        @empty
-            <div class="schedule-row"><div>Tidak ada jadwal hari ini.</div></div>
-        @endforelse
+            @empty
+                <div class="schedule-row-empty">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-calendar-x" viewBox="0 0 16 16" style="color: #a0aec0; margin-bottom: 4px;">
+                        <path d="M6.146 7.146a.5.5 0 0 1 .708 0L8 8.293l1.146-1.147a.5.5 0 1 1 .708.708L8.707 9l1.147 1.146a.5.5 0 0 1-.708.708L8 9.707l-1.146 1.147a.5.5 0 0 1-.708-.708L7.293 9 6.146 7.854a.5.5 0 0 1 0-.708"/>
+                        <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z"/>
+                    </svg>
+                    <div>Tidak ada jadwal kelas untuk hari ini.</div>
+                </div>
+            @endforelse
+        </div>
     </section>
 
 </div>
 
 <script>
-// Fungsi Unduh Excel (CSV) Khusus Model Les Privat
 function unduhLaporan(jenis) {
     const bulanInput = document.getElementById('pilihBulanLaporan').value;
     if (!bulanInput) {
         alert('Silakan pilih bulan laporan terlebih dahulu.');
         return;
     }
-
-    let csvContent = "\uFEFF"; // UTF-8 BOM
-    let namaFile = "";
-
-    if (jenis === 'absensi') {
-        namaFile = `Laporan_Absensi_Privat_${bulanInput}.csv`;
-        csvContent += "LAPORAN REKAP BULANAN ABSENSI\n";
-        csvContent += `Bulan: ${bulanInput}\n\n`;
-        csvContent += "No,Nama Siswa,Kursus,Jenis Kelas,Tentor,Total Sesi Bulanan,Hadir,Izin/Sakit,Alpa,Persentase Kehadiran\n";
-        csvContent += '1,"Siswa A","Web Master","Online","Tentor C",12,11,1,0,"91.7%"\n';
-        csvContent += '2,"Siswa B","MS Office","Offline","Tentor D",8,8,0,0,"100%"\n';
-        csvContent += '3,"Siswa C","Web Master","Offline Rumah","Tentor B",12,10,1,1,"83.3%"\n';
-    } else {
-        namaFile = `Laporan_Siswa_Kursus_Privat_${bulanInput}.csv`;
-        csvContent += "LAPORAN REKAP SISWA & KURSUS\n";
-        csvContent += `Bulan: ${bulanInput}\n\n`;
-        csvContent += "No,Nama Kursus,Jumlah Siswa Privat,Siswa Baru Bulan Ini,Kelas Terbanyak,Status Kursus\n";
-        csvContent += '1,"Web Master",14,3,"Online (8 Siswa)",Aktif\n';
-        csvContent += '2,"MS Office",8,2,"Offline (5 Siswa)",Aktif\n';
-    }
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", namaFile);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    window.location.href = `{{ url('/operator/dashboard/laporan') }}/${jenis}?bulan=${bulanInput}`;
 }
 
-// Fungsi Cetak / Print PDF Khusus Les Privat
 function cetakLaporan(jenis) {
     const bulanInput = document.getElementById('pilihBulanLaporan').value;
     if (!bulanInput) {
@@ -181,84 +175,138 @@ function cetakLaporan(jenis) {
     const judul = jenis === 'absensi' 
         ? 'Laporan Rekap Absensi Bulanan' 
         : 'Laporan Rekap Distribusi Siswa & Kursus';
-        
-    const printWindow = window.open('', '', 'width=950,height=650');
 
-    let isiTabel = '';
-    if (jenis === 'absensi') {
-        isiTabel = `
-            <thead>
-                <tr>
-                    <th>No.</th>
-                    <th>Nama Siswa</th>
-                    <th>Kursus</th>
-                    <th>Jenis Kelas</th>
-                    <th>Tentor</th>
-                    <th>Total Pertemuan</th>
-                    <th>Hadir</th>
-                    <th>Izin</th>
-                    <th>Sakit</th>
-                    <th>Alpa</th>
-                    <th>Kehadiran</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr><td>1</td><td>Siswa A</td><td>Web Master</td><td>Online</td><td>Tentor C</td><td>12</td><td>11</td><td>1</td><td>0</td><td>0</td><td>91.7%</td></tr>
-                <tr><td>2</td><td>Siswa B</td><td>MS Office</td><td>Offline</td><td>Tentor D</td><td>8</td><td>8</td><td>0</td><td>0</td><td>0</td><td>100%</td></tr>
-                <tr><td>3</td><td>Siswa C</td><td>Web Master</td><td>Offline Rumah</td><td>Tentor B</td><td>12</td><td>10</td><td>1</td><td>0</td><td>1</td><td>83.3%</td></tr>
-            </tbody>
-        `;
-    } else {
-        isiTabel = `
-            <thead>
-                <tr>
-                    <th>No.</th>
-                    <th>Nama Kursus</th>
-                    <th>Jumlah Siswa Privat</th>
-                    <th>Siswa Baru Bulan Ini</th>
-                    <th>Jenis Kelas Dominan</th>
-                    <th>Status Kursus</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr><td>1</td><td>Web Master</td><td>14 Siswa</td><td>3 Siswa</td><td>Online (8 Siswa)</td><td>Aktif</td></tr>
-                <tr><td>2</td><td>MS Office</td><td>8 Siswa</td><td>2 Siswa</td><td>Offline (5 Siswa)</td><td>Aktif</td></tr>
-            </tbody>
-        `;
-    }
+    fetch(`{{ url('/operator/dashboard/laporan-data') }}?jenis=${jenis}&bulan=${bulanInput}`)
+        .then(res => res.json())
+        .then(data => {
+            let isiTabel = '';
 
-    printWindow.document.write(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>${judul} - ${bulanInput}</title>
-            <style>
-                body { font-family: Arial, sans-serif; padding: 25px; color: #333; }
-                h1 { color: #286c65; margin-bottom: 5px; font-size: 20px; }
-                p { color: #555; margin-top: 0; font-size: 13px; }
-                table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-                th, td { border: 1px solid #ccc; padding: 8px 10px; text-align: left; font-size: 12px; }
-                th { background-color: #ffdc59; color: #286c65; }
-                .footer { margin-top: 30px; text-align: right; font-size: 11px; color: #777; }
-            </style>
-        </head>
-        <body>
-            <h1>${judul}</h1>
-            <p><strong>Periode Bulan:</strong> ${bulanInput}</p>
-            <table>${isiTabel}</table>
-            <div class="footer">
-                <p>Dicetak pada: ${new Date().toLocaleDateString('id-ID')}</p>
-            </div>
-        </body>
-        </html>
-    `);
+            if (jenis === 'absensi') {
+                let baris = '';
+                if (!data || data.length === 0) {
+                    baris = '<tr><td colspan="10" style="text-align:center;">Tidak ada data absensi untuk periode bulan ini.</td></tr>';
+                } else {
+                    data.forEach((row, idx) => {
+                        baris += `
+                            <tr>
+                                <td>${idx + 1}</td>
+                                <td><strong>${row.nama_siswa}</strong></td>
+                                <td>${row.nama_kursus}</td>
+                                <td>${row.jenis_kelas}</td>
+                                <td>${row.nama_tentor}</td>
+                                <td>${row.total_sesi}</td>
+                                <td>${row.hadir}</td>
+                                <td>${row.izin}</td>
+                                <td>${row.alpa}</td>
+                                <td><strong>${row.kehadiran_pct}</strong></td>
+                            </tr>
+                        `;
+                    });
+                }
 
-    printWindow.document.close();
-    printWindow.focus();
-    setTimeout(() => {
-        printWindow.print();
-        printWindow.close();
-    }, 500);
+                isiTabel = `
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Nama Siswa</th>
+                            <th>Kursus</th>
+                            <th>Jenis Kelas</th>
+                            <th>Tentor</th>
+                            <th>Total Sesi</th>
+                            <th>Hadir</th>
+                            <th>Izin/Sakit</th>
+                            <th>Alpa</th>
+                            <th>Kehadiran</th>
+                        </tr>
+                    </thead>
+                    <tbody>${baris}</tbody>
+                `;
+            } else {
+                let baris = '';
+                if (!data || data.length === 0) {
+                    baris = '<tr><td colspan="5" style="text-align:center;">Tidak ada data kursus.</td></tr>';
+                } else {
+                    data.forEach((row, idx) => {
+                        baris += `
+                            <tr>
+                                <td>${idx + 1}</td>
+                                <td><strong>${row.nama_kursus}</strong></td>
+                                <td>${row.total_siswa} Siswa</td>
+                                <td>${row.total_kelas} Kelas</td>
+                                <td>Aktif</td>
+                            </tr>
+                        `;
+                    });
+                }
+
+                isiTabel = `
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Nama Kursus</th>
+                            <th>Total Siswa</th>
+                            <th>Total Kelas</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>${baris}</tbody>
+                `;
+            }
+
+            const printWindow = window.open('', '', 'width=950,height=650');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>${judul} - ${bulanInput}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 25px; color: #333; }
+                        h1 { color: #286c65; margin-bottom: 5px; font-size: 20px; }
+                        p { color: #555; margin-top: 0; font-size: 13px; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                        th, td { border: 1px solid #ccc; padding: 8px 10px; text-align: left; font-size: 12px; }
+                        th { background-color: #ffdc59; color: #286c65; }
+                        .footer { margin-top: 30px; text-align: right; font-size: 11px; color: #777; }
+                    </style>
+                </head>
+                <body>
+                    <h1>${judul}</h1>
+                    <p><strong>Periode Bulan:</strong> ${bulanInput}</p>
+                    <table>${isiTabel}</table>
+                    <div class="footer">
+                        <p>Dicetak pada: ${new Date().toLocaleDateString('id-ID')}</p>
+                    </div>
+                </body>
+                </html>
+            `);
+
+            printWindow.document.close();
+            printWindow.focus();
+            setTimeout(() => {
+                printWindow.print();
+                printWindow.close();
+            }, 500);
+        })
+        .catch(err => {
+            alert('Gagal memuat data laporan: ' + err.message);
+        });
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+    const arrowJadwal = document.querySelector('a[href="#sectionJadwalHariIni"]');
+    if (arrowJadwal) {
+        arrowJadwal.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.getElementById('sectionJadwalHariIni');
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                target.classList.remove('highlight-smooth');
+                void target.offsetWidth;
+                target.classList.add('highlight-smooth');
+                setTimeout(() => target.classList.remove('highlight-smooth'), 1600);
+            }
+        });
+    }
+});
 </script>
 @endsection

@@ -1,3 +1,4 @@
+{{-- Manajemen Kursus & Kelas Operator - Dhuo Creative --}}
 @extends('layouts.Operator')
 @section('title', 'Manajemen Kursus')
 @section('content')
@@ -31,6 +32,15 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @forelse($kursusList ?? [] as $k)
+                    <tr data-status="{{ strtolower($k->status) }}" data-id="{{ $k->id_kursus }}">
+                        <td>{{ $k->nama_kursus }}</td>
+                        <td>{{ $k->deskripsi ?? '-' }}</td>
+                        <td>{{ $k->durasi }} pertemuan</td>
+                        <td><span class="o-status {{ strtolower($k->status) }}">{{ ucfirst($k->status) }}</span></td>
+                        <td><button type="button" class="o-action" data-detail-kursus>Detail</button></td>
+                    </tr>
+                    @empty
                     <tr data-status="aktif">
                         <td>Web Master</td>
                         <td>Pembuatan dan pengelolaan website</td>
@@ -45,6 +55,7 @@
                         <td><span class="o-status aktif">Aktif</span></td>
                         <td><button type="button" class="o-action" data-detail-kursus>Detail</button></td>
                     </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
@@ -80,6 +91,15 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @forelse($kelasList ?? [] as $c)
+                    <tr data-kursus="{{ $c->kursus->nama_kursus ?? '-' }}" data-id="{{ $c->id_kelas }}">
+                        <td>{{ $c->kursus->nama_kursus ?? '-' }}</td>
+                        <td>{{ ucfirst($c->kelas ?? '001') }}</td>
+                        <td>20</td>
+                        <td><span class="o-status {{ strtolower($c->status) }}">{{ ucfirst($c->status) }}</span></td>
+                        <td><button type="button" class="o-action" data-detail-kelas>Detail</button></td>
+                    </tr>
+                    @empty
                     <tr data-kursus="Web Master">
                         <td>Web Master</td>
                         <td>001</td>
@@ -101,6 +121,7 @@
                         <td><span class="o-status aktif">Aktif</span></td>
                         <td><button type="button" class="o-action" data-detail-kelas>Detail</button></td>
                     </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
@@ -119,6 +140,7 @@
             <h2>Tambah Kursus</h2>
         </div>
         <form id="formKursus">
+            @csrf
             <div class="o-form-group">
                 <label for="namaKursus">Nama Kursus</label>
                 <input id="namaKursus" maxlength="100" required placeholder="Contoh: Web Master">
@@ -256,10 +278,58 @@
  document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>b.closest('.o-modal').hidden=true));
  el('tabelKursus').addEventListener('click',e=>{const b=e.target.closest('[data-detail-kursus]');if(!b)return;selectedCourse=b.closest('tr');const c=selectedCourse.cells;el('dNamaKursus').textContent=c[0].textContent.trim();el('dDeskripsiKursus').textContent=c[1].textContent.trim();el('dDurasiKursus').textContent=c[2].textContent.trim();el('dStatusKursus').textContent=selectedCourse.dataset.status==='aktif'?'Aktif':'Nonaktif';dk.hidden=false});
  el('tabelKelas').addEventListener('click',e=>{const b=e.target.closest('[data-detail-kelas]');if(!b)return;selectedClass=b.closest('tr');const c=selectedClass.cells;el('dKursusKelas').textContent=c[0].textContent.trim();el('dNamaKelas').textContent=c[1].textContent.trim();el('dKapasitasKelas').textContent=c[2].textContent.trim();el('dStatusKelas').textContent=c[3].textContent.includes('Aktif')?'Aktif':'Nonaktif';dc.hidden=false});
- el('editDetailKursus').addEventListener('click',()=>{if(!selectedCourse)return;editingCourse=selectedCourse;const c=selectedCourse.cells;el('namaKursus').value=c[0].textContent.trim();el('deskripsiKursus').value=c[1].textContent.trim()==='-'?'':c[1].textContent.trim();el('durasiKursus').value=c[2].textContent.trim();el('statusKursus').value=selectedCourse.dataset.status;el('modalKursus').querySelector('h2').textContent='Edit Kursus';el('formKursus').querySelector('[type=submit]').textContent='Simpan Perubahan';dk.hidden=true;mk.hidden=false});
+ el('editDetailKursus').addEventListener('click',()=>{if(!selectedCourse)return;editingCourse=selectedCourse;const c=selectedCourse.cells;el('namaKursus').value=c[0].textContent.trim();el('deskripsiKursus').value=c[1].textContent.trim()==='-'?'':c[1].textContent.trim();el('durasiKursus').value=parseInt(c[2].textContent.trim(), 10)||'';el('statusKursus').value=selectedCourse.dataset.status;el('modalKursus').querySelector('h2').textContent='Edit Kursus';el('formKursus').querySelector('[type=submit]').textContent='Simpan Perubahan';dk.hidden=true;mk.hidden=false});
  el('editDetailKelas').addEventListener('click',()=>{if(!selectedClass)return;editingClass=selectedClass;fillCourses();el('kursusKelas').value=selectedClass.cells[0].textContent.trim();el('namaKelas').value=selectedClass.cells[1].textContent.trim();el('kapasitasKelas').value=selectedClass.cells[2].textContent.trim();el('statusKelas').value=selectedClass.cells[3].textContent.includes('Aktif')?'aktif':'nonaktif';el('modalKelas').querySelector('h2').textContent='Edit Kelas';el('formKelas').querySelector('[type=submit]').textContent='Simpan Perubahan';dc.hidden=true;mc.hidden=false});
  function statusBadge(s){const b=document.createElement('span');b.className='o-status '+s;b.textContent=s==='aktif'?'Aktif':'Nonaktif';return b}
- el('formKursus').addEventListener('submit',e=>{e.preventDefault();const body=el('tabelKursus').tBodies[0],name=el('namaKursus').value.trim(),target=editingCourse;if([...body.rows].some(r=>r!==target&&r.cells[0].textContent.trim().toLowerCase()===name.toLowerCase())){alert('Nama kursus sudah ada.');return}const r=target||body.insertRow(),vals=[name,el('deskripsiKursus').value.trim()||'-',el('durasiKursus').value];vals.forEach((v,i)=>{if(r.cells[i])r.cells[i].textContent=v;else{const c=r.insertCell();c.textContent=v}});const status=el('statusKursus').value;r.dataset.status=status;const sc=r.cells[3]||r.insertCell();sc.replaceChildren(statusBadge(status));if(!r.cells[4]){const ac=r.insertCell(),b=document.createElement('button');b.type='button';b.className='o-action';b.dataset.detailKursus='';b.textContent='Detail';ac.appendChild(b)}editingCourse=null;mk.hidden=true;fillCourses();filter('cariKursus','tabelKursus','kosongKursus')});
+ el('formKursus').addEventListener('submit', async e => {
+     e.preventDefault();
+     const name = el('namaKursus').value.trim();
+     const deskripsi = el('deskripsiKursus').value.trim();
+     const durasi = el('durasiKursus').value.trim();
+     const status = el('statusKursus').value;
+     const token = el('formKursus').querySelector('input[name="_token"]')?.value || '{{ csrf_token() }}';
+
+     if (!name || !durasi) return;
+
+     const btn = el('formKursus').querySelector('[type=submit]');
+     btn.disabled = true;
+     const origText = btn.textContent;
+     btn.textContent = 'Menyimpan...';
+
+     const isEdit = Boolean(editingCourse && editingCourse.dataset.id);
+     const url = isEdit ? `/operator/kursus/${editingCourse.dataset.id}` : "{{ route('operator.kursus.store') }}";
+     const method = isEdit ? 'PUT' : 'POST';
+
+     try {
+         const res = await fetch(url, {
+             method: method,
+             headers: {
+                 'Content-Type': 'application/json',
+                 'X-CSRF-TOKEN': token,
+                 'Accept': 'application/json'
+             },
+             body: JSON.stringify({
+                 nama_kursus: name,
+                 deskripsi: deskripsi,
+                 durasi: parseInt(durasi, 10),
+                 status: status
+             })
+         });
+
+         const data = await res.json();
+         if (res.ok && data.success) {
+             window.location.reload();
+         } else {
+             alert('Gagal menyimpan kursus: ' + (data.message || 'Terjadi kesalahan'));
+             btn.disabled = false;
+             btn.textContent = origText;
+         }
+     } catch (err) {
+         alert('Terjadi kesalahan jaringan.');
+         btn.disabled = false;
+         btn.textContent = origText;
+     }
+ });
  el('formKelas').addEventListener('submit',e=>{e.preventDefault();const name=el('kursusKelas').value,cls=el('namaKelas').value.trim(),body=el('tabelKelas').tBodies[0],target=editingClass;if([...body.rows].some(r=>r!==target&&r.cells[0].textContent.trim()===name&&r.cells[1].textContent.trim().toLowerCase()===cls.toLowerCase())){alert('Nama kelas tersebut sudah digunakan untuk kursus ini.');return}const r=target||body.insertRow(),vals=[name,cls,el('kapasitasKelas').value];vals.forEach((v,i)=>{if(r.cells[i])r.cells[i].textContent=v;else{const c=r.insertCell();c.textContent=v}});r.dataset.kursus=name;const status=el('statusKelas').value;const sc=r.cells[3]||r.insertCell();sc.replaceChildren(statusBadge(status));if(!r.cells[4]){const ac=r.insertCell(),b=document.createElement('button');b.type='button';b.className='o-action';b.dataset.detailKelas='';b.textContent='Detail';ac.appendChild(b)}editingClass=null;mc.hidden=true;filter('cariKelas','tabelKelas','kosongKelas')});
  [mk,mc,dk,dc].forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.hidden=true}));document.addEventListener('keydown',e=>{if(e.key==='Escape')[mk,mc,dk,dc].forEach(m=>m.hidden=true)});
 })();

@@ -21,7 +21,7 @@ class Nilai extends Model
     ];
 
     public function pengumpulanTugas() {
-        return $this->belongsTo(PengumpulanTugas::class, 'id_pengumpulan', 'id_tugas');
+        return $this->belongsTo(PengumpulanTugas::class, 'id_pengumpulan', 'id_pengumpulan');
     }
 
     public function tentor() {

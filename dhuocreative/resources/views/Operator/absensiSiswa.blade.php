@@ -1,34 +1,28 @@
+{{-- Detail Absensi Siswa Operator - Dhuo Creative --}}
 @extends('layouts.Operator')
 
 @section('title', 'Detail Absensi Siswa')
 
 @section('content')
 @php
-    // Data contoh tampilan. Nantinya dapat diganti dengan data dari controller.
     $siswa = $siswa ?? [
-        'id' => 1208,
-        'nama' => 'Siswa A',
-        'kursus' => 'Web Master',
-        'kelas' => 'Online',
-        'tentor' => 'Tentor C',
-        'mulai_kontrak' => '2026-10-05',
-        'akhir_kontrak' => '2026-12-05',
+        'id' => 0,
+        'nama' => 'Siswa',
+        'kursus' => 'Kursus',
+        'kelas' => 'Kelas',
+        'tentor' => 'Tentor',
+        'mulai_kontrak' => date('Y-m-d'),
+        'akhir_kontrak' => date('Y-m-d'),
     ];
 
-    $daftarPertemuan = $daftarPertemuan ?? [
-        ['ke' => 1, 'tanggal' => '2026-10-05', 'hari' => 'Senin', 'jam' => '16.00–17.30', 'status' => 'hadir', 'jadwal' => 'Jadwal tetap'],
-        ['ke' => 2, 'tanggal' => '2026-10-07', 'hari' => 'Rabu', 'jam' => '16.00–17.30', 'status' => 'hadir', 'jadwal' => 'Jadwal tetap'],
-        ['ke' => 3, 'tanggal' => '2026-10-09', 'hari' => 'Jumat', 'jam' => '16.00–17.30', 'status' => 'hadir', 'jadwal' => 'Jadwal tetap'],
-        ['ke' => 4, 'tanggal' => '2026-10-12', 'hari' => 'Senin', 'jam' => '16.00–17.30', 'status' => 'hadir', 'jadwal' => 'Jadwal tetap'],
-        ['ke' => 5, 'tanggal' => '2026-10-14', 'hari' => 'Rabu', 'jam' => '16.00–17.30', 'status' => 'hadir', 'jadwal' => 'Jadwal ganti'],
-    ];
+    $daftarPertemuan = $daftarPertemuan ?? [];
 
-    $totalPertemuan = 12;
-    $totalHadir = collect($daftarPertemuan)->where('status', 'hadir')->count();
-    $totalTercatat = count($daftarPertemuan);
-    $sisaPertemuan = max(0, $totalPertemuan - $totalTercatat);
-    $persentaseHadir = $totalPertemuan ? ($totalHadir / $totalPertemuan) * 100 : 0;
-    $persentaseSisa = $totalPertemuan ? ($sisaPertemuan / $totalPertemuan) * 100 : 0;
+    $totalPertemuan = $totalPertemuan ?? count($daftarPertemuan);
+    $totalHadir = $totalHadir ?? collect($daftarPertemuan)->where('status', 'hadir')->count();
+    $totalTercatat = $totalTercatat ?? count($daftarPertemuan);
+    $sisaPertemuan = $sisaPertemuan ?? max(0, $totalPertemuan - $totalHadir);
+    $persentaseHadir = $persentaseHadir ?? ($totalPertemuan > 0 ? round(($totalHadir / $totalPertemuan) * 100) : 0);
+    $persentaseSisa = $persentaseSisa ?? ($totalPertemuan > 0 ? round(($sisaPertemuan / $totalPertemuan) * 100) : 0);
 @endphp
 
 <div class="tentor-absensi-page ta-page o-operator-absensi-detail">
@@ -87,6 +81,7 @@
                 <option value="sakit">Sakit</option>
                 <option value="izin">Izin</option>
                 <option value="alpa">Alpa</option>
+                <option value="belum hadir">Belum Hadir</option>
             </select>
         </div>
     </div>
@@ -112,7 +107,11 @@
                         </td>
                         <td>{{ $pertemuan['jam'] }}</td>
                         <td><span class="ta-schedule-pill">{{ $pertemuan['jadwal'] }}</span></td>
-                        <td><span class="ta-status-pill ta-status-{{ $pertemuan['status'] }}">{{ ucfirst($pertemuan['status']) }}</span></td>
+                        <td>
+                            <span class="ta-status-pill ta-status-{{ str_replace(' ', '-', $pertemuan['status']) }}">
+                                {{ ucfirst($pertemuan['status'] === 'alpa' || $pertemuan['status'] === 'alpha' ? 'Alpa' : ($pertemuan['status'] === 'belum hadir' ? 'Belum Hadir' : $pertemuan['status'])) }}
+                            </span>
+                        </td>
                     </tr>
                 @empty
                     <tr><td colspan="5" class="o-empty">Belum ada riwayat pertemuan.</td></tr>
@@ -137,8 +136,16 @@ document.addEventListener('DOMContentLoaded', function () {
     const filter = document.getElementById('taFilterStatus');
 
     filter?.addEventListener('change', function () {
+        const val = this.value.toLowerCase();
         body.querySelectorAll('tr[data-status]').forEach(row => {
-            row.hidden = this.value !== 'semua' && row.dataset.status !== this.value;
+            const st = (row.dataset.status || '').toLowerCase();
+            if (val === 'semua') {
+                row.hidden = false;
+            } else if (val === 'alpa' || val === 'alpha') {
+                row.hidden = (st !== 'alpa' && st !== 'alpha');
+            } else {
+                row.hidden = (st !== val);
+            }
         });
     });
 });

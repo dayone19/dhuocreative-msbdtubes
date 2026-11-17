@@ -4,6 +4,13 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Operator\JadwalController;
+use App\Http\Controllers\Operator\SiswaController;
+use App\Http\Controllers\Operator\TugasController;
+use App\Http\Controllers\Operator\DashboardController as OperatorDashboardController;
+use App\Http\Controllers\Operator\AbsensiController as OperatorAbsensiController;
+use App\Http\Controllers\Operator\KursusController as OperatorKursusController;
+use App\Http\Controllers\Operator\SertifikatController as OperatorSertifikatController;
+use App\Http\Controllers\Operator\PengumumanController as OperatorPengumumanController;
 use App\Http\Controllers\Tentor\DashboardController as TentorDashboardController;
 use App\Http\Controllers\Tentor\KursusController as TentorKursusController;
 use App\Http\Controllers\Tentor\AbsensiController as TentorAbsensiController;
@@ -94,21 +101,22 @@ Route::middleware(['auth', 'prevent.back'])->prefix('tentor')->name('tentor.')->
 
 // operator
 Route::middleware(['auth', 'prevent.back'])->prefix('operator')->name('operator.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('operator.dashboard');
-    })->name('dashboard'); 
+    Route::get('/dashboard', [OperatorDashboardController::class, 'index'])->name('dashboard'); 
+    Route::get('/dashboard/laporan/{jenis}', [OperatorDashboardController::class, 'downloadLaporan'])->name('dashboard.laporan.download');
+    Route::get('/dashboard/laporan-data', [OperatorDashboardController::class, 'getLaporanData'])->name('dashboard.laporan.data'); 
 
-    Route::get('/siswa', function () {
-        return view('operator.siswa');
-    })->name('siswa'); 
+    Route::get('/siswa', [SiswaController::class, 'index'])->name('siswa');
+    Route::post('/siswa', [SiswaController::class, 'store'])->name('siswa.store');
+    Route::put('/siswa/{id}', [SiswaController::class, 'update'])->name('siswa.update'); 
+    Route::post('/siswa/{id}/kursus', [SiswaController::class, 'tambahKursus'])->name('siswa.kursus.store'); 
+    Route::put('/siswa/{id}/kursus/{id_kursus}', [SiswaController::class, 'updateKursus'])->name('siswa.kursus.update'); 
 
-    Route::get('/tugas', function () {
-        return view('operator.tugas');
-    })->name('tugas');
+    Route::get('/tugas', [TugasController::class, 'index'])->name('tugas');
+    Route::get('/tugas/download', [TugasController::class, 'downloadFile'])->name('tugas.download');
 
-    Route::get('/kursus', function () {
-        return view('operator.kursus');
-    })->name('kursus'); 
+    Route::get('/kursus', [OperatorKursusController::class, 'index'])->name('kursus');
+    Route::post('/kursus', [OperatorKursusController::class, 'store'])->name('kursus.store');
+    Route::put('/kursus/{id}', [OperatorKursusController::class, 'update'])->name('kursus.update'); 
 
     Route::get('/jadwal', [JadwalController::class, 'index'])
     ->name('jadwal'); 
@@ -121,21 +129,16 @@ Route::middleware(['auth', 'prevent.back'])->prefix('operator')->name('operator.
   
 
 
-    Route::get('/absensi', function () {
-        return view('operator.absensi');
-    })->name('absensi'); 
+    Route::get('/absensi', [OperatorAbsensiController::class, 'index'])->name('absensi'); 
+    Route::get('/absensiSiswa/{id?}', [OperatorAbsensiController::class, 'detail'])->name('absensiSiswa'); 
 
-    Route::get('/absensiSiswa', function () {
-        return view('operator.absensiSiswa');
-    })->name('absensiSiswa'); 
+    Route::get('/sertifikat', [OperatorSertifikatController::class, 'index'])->name('sertifikat');
+    Route::get('/sertifikat/file/{sertifikat}', [OperatorSertifikatController::class, 'file'])->name('sertifikat.file');
 
-    Route::get('/sertifikat', function () {
-        return view('operator.sertifikat');
-    })->name('sertifikat');
-
-    Route::get('/pengumuman', function () {
-        return view('operator.pengumuman');
-    })->name('pengumuman'); 
+    Route::get('/pengumuman', [OperatorPengumumanController::class, 'index'])->name('pengumuman');
+    Route::post('/pengumuman', [OperatorPengumumanController::class, 'store'])->name('pengumuman.store');
+    Route::put('/pengumuman/{id}', [OperatorPengumumanController::class, 'update'])->name('pengumuman.update');
+    Route::delete('/pengumuman/{id}', [OperatorPengumumanController::class, 'destroy'])->name('pengumuman.destroy'); 
 });
 
 // siswa

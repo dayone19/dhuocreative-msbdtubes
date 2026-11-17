@@ -1,3 +1,4 @@
+{{-- Manajemen Jadwal Operator - Dhuo Creative --}}
 @extends('layouts.Operator')
 
 @section('title', 'Manajemen Jadwal')
@@ -30,15 +31,19 @@
         </button>
     </div>
 
-    <!-- Ringkasan 1 minggu -->
-    <div class="o-schedule-panel">
+        <div class="o-schedule-panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+            <a href="{{ route('operator.jadwal', ['minggu' => $prevWeek]) }}" style="text-decoration: none; padding: 7px 16px; font-size: 13px; font-weight: 700; color: #286c65; background: #ffffff; border: 1.5px solid #286c65; border-radius: 20px;">‹ Minggu Lalu</a>
+            <span style="font-weight: 800; color: #df6833; font-size: 16px;">Periode: {{ $labelMinggu }}</span>
+            <a href="{{ route('operator.jadwal', ['minggu' => $nextWeek]) }}" style="text-decoration: none; padding: 7px 16px; font-size: 13px; font-weight: 700; color: #286c65; background: #ffffff; border: 1.5px solid #286c65; border-radius: 20px;">Minggu Depan ›</a>
+        </div>
         <div class="o-week-grid" id="ringkasanMingguan">
-            @foreach($jadwalMingguan as $hari => $j)
+            @foreach($jadwalMingguan as $hari => $data)
                 <div class="o-week-day">
-                    <h3>{{ $hari }}</h3>
-                    @if($j)
-                        <p>{{ $j->kelas->kursus->nama_kursus ?? '-' }} - {{ ucfirst($j->kelas->kelas ?? '-') }}</p>
-                        <span>{{ substr($j->jam_mulai, 0, 5) }}–{{ substr($j->jam_selesai, 0, 5) }} · {{ $j->kelas->siswa->nama ?? 'Siswa' }}</span>
+                    <h3>{{ $hari }} <span style="font-size: 12px; font-weight: normal; opacity: 0.9;">({{ $data['tanggal'] }})</span></h3>
+                    @if($data['jadwal'])
+                        <p>{{ $data['jadwal']->kelas->kursus->nama_kursus ?? '-' }} - {{ $data['jadwal']->kelas->kelas ?? '-' }}</p>
+                        <span>{{ substr($data['jadwal']->jam_mulai, 0, 5) }}–{{ substr($data['jadwal']->jam_selesai, 0, 5) }} · {{ $data['jadwal']->kelas->siswa->nama ?? 'Siswa' }}</span>
                     @else
                         <p>Belum ada jadwal</p>
                         <span>—</span>
@@ -79,9 +84,9 @@
             </thead>
             <tbody id="bodyJadwal">
                 @forelse($jadwals as $j)
-                <tr data-id="{{ $j->id_jadwal }}" data-tanggal="{{ $j->tanggal }}" data-status="{{ $j->status }}">
+                <tr data-id="{{ $j->id_jadwal }}" data-tanggal="{{ $j->tanggal }}" data-status="{{ $j->status }}" data-pertemuan="{{ $j->pertemuan_ke }}">
                     <td>{{ $j->kelas->kursus->nama_kursus ?? '-' }}</td>
-                    <td>{{ ucfirst($j->kelas->kelas ?? '-') }}</td>
+                    <td>{{ $j->kelas->kelas ?? '-' }}</td>
                     <td>{{ $j->tentor->nama ?? '-' }}</td>
                     <td>{{ $j->kelas->siswa->nama ?? '-' }}</td>
                     <td>{{ $j->tanggal }}</td>
@@ -101,8 +106,7 @@
 
     <p class="o-empty" id="jadwalKosong" hidden>Jadwal tidak ditemukan.</p>
 
-    <!-- Navigasi Paginasi -->
-    <nav class="tj-pagination" id="paginasiJadwal" style="margin-top: 20px;" hidden></nav>
+        <nav class="tj-pagination" id="paginasiJadwal" style="margin-top: 20px;" hidden></nav>
 
     <div class="o-toolbar o-approval-heading" style="margin-top:42px">
         <h2>Persetujuan Pergantian Jadwal dari Tentor</h2>
@@ -171,7 +175,6 @@
     <p class="o-empty" id="persetujuanKosong" hidden>Tidak ada pengajuan pergantian jadwal.</p>
 </div>
 
-<!-- Modal Tambah & Edit Jadwal -->
 <div class="o-modal" id="modalJadwal" hidden>
     <div class="o-modal-box o-modal-wide">
         <div class="o-modal-header">
@@ -188,6 +191,15 @@
             <input type="hidden" name="id_jadwal" id="jadwalId">
             <div class="o-form-grid">
                 <div class="o-form-group">
+                    <label for="jadwalSiswa">Nama Siswa</label>
+                    <select id="jadwalSiswa" name="siswa" required>
+                        <option value="">Pilih siswa</option>
+                        @foreach($siswaList as $siswa)
+                            <option value="{{ $siswa->nama }}">{{ $siswa->nama }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="o-form-group">
                     <label for="jadwalKursus">Nama Kursus</label>
                     <select id="jadwalKursus" name="kursus" required>
                         <option value="">Pilih kursus</option>
@@ -200,9 +212,9 @@
                     <label for="jadwalKelas">Nama Kelas</label>
                     <select id="jadwalKelas" name="kelas" required>
                         <option value="">Pilih kelas</option>
-                        <option value="Online">Online</option>
-                        <option value="Offline">Offline</option>
-                        <option value="Offline Rumah">Offline Rumah</option>
+                        <option value="Online Class">Online Class</option>
+                        <option value="Private Class">Private Class</option>
+                        <option value="Home Class">Home Class</option>
                     </select>
                 </div>
                 <div class="o-form-group">
@@ -215,25 +227,16 @@
                     </select>
                 </div>
                 <div class="o-form-group">
-                    <label for="jadwalSiswa">Nama Siswa</label>
-                    <select id="jadwalSiswa" name="siswa" required>
-                        <option value="">Pilih siswa</option>
-                        @foreach($siswaList as $siswa)
-                            <option value="{{ $siswa->nama }}">{{ $siswa->nama }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="o-form-group">
                     <label for="jadwalTanggalBaru">Tanggal</label>
                     <input id="jadwalTanggalBaru" name="tanggal" type="date" required>
                 </div>
                 <div class="o-form-group">
                     <label for="jadwalMulai">Jam Mulai</label>
-                    <input id="jadwalMulai" name="jam_mulai" type="time" required>
+                    <input id="jadwalMulai" name="jam_mulai" type="time" min="07:00" max="20:00" required>
                 </div>
                 <div class="o-form-group">
                     <label for="jadwalSelesai">Jam Selesai</label>
-                    <input id="jadwalSelesai" name="jam_selesai" type="time" required>
+                    <input id="jadwalSelesai" name="jam_selesai" type="time" min="09:00" max="22:00" required>
                 </div>
                 <div class="o-form-group o-form-full">
                     <label for="jadwalStatus">Status</label>
@@ -244,12 +247,12 @@
                     </select>
                 </div>
             </div>
+            <div id="bentrokAlert" style="display:none; margin: 14px 0; padding: 12px 16px; border-radius: 8px; background: #fee2e2; border: 1px solid #ef4444; color: #b91c1c; font-size: 13px; font-weight: 600;"></div>
             <button class="o-btn o-btn-orange o-btn-submit" type="submit">Simpan Jadwal</button>
         </form>
     </div>
 </div>
 
-<!-- Modal Detail Jadwal -->
 <div class="o-modal" id="modalDetailJadwal" hidden>
     <div class="o-modal-box">
         <div class="o-modal-header">
@@ -292,6 +295,10 @@
             <div>
                 <span>Status</span>
                 <strong id="detailStatus">-</strong>
+            </div>
+            <div>
+                <span>Pertemuan Ke</span>
+                <strong id="detailPertemuan">-</strong>
             </div>
         </div>
         <button type="button" class="o-btn o-btn-orange o-btn-full" id="editDetailJadwal">Edit Jadwal</button>
@@ -360,8 +367,134 @@ function renderPaginasi(kontainerId, total, halaman, pindah) {
 const el = id => document.getElementById(id);
 const modal = el('modalJadwal');
 const detail = el('modalDetailJadwal');
-const defaultClasses = ['Online', 'Offline', 'Offline Rumah'];
+const defaultClasses = ['Online Class', 'Private Class', 'Home Class'];
 let selectedRow = null;
+
+const siswaMapping = @json($siswaMapping ?? []);
+const jadwalExisting = @json($jadwalExisting ?? []);
+
+function cekBentrok() {
+    const siswa = el('jadwalSiswa')?.value;
+    const tentor = el('jadwalTentor')?.value;
+    const tanggal = el('jadwalTanggalBaru')?.value;
+    const mulai = el('jadwalMulai')?.value;
+    const selesai = el('jadwalSelesai')?.value;
+    const idEdit = el('jadwalId')?.value;
+    const alertBox = el('bentrokAlert');
+    const submitBtn = el('formJadwal')?.querySelector('[type=submit]');
+
+    if (!alertBox) return false;
+
+    if (!tanggal || !mulai || !selesai) {
+        alertBox.style.display = 'none';
+        if (submitBtn) submitBtn.disabled = false;
+        return false;
+    }
+
+    if (mulai > '20:00') {
+        alertBox.textContent = '⚠️ Jam mulai pembelajaran paling lambat pukul 20:00 (durasi kursus 2 jam, selesai maks. pukul 22:00)!';
+        alertBox.style.display = 'block';
+        if (submitBtn) submitBtn.disabled = true;
+        return true;
+    }
+
+    if (selesai > '22:00') {
+        alertBox.textContent = '⚠️ Jam selesai pembelajaran tidak boleh di atas pukul 22:00!';
+        alertBox.style.display = 'block';
+        if (submitBtn) submitBtn.disabled = true;
+        return true;
+    }
+
+    if (selesai <= mulai && mulai <= '20:00') {
+        const parts = mulai.split(':');
+        const h = parseInt(parts[0], 10);
+        const m = parts[1];
+        const endH = String(h + 2).padStart(2, '0');
+        el('jadwalSelesai').value = `${endH}:${m}`;
+    }
+
+    for (const j of jadwalExisting) {
+        if (idEdit && String(j.id) === String(idEdit)) continue; 
+        if (j.tanggal !== tanggal) continue;
+
+        const overlap = (mulai < j.jam_selesai && selesai > j.jam_mulai);
+        if (overlap) {
+            if (tentor && j.tentor === tentor) {
+                alertBox.textContent = `⚠️ Jadwal Bentrok! Tentor ${tentor} sudah memiliki jadwal lain pada tanggal ini pukul ${j.jam_mulai}–${j.jam_selesai}.`;
+                alertBox.style.display = 'block';
+                if (submitBtn) submitBtn.disabled = true;
+                return true;
+            }
+            if (siswa && j.siswa === siswa) {
+                alertBox.textContent = `⚠️ Jadwal Bentrok! Siswa ${siswa} sudah memiliki jadwal kelas lain pada tanggal ini pukul ${j.jam_mulai}–${j.jam_selesai}.`;
+                alertBox.style.display = 'block';
+                if (submitBtn) submitBtn.disabled = true;
+                return true;
+            }
+        }
+    }
+
+    alertBox.style.display = 'none';
+    if (submitBtn) submitBtn.disabled = false;
+    return false;
+}
+
+el('jadwalMulai')?.addEventListener('change', () => {
+    const val = el('jadwalMulai').value;
+    if (!val) return;
+    if (val > '20:00') {
+        alert('⚠️ Jam mulai pembelajaran paling lambat pukul 20:00 karena durasi kursus 2 jam (selesai maks. pukul 22:00)!');
+        el('jadwalMulai').value = '20:00';
+        el('jadwalSelesai').value = '22:00';
+        cekBentrok();
+        return;
+    }
+    const parts = val.split(':');
+    const h = parseInt(parts[0], 10);
+    const m = parts[1];
+    const endH = String(h + 2).padStart(2, '0');
+    el('jadwalSelesai').value = `${endH}:${m}`;
+    cekBentrok();
+});
+
+['jadwalTanggalBaru', 'jadwalSelesai', 'jadwalTentor'].forEach(id => {
+    el(id)?.addEventListener('change', cekBentrok);
+});
+
+el('jadwalSiswa')?.addEventListener('change', () => {
+    const sName = el('jadwalSiswa').value;
+    const list = siswaMapping[sName] || [];
+
+    if (list.length > 0) {
+        const currentCourse = el('jadwalKursus').value;
+        const match = list.find(x => x.kursus === currentCourse);
+        
+        if (match) {
+            if (match.kelas) el('jadwalKelas').value = match.kelas;
+            if (match.tentor) el('jadwalTentor').value = match.tentor;
+        } else {
+            const first = list[0];
+            if (first.kursus) el('jadwalKursus').value = first.kursus;
+            fillClasses();
+            if (first.kelas) el('jadwalKelas').value = first.kelas;
+            if (first.tentor) el('jadwalTentor').value = first.tentor;
+        }
+    }
+    cekBentrok();
+});
+
+el('jadwalKursus')?.addEventListener('change', () => {
+    fillClasses();
+    const sName = el('jadwalSiswa')?.value;
+    const course = el('jadwalKursus')?.value;
+    const list = siswaMapping[sName] || [];
+    const match = list.find(x => x.kursus === course);
+    if (match) {
+        if (match.kelas) el('jadwalKelas').value = match.kelas;
+        if (match.tentor) el('jadwalTentor').value = match.tentor;
+    }
+    cekBentrok();
+});
 
 function fillClasses(){
     const s = el('jadwalKelas');
@@ -373,7 +506,6 @@ function fillClasses(){
         if(defaultClasses.includes(old)) s.value = old;
     }
 }
-el('jadwalKursus')?.addEventListener('change', fillClasses);
 
 document.querySelectorAll('[data-close]').forEach(b => {
     b.addEventListener('click', () => { b.closest('.o-modal').hidden = true; });
@@ -384,6 +516,8 @@ el('btnTambahJadwal')?.addEventListener('click', () => {
     el('formJadwal').reset();
     el('modalJadwal').querySelector('h2').textContent = 'Tambah Jadwal';
     el('formJadwal').querySelector('[type=submit]').textContent = 'Simpan Jadwal';
+    el('bentrokAlert').style.display = 'none';
+    el('formJadwal').querySelector('[type=submit]').disabled = false;
     fillClasses();
     modal.hidden = false;
 });
@@ -406,6 +540,7 @@ el('tabelJadwal')?.addEventListener('click', e => {
     el('detailMulai').textContent = c[5].textContent.trim();
     el('detailSelesai').textContent = c[6].textContent.trim();
     el('detailStatus').textContent = r.dataset.status.charAt(0).toUpperCase() + r.dataset.status.slice(1);
+    el('detailPertemuan').textContent = r.dataset.pertemuan ? 'Pertemuan ' + r.dataset.pertemuan : '-';
     detail.hidden = false;
 });
 
@@ -413,32 +548,44 @@ el('editDetailJadwal')?.addEventListener('click', () => {
     if (!selectedRow) return;
     el('jadwalId').value = selectedRow.dataset.id;
     const c = selectedRow.cells;
+    el('jadwalSiswa').value = c[3].textContent.trim();
     el('jadwalKursus').value = c[0].textContent.trim();
     fillClasses();
     el('jadwalKelas').value = c[1].textContent.trim();
     el('jadwalTentor').value = c[2].textContent.trim();
-    el('jadwalSiswa').value = c[3].textContent.trim();
     el('jadwalTanggalBaru').value = selectedRow.dataset.tanggal;
     el('jadwalMulai').value = c[5].textContent.trim();
     el('jadwalSelesai').value = c[6].textContent.trim();
     el('jadwalStatus').value = selectedRow.dataset.status;
     el('modalJadwal').querySelector('h2').textContent = 'Edit Jadwal';
     el('formJadwal').querySelector('[type=submit]').textContent = 'Simpan Perubahan';
+    el('bentrokAlert').style.display = 'none';
+    el('formJadwal').querySelector('[type=submit]').disabled = false;
     detail.hidden = true;
     modal.hidden = false;
+    cekBentrok();
 });
 
 el('formJadwal')?.addEventListener('submit', e => {
     const start = el('jadwalMulai').value;
     const end = el('jadwalSelesai').value;
-    if (end <= start) {
+    if (start > '20:00') {
         e.preventDefault();
-        alert('Jam selesai harus setelah jam mulai.');
+        alert('Jam mulai pembelajaran paling lambat pukul 20:00 (durasi kursus 2 jam, selesai maks. pukul 22:00).');
+        return;
+    }
+    if (end > '22:00') {
+        e.preventDefault();
+        alert('Jam selesai pembelajaran tidak boleh di atas pukul 22:00.');
+        return;
+    }
+    if (cekBentrok()) {
+        e.preventDefault();
+        alert('Tidak dapat menyimpan! Terdapat jadwal yang bentrok. Silakan sesuaikan tanggal atau jam.');
         return;
     }
 });
 
-// Filter & Paginasi
 function filter(){
     const q = el('cariJadwal').value.toLowerCase().trim();
     const month = el('filterTanggal').value;

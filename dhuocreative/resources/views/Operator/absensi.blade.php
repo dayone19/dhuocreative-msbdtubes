@@ -1,14 +1,16 @@
+{{-- Rekap Absensi Siswa Operator - Dhuo Creative --}}
 @extends('layouts.Operator')
 
 @section('title', 'Rekap Absensi')
 
 @section('content')
 @php
-    $rekapAbsensi = $rekapAbsensi ?? [
-        ['id' => 1208, 'kursus' => 'Web Master', 'nama' => 'Siswa A', 'tentor' => 'Tentor C', 'kelas' => 'Online', 'hadir' => 5, 'total' => 12],
-        ['id' => 1209, 'kursus' => 'Web Master', 'nama' => 'Siswa B', 'tentor' => 'Tentor A', 'kelas' => 'Offline', 'hadir' => 10, 'total' => 12],
-        ['id' => 1210, 'kursus' => 'Office Master', 'nama' => 'Siswa C', 'tentor' => 'Tentor B', 'kelas' => 'Online', 'hadir' => 8, 'total' => 10],
-        ['id' => 1211, 'kursus' => 'Office Master', 'nama' => 'Siswa D', 'tentor' => 'Tentor C', 'kelas' => 'Offline Rumah', 'hadir' => 11, 'total' => 12],
+    $rekapAbsensi = $rekapAbsensi ?? [];
+    $stats = $stats ?? [
+        'total_siswa'     => count($rekapAbsensi),
+        'total_kehadiran' => collect($rekapAbsensi)->sum('hadir'),
+        'total_pertemuan' => collect($rekapAbsensi)->sum('total'),
+        'rata_rata_hadir' => collect($rekapAbsensi)->sum('total') ? round(collect($rekapAbsensi)->sum('hadir') / collect($rekapAbsensi)->sum('total') * 100) : 0,
     ];
 @endphp
 
@@ -22,19 +24,19 @@
     <div class="o-attendance-stats">
         <article class="o-attendance-stat">
             <span>Total siswa</span>
-            <strong>{{ count($rekapAbsensi) }}</strong>
+            <strong>{{ $stats['total_siswa'] }}</strong>
         </article>
         <article class="o-attendance-stat">
             <span>Total kehadiran</span>
-            <strong>{{ collect($rekapAbsensi)->sum('hadir') }}</strong>
+            <strong>{{ $stats['total_kehadiran'] }}</strong>
         </article>
         <article class="o-attendance-stat">
             <span>Total pertemuan</span>
-            <strong>{{ collect($rekapAbsensi)->sum('total') }}</strong>
+            <strong>{{ $stats['total_pertemuan'] }}</strong>
         </article>
         <article class="o-attendance-stat">
             <span>Rata-rata hadir</span>
-            <strong>{{ collect($rekapAbsensi)->sum('total') ? round(collect($rekapAbsensi)->sum('hadir') / collect($rekapAbsensi)->sum('total') * 100) : 0 }}%</strong>
+            <strong>{{ $stats['rata_rata_hadir'] }}%</strong>
         </article>
     </div>
 

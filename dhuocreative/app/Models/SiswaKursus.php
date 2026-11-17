@@ -8,6 +8,8 @@ class SiswaKursus extends Model
 {
     protected $table = 'siswa_kursus';
     protected $primaryKey = 'id_siswa_kursus';
+    public $incrementing = false;
+    public $timestamps = false;
     protected $fillable = [
         'id_siswa_kursus',
         'id_siswa',
