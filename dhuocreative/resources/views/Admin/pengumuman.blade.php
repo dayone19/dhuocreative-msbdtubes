@@ -195,7 +195,7 @@
                     >
                 </div>
 
-                <button type="submit" class="o-btn o-btn-orange o-btn-full">
+                <button type="submit" class="ak-btn ak-btn-orange ak-btn-full">
                     Simpan Pengumuman
                 </button>
             </form>

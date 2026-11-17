@@ -54,6 +54,7 @@
         font-size: 36px;
         line-height: 1.2;
         letter-spacing: -0.5px;
+        font-weight:800;
     }
     .date {
         padding: 10px 20px;
@@ -75,10 +76,10 @@
         font-size: 22px;
         margin-bottom: 18px;
         color: var(--teal);
+        font-weight:800;
     }
     .class {
         display: grid;
-        justify-content: space-between;
         align-items: center;
         gap: 24px;
         margin-top: 16px;
@@ -105,12 +106,11 @@
         font-size: 14px;
     }
     .pill {
-        display: inline-flex;
         align-items: center;
         justify-content: center;
         min-width: 80px;
         height: 32px;
-        padding: 0 14px;
+        padding: 8px 20px;
         border-radius: 999px;
         font-size: 13px;
         font-weight: 600;
@@ -119,13 +119,15 @@
     .pill-online {
         background: var(--mint);
         color: var(--teal);
+        display:flex;
+        margin-top:-5px;
     }
     .pill-hadir {
         background: var(--mint);
         color: var(--teal);
     }
     .pill-izin {
-        background: var(--yellow);
+        background: var(--gold-dk);
         color: var(--gold-dk);
     }
     .pill-sakit {
@@ -145,14 +147,11 @@
         font-weight: 600;
         white-space: nowrap;
     }
-    .btn.go {
-        background: var(--orange);
-        color: var(--ivory);
-        cursor: pointer;
-        transition: background 0.2s ease;
-    }
-    .btn.go:hover {
-        background: var(--orange-dk);;
+    .btn.go {background: #f27640;color: #ffffff;cursor: pointer;}
+    .btn.izin { background:#987809;color:#fffaf0; cursor: pointer;}
+    .btn.sakit { background:#f8d7da;color:#721c24; cursor: pointer;}
+    .btn:hover {
+        background: #f3a92d;
     }
     .btn.done {
         background: var(--mint);
@@ -305,8 +304,6 @@
         user-select: none;
     }
 
-@media (max-width: 640px) {
-
     @media (max-width: 640px) {
         .page {
             gap: 20px;
@@ -353,7 +350,7 @@
             padding: 13px 14px;
         }
 }
-}
+
 
 </style>
 
@@ -389,19 +386,19 @@
                     <div class="meta">
                         <span>{{ $j->nama_tentor }}</span>
                         <span>{{ $j->jam }}</span>
+                        <span class="pill pill-online">{{ $j->jenis }}</span>
                     </div>
                 </div>
-                <span class="pill pill-online">{{ $j->jenis }}</span>
 
                 @if ($j->sudah_absen)
                     <span class="btn done">Sudah: {{ ucfirst($j->status_absen) }}</span>
                 @elseif ($j->bisa_absen)
-                    <form method="POST" action="{{ route('siswa.absensi.absen') }}" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+                    <form method="POST" action="{{ route('siswa.absensi.absen') }}" style="display:flex;flex-wrap:wrap;align-items:center;justify-content: space-evenly;">
                         @csrf
                         <input type="hidden" name="id_jadwal" value="{{ $j->id_jadwal }}">
                         <button type="submit" name="status" value="hadir" class="btn go">Hadir</button>
-                        <button type="submit" name="status" value="izin" class="btn" style="background:#fff3cd;color:#856404;">Izin</button>
-                        <button type="submit" name="status" value="sakit" class="btn" style="background:#f8d7da;color:#721c24;">Sakit</button>
+                        <button type="submit" name="status" value="izin" class="btn izin">Izin</button>
+                        <button type="submit" name="status" value="sakit" class="btn sakit">Sakit</button>
                     </form>
                 @elseif ($j->berlangsung === false)
                     <span class="btn done" style="opacity:.7;">Di luar jam kelas</span>
