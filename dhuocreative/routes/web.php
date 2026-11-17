@@ -63,7 +63,7 @@ Route::post('/forgotPass/reset-password', [ForgotPasswordController::class, 'res
     ->name('password.reset');    
 
 // tentor
-Route::middleware(['auth', 'prevent.back'])->prefix('tentor')->name('tentor.')->group(function () {
+Route::middleware(['auth', 'db.role', 'prevent.back'])->prefix('tentor')->name('tentor.')->group(function () {
     Route::get('/dashboard', [TentorDashboardController::class, 'index'])->name('dashboard'); 
     
     Route::get('/jadwal', [TentorJadwalController::class, 'index'])->name('jadwal');
@@ -127,7 +127,7 @@ Route::middleware(['auth', 'prevent.back'])->prefix('operator')->name('operator.
 });
 
 // siswa
-Route::middleware(['auth', 'prevent.back'])->prefix('siswa')->name('siswa.')->group(function () {
+Route::middleware(['auth', 'db.role', 'prevent.back'])->prefix('siswa')->name('siswa.')->group(function () {
     Route::get('/dashboard', [SiswaDashboardController::class, 'index'])->name('dashboard');
     Route::get('/kursus', [App\Http\Controllers\Siswa\KursusController::class, 'index'])->name('kursus');
     Route::get('/absensi', [App\Http\Controllers\Siswa\AbsensiController::class, 'index'])->name('absensi');
@@ -146,7 +146,7 @@ Route::middleware(['auth', 'prevent.back'])->prefix('siswa')->name('siswa.')->gr
 });
 
 // admin
-Route::middleware(['auth', 'prevent.back'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'db.role', 'prevent.back'])->prefix('admin')->name('admin.')->group(function () {
     // dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     

@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'prevent.back'         => \App\Http\Middleware\PreventBackHistory::class, //m1
+            'db.role' => \App\Http\Middleware\SetDatabaseConnection::class,
         ]);
 
     })
