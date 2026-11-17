@@ -5,6 +5,37 @@
 
 @section('content')
 
+<style>
+.t-announcement-category {
+    display: inline-block;
+    font-size: .78rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #fff0df;
+    color: #a95412;
+}
+
+.t-announcement-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.t-announcement-author {
+    opacity: .8;
+    font-size: .9rem;
+}
+
+.t-page-subtitle {
+    margin-top: 6px;
+    color: #777;
+    font-size: .92rem;
+}
+</style>
+
 <div class="t-page">
 
     <div class="t-page-header">
@@ -76,37 +107,6 @@
     </p>
 
 </div>
-
-<style>
-.t-announcement-category {
-    display: inline-block;
-    font-size: .78rem;
-    font-weight: 600;
-    padding: 4px 10px;
-    border-radius: 999px;
-    background: #fff0df;
-    color: #a95412;
-}
-
-.t-announcement-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    flex-wrap: wrap;
-}
-
-.t-announcement-author {
-    opacity: .8;
-    font-size: .9rem;
-}
-
-.t-page-subtitle {
-    margin-top: 6px;
-    color: #777;
-    font-size: .92rem;
-}
-</style>
 
 <script>
 (() => {

@@ -10,7 +10,7 @@
     </div>
     <div class="jadwal-mingguan" id="jadwalMingguan"></div>
     <div class="o-toolbar">
-        <h2>Daftar Jadwal</h2>
+        <h1 class="t-page-title">Daftar Jadwal</h1>
 
         <div class="o-schedule-filters">
             <input class="o-search"id="cariJadwal"type="search"placeholder="Cari kursus, kelas, atau siswa..."aria-label="Cari jadwal">

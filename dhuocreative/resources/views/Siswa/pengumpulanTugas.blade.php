@@ -1,467 +1,18 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>DhuoCreative Portal</title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-    <style>
-        :root {
-            --teal: #286c65;
-            --orange: #f27640;
-            --orange-dk: #df6833;
-            --amber: #ffb83f;
-            --amber-dk: #f3a92d;
-            --yellow: #ffdc59;
-            --gold: #b29458;
-            --gold-dk: #987840;
-            --olive: #b4a052;
-            --cream: #f5e9cf;
-            --ivory: #fffaf0;
-            --sand: #fcf4e5;
-            --mint: #e3efed;
-            --mint-line: #cfe0dd;
-            --teal-muted: #5f7f7b;
-        }
-        body {
-            margin: 0;
-            padding: 24px 40px;
-            background: #fff;
-        }
-
-        .pt-page {
-            width: 100%;
-            max-width: 100%;
-            font-family: 'Plus Jakarta Sans', 'Bricolage Grotesque', sans-serif;
-            color: var(--teal);
-            box-sizing: border-box;
-        }
-
-        .pt-page *,
-        .pt-page *::before,
-        .pt-page *::after {
-            box-sizing: border-box;
-        }
-
-        .pt-header {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 20px;
-        }
-
-        .pt-header i {
-            font-size: 40px;
-            line-height: 1;
-            color: var(--teal);
-        }
-
-        .pt-header h1 {
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 36px;
-            font-weight: 800;
-            line-height: 1.1;
-            color: var(--teal);
-            margin: 0;
-        }
-
-        .pt-grid {
-            display: grid;
-            grid-template-columns: 1.2fr 1.5fr 1fr .85fr;
-            align-items: center;
-            column-gap: 16px;
-        }
-
-        .pt-thead {
-            padding: 0 34px;
-            min-height: 52px;
-            border-radius: 14px;
-            font-size: 17px;
-            font-weight: 700;
-            background: var(--cream);
-            color: var(--orange-dk);
-        }
-
-        .pt-list {
-            margin-top: 14px;
-            padding: 0 22px;
-            background: var(--ivory);
-            border: 1px solid var(--mint-line);
-            border: 1.5px solid var(--ivory);
-            border-radius: 18px;
-        }
-
-        .pt-row {
-            padding: 18px 12px;
-        }
-
-        .pt-row + .pt-row {
-            border-top: 1px solid var(--mint-line);
-        }
-
-        .pt-name strong {
-            display: block;
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--teal);
-        }
-
-        .pt-name span {
-            display: block;
-            margin-top: 6px;
-            font-size: 14px;
-            color: var(--teal-muted);
-        }
-
-        .pt-deadline {
-            font-size: 14.5px;
-            line-height: 1.65;
-            color: var(--teal);
-        }
-
-        .pt-status {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            justify-self: start;
-            padding: 9px 18px 9px 12px;
-            border-radius: 999px;
-            font-size: 14px;
-            font-weight: 700;
-            white-space: nowrap;
-        }
-
-        .pt-status::before {
-            content: "";
-            width: 11px;
-            height: 11px;
-            border-radius: 50%;
-            background: currentColor;
-        }
-
-        .pt-status-done {
-            background: var(--mint);
-            color: var(--teal);
-        }
-
-        .pt-status-pending {
-            background: #fff0c9;
-            color: var(--gold-dk);
-        }
-
-        .pt-submit {
-            margin-top: 16px;
-            padding: 22px 36px 26px;
-            background: var(--mint);
-            border-radius: 28px;
-        }
-
-        .pt-submit h2 {
-            font-size: 21px;
-            font-weight: 700;
-            color: var(--teal);
-            margin: 0 0 14px;
-        }
-
-        .pt-field {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 16px;
-        }
-
-        .pt-field label,
-        .pt-upload-label {
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--teal);
-        }
-
-        .pt-select {
-            width: 295px;
-            max-width: 100%;
-            height: 42px;
-            padding: 0 40px 0 14px;
-            border: none;
-            border-radius: 14px;
-            background: var(--ivory) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23222' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 16 16'%3E%3Cpath d='m3 6 5 5 5-5'/%3E%3C/svg%3E") no-repeat right 14px center;
-            font-family: inherit;
-            font-size: 14px;
-            appearance: none;
-            -webkit-appearance: none;
-            cursor: pointer;
-            background-color: var(--ivory);
-            color: var(--teal);
-        }
-
-        .pt-upload-row {
-            display: grid;
-            grid-template-columns: 154px 395px 1fr;
-            align-items: start;
-            column-gap: 0;
-        }
-
-        .pt-upload-label {
-            padding-top: 0;
-        }
-
-        .pt-drop {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-            width: 100%;
-            height: 142px;
-            padding: 16px;
-            border: 2px dashed var(--gold);
-            border-radius: 18px;
-            text-align: center;
-            cursor: pointer;
-            background: var(--cream);
-            border-color: var(--gold);
-            color: var(--teal);
-            transition: background .2s ease, border-color .2s ease;
-        }
-
-        .pt-drop:hover,
-        .pt-drop.is-over {
-            background: var(--sand);
-            border-color: var(--orange);
-        }
-
-        .pt-drop:focus-within {
-            outline-color: var(--orange);
-            outline: 3px solid var(--orange);
-            outline-offset: 2px;
-        }
-
-        .pt-drop i {
-            font-size: 54px;
-            line-height: 1;
-            color: #b98a4a;
-        }
-
-        .pt-drop-title {
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .pt-drop-note {
-            font-size: 11px;
-            color: var(--teal-muted);
-        }
-
-        .pt-file-input {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .pt-file-name {
-            max-width: 100%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--teal);
-        }
-
-        .pt-btn {
-            justify-self: end;
-            align-self: center;
-            margin-top: 34px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            min-width: 228px;
-            height: 53px;
-            padding: 0 32px;
-            border: none;
-            border-radius: 999px;
-            background: var(--orange-dk);
-            color: var(--ivory);
-            font-family: inherit;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: background .2s ease, transform .2s ease;
-        }
-
-        .pt-btn:hover {
-            background: #d95f2a;
-            transform: scale(1.03);
-        }
-
-        .pt-btn:focus-visible {
-            outline: 3px solid #1f6b5f;
-            outline-offset: 2px;
-        }
-
-        .pt-description {
-            font-size: 13px;
-            line-height: 1.7;
-            color: var(--teal-muted);
-            padding-right: 8px;
-        }
-
-        @media (max-width: 1100px) {
-            .pt-upload-row {
-                grid-template-columns: 130px minmax(0, 1fr) auto;
-                column-gap: 20px;
-            }
-
-            .pt-btn {
-                min-width: 0;
-                padding: 0 24px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            body {
-                padding: 16px;
-            }
-
-            .pt-header i {
-                font-size: 32px;
-            }
-
-            .pt-header h1 {
-                font-size: 28px;
-            }
-
-            .pt-thead {
-                display: none;
-            }
-
-            .pt-list {
-                margin-top: 0;
-                padding: 0 14px;
-            }
-
-            .pt-grid.pt-row {
-                grid-template-columns: 1fr;
-                row-gap: 8px;
-            }
-
-            .pt-submit {
-                padding: 20px 16px 22px;
-                border-radius: 22px;
-            }
-
-            .pt-field {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 8px;
-            }
-
-            .pt-select {
-                width: 100%;
-            }
-
-            .pt-upload-row {
-                grid-template-columns: 1fr;
-                row-gap: 10px;
-            }
-
-            .pt-btn {
-                justify-self: stretch;
-                margin-top: 10px;
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            .pt-page * {
-                transition: none !important;
-            }
-        }
-    </style>
-</head>
-<body>
-
 @extends('layouts.siswa')
-
 @section('content')
-
-<style>
-/* pagination siswa – rata tengah (inject di section biar pasti ke-load) */
-.nl-page .tj-pagination,
-.pt-page .tj-pagination,
-.tj-pagination {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    gap: 8px !important;
-    margin: 20px auto !important;
-    padding: 8px 0 !important;
-    flex-wrap: wrap !important;
-    width: 100% !important;
-}
-.tj-pagination .tj-pg-btn {
-    min-width: 40px;
-    height: 40px;
-    padding: 0 12px;
-    border: 1.5px solid #cfe0dd;
-    border-radius: 12px;
-    background: #fffaf0;
-    color: #14524b;
-    font: inherit;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    box-sizing: border-box;
-    box-shadow: 0 1px 2px rgba(0,0,0,.04);
-}
-.tj-pagination .tj-pg-btn:hover:not(:disabled):not(.is-active):not(.active) {
-    background: #e3efed;
-    border-color: #286c65;
-}
-.tj-pagination .tj-pg-btn.is-active,
-.tj-pagination .tj-pg-btn.active {
-    background: #f27640;
-    border-color: #f27640;
-    color: #fff;
-    cursor: default;
-    box-shadow: 0 2px 8px rgba(242,118,64,.35);
-}
-.tj-pagination .tj-pg-btn:disabled {
-    opacity: .45;
-    cursor: not-allowed;
-}
-.tj-pagination .tj-pg-dots {
-    min-width: 28px;
-    height: 40px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: #5f7f7b;
-    font-weight: 700;
-    font-size: 15px;
-    user-select: none;
-}
-</style>
-
 
 <div class="pt-page">
 
     @if (session('sukses'))
-        <p style="background:#e3f6e8;color:#1d6b35;padding:10px 14px;border-radius:10px;margin:0 0 12px;">{{ session('sukses') }}</p>
+        <p style="background:#e3f6e8;color:#1d6b35;padding:10px 14px;border-radius:10px;margin:0 0 12px;">
+            {{ session('sukses') }}
+        </p>
     @endif
+
     @if ($errors->any())
-        <p style="background:#fde8e8;color:#a12222;padding:10px 14px;border-radius:10px;margin:0 0 12px;">{{ $errors->first() }}</p>
+        <p style="background:#fde8e8;color:#a12222;padding:10px 14px;border-radius:10px;margin:0 0 12px;">
+            {{ $errors->first() }}
+        </p>
     @endif
 
     <!-- Daftar tugas -->
@@ -475,63 +26,79 @@
 
         <div class="pt-list">
             @forelse ($tugas as $t)
-            <div class="pt-grid pt-row">
-                <div class="pt-name">
-                    <strong>{{ $t->judul }}</strong>
-                    <span>{{ $t->nama_kursus }}</span>
+                <div class="pt-grid pt-row">
+                    <div class="pt-name">
+                        <strong>{{ $t->judul }}</strong>
+                        <span>{{ $t->nama_kursus }}</span>
+                    </div>
+
+                    <div class="pt-description">
+                        {{ $t->deskripsi_teks }}
+                    </div>
+
+                    <div class="pt-deadline">
+                        {{ $t->deadline_tanggal }}<br>
+                        {{ $t->deadline_jam }}
+                    </div>
+
+                    <span class="pt-status {{ $t->status_css }}">
+                        {{ $t->status_teks }}
+                    </span>
                 </div>
-                <div class="pt-description">
-                    {{ $t->deskripsi_teks }}
-                </div>
-                <div class="pt-deadline">
-                    {{ $t->deadline_tanggal }}<br>{{ $t->deadline_jam }}
-                </div>
-                <span class="pt-status {{ $t->status_css }}">{{ $t->status_teks }}</span>
-            </div>
             @empty
-            <p style="padding: 16px;">Belum ada tugas.</p>
+                <p style="padding: 16px;">Belum ada tugas.</p>
             @endforelse
         </div>
 
         @if ($tugas->hasPages())
-        <nav class="tj-pagination" aria-label="Navigasi halaman">
-            @if ($tugas->onFirstPage())
-                <button type="button" class="tj-pg-btn" disabled aria-label="Sebelumnya">&lt;</button>
-            @else
-                <a href="{{ $tugas->previousPageUrl() }}" class="tj-pg-btn" aria-label="Sebelumnya">&lt;</a>
-            @endif
+            <nav class="tj-pagination" aria-label="Navigasi halaman">
 
-            @php
-                $__cur = $tugas->currentPage();
-                $__last = $tugas->lastPage();
-                if ($__last <= 7) {
-                    $__pages = range(1, $__last);
-                } else {
-                    $__pages = collect([1, $__last, $__cur, $__cur - 1, $__cur + 1, $__cur - 2, $__cur + 2])
-                        ->filter(fn ($n) => $n >= 1 && $n <= $__last)
-                        ->unique()->sort()->values()->all();
-                }
-                $__prev = 0;
-            @endphp
-
-            @foreach ($__pages as $__i)
-                @if ($__prev && $__i - $__prev > 1)
-                    <span class="tj-pg-dots">…</span>
-                @endif
-                @if ($__i == $__cur)
-                    <button type="button" class="tj-pg-btn is-active" aria-current="page">{{ $__i }}</button>
+                @if ($tugas->onFirstPage())
+                    <button type="button" class="tj-pg-btn" disabled aria-label="Sebelumnya">&lt;</button>
                 @else
-                    <a href="{{ $tugas->url($__i) }}" class="tj-pg-btn">{{ $__i }}</a>
+                    <a href="{{ $tugas->previousPageUrl() }}" class="tj-pg-btn" aria-label="Sebelumnya">&lt;</a>
                 @endif
-                @php $__prev = $__i; @endphp
-            @endforeach
 
-            @if ($tugas->hasMorePages())
-                <a href="{{ $tugas->nextPageUrl() }}" class="tj-pg-btn" aria-label="Berikutnya">&gt;</a>
-            @else
-                <button type="button" class="tj-pg-btn" disabled aria-label="Berikutnya">&gt;</button>
-            @endif
-        </nav>
+                @php
+                    $__cur = $tugas->currentPage();
+                    $__last = $tugas->lastPage();
+
+                    if ($__last <= 7) {
+                        $__pages = range(1, $__last);
+                    } else {
+                        $__pages = collect([1, $__last, $__cur, $__cur - 1, $__cur + 1, $__cur - 2, $__cur + 2])
+                            ->filter(fn ($n) => $n >= 1 && $n <= $__last)
+                            ->unique()->sort()->values()->all();
+                    }
+
+                    $__prev = 0;
+                @endphp
+
+                @foreach ($__pages as $__i)
+                    @if ($__prev && $__i - $__prev > 1)
+                        <span class="tj-pg-dots">…</span>
+                    @endif
+
+                    @if ($__i == $__cur)
+                        <button type="button" class="tj-pg-btn is-active" aria-current="page">
+                            {{ $__i }}
+                        </button>
+                    @else
+                        <a href="{{ $tugas->url($__i) }}" class="tj-pg-btn">
+                            {{ $__i }}
+                        </a>
+                    @endif
+
+                    @php $__prev = $__i; @endphp
+                @endforeach
+
+                @if ($tugas->hasMorePages())
+                    <a href="{{ $tugas->nextPageUrl() }}" class="tj-pg-btn" aria-label="Berikutnya">&gt;</a>
+                @else
+                    <button type="button" class="tj-pg-btn" disabled aria-label="Berikutnya">&gt;</button>
+                @endif
+
+            </nav>
         @endif
     </section>
 
@@ -544,9 +111,12 @@
 
             <div class="pt-field">
                 <label for="kelas">Kelas</label>
+
                 <select id="kelas" name="id_kelas" class="pt-select">
                     @forelse ($kelasSiswa as $k)
-                        <option value="{{ $k->id_kelas }}">{{ $k->nama_kursus }}</option>
+                        <option value="{{ $k->id_kelas }}">
+                            {{ $k->nama_kursus }}
+                        </option>
                     @empty
                         <option value="">Belum ada kelas aktif</option>
                     @endforelse
@@ -555,8 +125,10 @@
 
             <div class="pt-field">
                 <label for="tugas">Tugas</label>
+
                 <select id="tugas" name="id_tugas" class="pt-select" required>
                     <option value="">Pilih kelas dulu</option>
+
                     @foreach ($semuaTugas as $t)
                         <option value="{{ $t->id_tugas }}"
                                 data-kelas="{{ $t->id_kelas }}"
@@ -571,10 +143,18 @@
                 <span class="pt-upload-label">Upload File Tugas</span>
 
                 <label class="pt-drop" id="dropzone">
-                    <input type="file" id="file-tugas" name="file" class="pt-file-input" accept=".pdf,.doc,.docx,.ppt,.pptx,.zip,.jpg,.jpeg,.png">
+                    <input type="file" id="file-tugas" name="file" class="pt-file-input"
+                           accept=".pdf,.doc,.docx,.ppt,.pptx,.zip,.jpg,.jpeg,.png">
+
                     <i class="bi bi-cloud-upload" id="drop-icon"></i>
-                    <span class="pt-drop-title" id="drop-title">Klik untuk mengunggah</span>
-                    <span class="pt-drop-note" id="drop-note">(file max 50MB)</span>
+
+                    <span class="pt-drop-title" id="drop-title">
+                        Klik untuk mengunggah
+                    </span>
+
+                    <span class="pt-drop-note" id="drop-note">
+                        (file max 50MB)
+                    </span>
                 </label>
 
                 <button type="submit" class="pt-btn">
@@ -588,88 +168,94 @@
 </div>
 
 <script>
-    (function () {
-        var MAX_SIZE = 50 * 1024 * 1024;
-        var input = document.getElementById('file-tugas');
-        var zone  = document.getElementById('dropzone');
-        var title = document.getElementById('drop-title');
-        var note  = document.getElementById('drop-note');
-        var form  = document.getElementById('form-tugas');
-        var selKelas = document.getElementById('kelas');
-        var selTugas = document.getElementById('tugas');
+(function () {
+    var MAX_SIZE = 50 * 1024 * 1024;
+    var input = document.getElementById('file-tugas');
+    var zone = document.getElementById('dropzone');
+    var title = document.getElementById('drop-title');
+    var note = document.getElementById('drop-note');
+    var form = document.getElementById('form-tugas');
+    var selKelas = document.getElementById('kelas');
+    var selTugas = document.getElementById('tugas');
 
-        function showFile(file) {
-            if (!file) return;
-            if (file.size > MAX_SIZE) {
-                input.value = '';
-                title.className = 'pt-drop-title';
-                title.textContent = 'Klik untuk mengunggah';
-                note.textContent = 'File terlalu besar. Maksimal 50MB.';
-                return;
-            }
-            title.className = 'pt-file-name';
-            title.textContent = file.name;
-            note.textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+    function showFile(file) {
+        if (!file) return;
+
+        if (file.size > MAX_SIZE) {
+            input.value = '';
+            title.className = 'pt-drop-title';
+            title.textContent = 'Klik untuk mengunggah';
+            note.textContent = 'File terlalu besar. Maksimal 50MB.';
+            return;
         }
 
-        input.addEventListener('change', function () {
+        title.className = 'pt-file-name';
+        title.textContent = file.name;
+        note.textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+    }
+
+    input.addEventListener('change', function () {
+        showFile(input.files[0]);
+    });
+
+    ['dragenter', 'dragover'].forEach(function (evt) {
+        zone.addEventListener(evt, function (e) {
+            e.preventDefault();
+            zone.classList.add('is-over');
+        });
+    });
+
+    ['dragleave', 'drop'].forEach(function (evt) {
+        zone.addEventListener(evt, function (e) {
+            e.preventDefault();
+            zone.classList.remove('is-over');
+        });
+    });
+
+    zone.addEventListener('drop', function (e) {
+        if (e.dataTransfer.files.length) {
+            input.files = e.dataTransfer.files;
             showFile(input.files[0]);
-        });
-
-        ['dragenter', 'dragover'].forEach(function (evt) {
-            zone.addEventListener(evt, function (e) {
-                e.preventDefault();
-                zone.classList.add('is-over');
-            });
-        });
-
-        ['dragleave', 'drop'].forEach(function (evt) {
-            zone.addEventListener(evt, function (e) {
-                e.preventDefault();
-                zone.classList.remove('is-over');
-            });
-        });
-
-        zone.addEventListener('drop', function (e) {
-            if (e.dataTransfer.files.length) {
-                input.files = e.dataTransfer.files;
-                showFile(input.files[0]);
-            }
-        });
-
-        function saringTugas() {
-            var kelasId = selKelas.value;
-            var first = null;
-            Array.prototype.forEach.call(selTugas.options, function (opt) {
-                if (!opt.value) {
-                    opt.hidden = false;
-                    return;
-                }
-                var cocok = String(opt.getAttribute('data-kelas')) === String(kelasId);
-                opt.hidden = !cocok;
-                if (cocok && !opt.disabled && !first) first = opt;
-            });
-            selTugas.value = first ? first.value : '';
         }
+    });
 
-        selKelas.addEventListener('change', saringTugas);
-        saringTugas();
+    function saringTugas() {
+        var kelasId = selKelas.value;
+        var first = null;
 
-        form.addEventListener('submit', function (e) {
-            if (!selTugas.value) {
-                e.preventDefault();
-                note.textContent = 'Pilih tugas terlebih dahulu.';
+        Array.prototype.forEach.call(selTugas.options, function (opt) {
+            if (!opt.value) {
+                opt.hidden = false;
                 return;
             }
-            if (!input.files.length) {
-                e.preventDefault();
-                note.textContent = 'Pilih file tugas terlebih dahulu.';
+
+            var cocok = String(opt.getAttribute('data-kelas')) === String(kelasId);
+            opt.hidden = !cocok;
+
+            if (cocok && !opt.disabled && !first) {
+                first = opt;
             }
         });
-    })();
+
+        selTugas.value = first ? first.value : '';
+    }
+
+    selKelas.addEventListener('change', saringTugas);
+    saringTugas();
+
+    form.addEventListener('submit', function (e) {
+        if (!selTugas.value) {
+            e.preventDefault();
+            note.textContent = 'Pilih tugas terlebih dahulu.';
+            return;
+        }
+
+        if (!input.files.length) {
+            e.preventDefault();
+            note.textContent = 'Pilih file tugas terlebih dahulu.';
+        }
+    });
+})();
 </script>
 
 @endsection
-
-</body>
-</html>

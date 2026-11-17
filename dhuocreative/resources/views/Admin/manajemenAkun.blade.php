@@ -38,7 +38,7 @@
         </div>
 
         <select class="t-filter akun-select" name="role" id="filterRole">
-            <option value="">Semua Role</option>
+            <option value=""><b>Semua Role</b></option>
             <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
             <option value="operator" {{ request('role') == 'operator' ? 'selected' : '' }}>Operator</option>
             <option value="tentor" {{ request('role') == 'tentor' ? 'selected' : '' }}>Tentor</option>

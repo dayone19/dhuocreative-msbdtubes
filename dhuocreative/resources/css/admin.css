@@ -1412,6 +1412,7 @@ body {
     color: #fff;
     font: inherit;
     font-size: 17px;
+    font-weight: 700;
     cursor: pointer;
 }
 
@@ -2336,11 +2337,22 @@ body {
 }
 
 /* Data Pengguna */
+.dp-page,
+.dp-page *,
+.dp-page *::before,
+.dp-page *::after {
+    box-sizing: border-box;
+}
+
 .dp-page {
     width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    padding-top: 24px;
     font-family: Arial, Helvetica, sans-serif;
     color: #111;
 }
+
 
 .dp-tabs {
     display: flex;
@@ -3262,16 +3274,21 @@ body {
 
 /* riwayat absen */
 .ra-page,
-.ra-page * { box-sizing: border-box; }
- 
- 
+.ra-page *,
+.ra-page *::before,
+.ra-page *::after {
+    box-sizing: border-box;
+}
+
 .ra-page {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 12px 30px 60px;
-  font-family: Arial, Helvetica, sans-serif;
-  color: var(--ink);
-  background: #fff;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 24px 0 60px;
+    font-family: 'Plus Jakarta Sans', 'Bricolage Grotesque', sans-serif;
+    color: var(--ink);
+    background: #fff;
 }
  
 /* header */
@@ -3283,7 +3300,15 @@ body {
   flex-wrap: wrap;
   margin-bottom: 20px;
 }
-.ra-page-title { margin: 0; font-size: 30px; font-weight: 800; color: var(--teal); }
+
+.ra-page-title {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 30px;
+    font-weight: 800;
+    color: var(--teal);
+}
+
 .ra-page-sub { margin: 4px 0 0; font-size: 14px; color: var(--muted); }
 .ra-back-link {
   display: inline-block;
