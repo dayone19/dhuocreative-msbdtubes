@@ -250,13 +250,15 @@ class RiwayatAbsensiController extends Controller
                     'status' => $request->status,
                 ]);
         } else {
-            // Membuat absensi jika sebelumnya belum tercatat
-            DB::table('absensi_siswa')->insert([
-                'id_jadwal' => $id_jadwal,
-                'id_siswa' => $id_siswa,
-                'waktu_absen' => Carbon::now(),
-                'status' => $request->status,
-            ]);
+            // Membuat absensi jika sebelumnya belum tercatat pakai store procedure
+            DB::statement(
+                'CALL catat_absensi_siswa(?, ?, ?)',
+                [
+                    $id_jadwal,
+                    $id_siswa,
+                    $request->status,
+                ]
+            );
         }
 
         return redirect()->back()->with(

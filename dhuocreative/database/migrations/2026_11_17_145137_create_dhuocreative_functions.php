@@ -22,22 +22,25 @@ return new class extends Migration
         LANGUAGE plpgsql
         AS $$
         DECLARE
-            v_id_kelas INTEGER;
+            v_jadwal RECORD;
         BEGIN
-            SELECT j.id_kelas
-            INTO v_id_kelas
+            SELECT
+                j.jam_mulai,
+                j.jam_selesai
+            INTO v_jadwal
             FROM jadwal j
             WHERE j.id_tentor = p_id_tentor
-              AND j.tanggal = p_tanggal
-              AND j.status = 'terjadwal'
-              AND j.jam_mulai < p_jam_selesai
-              AND j.jam_selesai > p_jam_mulai
+            AND j.tanggal = p_tanggal
+            AND j.status = 'terjadwal'
+            AND j.jam_mulai < p_jam_selesai
+            AND j.jam_selesai > p_jam_mulai
             LIMIT 1;
 
             IF FOUND THEN
                 RAISE EXCEPTION
-                    'Jadwal tentor bentrok dengan kelas ID %!',
-                    v_id_kelas;
+                    'Jadwal tentor bentrok|%|%',
+                    v_jadwal.jam_mulai,
+                    v_jadwal.jam_selesai;
             END IF;
 
             RETURN TRUE;
@@ -357,6 +360,43 @@ return new class extends Migration
         END;
         $$;
 
+        CREATE OR REPLACE FUNCTION trg_validasi_pengajuan_jadwal()
+        RETURNS TRIGGER
+        LANGUAGE plpgsql
+        AS $$
+        BEGIN
+            -- Cek bentrok dengan jadwal tentor yang sudah ada
+            IF EXISTS (
+                SELECT 1
+                FROM jadwal j
+                WHERE j.id_tentor = NEW.id_tentor
+                AND j.tanggal = NEW.tanggal_baru
+                AND j.id_jadwal <> COALESCE(NEW.id_jadwal_lama, -1)
+                AND j.status <> 'dibatalkan'
+                AND NEW.jam_mulai < j.jam_selesai
+                AND NEW.jam_selesai > j.jam_mulai
+            ) THEN
+                RAISE EXCEPTION
+                    'Jadwal bentrok dengan jadwal tentor yang sudah terdaftar!';
+            END IF;
+            -- Cek bentrok dengan pengajuan lain yang masih menunggu
+            IF EXISTS (
+                SELECT 1
+                FROM pengajuan_jadwal p
+                WHERE p.id_tentor = NEW.id_tentor
+                AND p.status = 'menunggu'
+                AND p.id_pengajuan <> COALESCE(NEW.id_pengajuan, -1)
+                AND NEW.tanggal_baru = p.tanggal_baru
+                AND NEW.jam_mulai < p.jam_selesai
+                AND NEW.jam_selesai > p.jam_mulai
+            ) THEN
+                RAISE EXCEPTION
+                    'Jadwal bentrok dengan pengajuan lain yang masih menunggu!';
+            END IF;
+            RETURN NEW;
+        END;
+        $$;
+
         SQL);
     }
 
@@ -364,6 +404,7 @@ return new class extends Migration
     {
         DB::unprepared(<<<'SQL'
 
+        DROP FUNCTION IF EXISTS trg_validasi_pengajuan_jadwal();
         DROP FUNCTION IF EXISTS trg_validasi_tentor_penilai();
         DROP FUNCTION IF EXISTS trg_validasi_status_kursus();
         DROP FUNCTION IF EXISTS trg_validasi_penilaian();

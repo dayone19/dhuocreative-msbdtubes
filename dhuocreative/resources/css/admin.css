@@ -4484,3 +4484,46 @@ body {
     opacity: 0.45;
     cursor: not-allowed;
 }
+.o-week-day {
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+}
+
+.o-week-day-schedules {
+    max-height: 220px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.o-week-schedule-item {
+    padding: 10px;
+    border-radius: 9px;
+    background: rgba(40, 108, 101, 0.08);
+    border-left: 3px solid #286c65;
+}
+
+.o-week-schedule-item p {
+    margin: 0 0 5px;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.o-week-schedule-item span {
+    display: block;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.o-week-day-schedules::-webkit-scrollbar {
+    width: 5px;
+}
+
+.o-week-day-schedules::-webkit-scrollbar-thumb {
+    background: #286c65;
+    border-radius: 10px;
+}

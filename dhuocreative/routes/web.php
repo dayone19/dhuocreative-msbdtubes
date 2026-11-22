@@ -96,7 +96,7 @@ Route::middleware(['auth', 'db.role', 'prevent.back'])->prefix('tentor')->name('
 });
 
 // operator
-Route::middleware(['auth', 'prevent.back'])->prefix('operator')->name('operator.')->group(function () {
+Route::middleware(['auth', 'db.role', 'prevent.back'])->prefix('operator')->name('operator.')->group(function () {
     Route::get('/dashboard', [OperatorDashboardController::class, 'index'])->name('dashboard'); 
     Route::get('/dashboard/laporan/{jenis}', [OperatorDashboardController::class, 'downloadLaporan'])->name('dashboard.laporan.download');
     Route::get('/dashboard/laporan-data', [OperatorDashboardController::class, 'getLaporanData'])->name('dashboard.laporan.data'); 
@@ -122,9 +122,7 @@ Route::middleware(['auth', 'prevent.back'])->prefix('operator')->name('operator.
 
     Route::post('/jadwal/persetujuan', [JadwalController::class, 'approveReschedule'])
     ->name('jadwal.approve');
-  
-
-
+//   absensi
     Route::get('/absensi', [OperatorAbsensiController::class, 'index'])->name('absensi'); 
     Route::get('/absensiSiswa/{id?}', [OperatorAbsensiController::class, 'detail'])->name('absensiSiswa'); 
 
@@ -167,6 +165,7 @@ Route::middleware(['auth', 'db.role', 'prevent.back'])->prefix('admin')->name('a
     Route::patch('/manajemenAkun/{id}/nonaktifkan', [ManajemenAkunController::class, 'nonaktifkan'])->name('manajemenAkun.nonaktifkan');
     Route::post('/buatAkun', [ManajemenAkunController::class, 'store'])->name('buatAkun.store');
     Route::get('/buatAkun', function () {return view('admin.buatAkun');})->name('buatAkun');
+    Route::patch('/manajemen-akun/{id}/aktifkan', [ManajemenAkunController::class, 'aktifkan'])->name('manajemenAkun.aktifkan');
 
     // data pengguna
     Route::get('/dataPengguna', [DataPenggunaController::class, 'index'])->name('dataPengguna');
@@ -180,7 +179,9 @@ Route::middleware(['auth', 'db.role', 'prevent.back'])->prefix('admin')->name('a
     
     // jadwal
     Route::get('/jadwal', [AdminJadwalController::class, 'index'])->name('jadwal');
-    Route::get('/jadwalAbsensi', function () {return view('admin.jadwalAbsensi');})->name('jadwalAbsensi');
+    Route::post('/jadwal', [AdminJadwalController::class, 'store'])->name('jadwal.store');
+    Route::post('/jadwal/persetujuan', [AdminJadwalController::class, 'approveReschedule'])->name('jadwal.approve');
+    Route::get('/jadwalAbsensi', [AdminJadwalController::class, 'index'])->name('jadwalAbsensi');
     
     // riwayat absensi
     Route::get('/riwayatAbsen', [RiwayatAbsensiController::class, 'index'])->name('riwayatAbsen');
@@ -192,6 +193,7 @@ Route::middleware(['auth', 'db.role', 'prevent.back'])->prefix('admin')->name('a
     
     // sertifikat
     Route::get('/nilaiSertifikat', [AdminSertifikatController::class, 'index'])->name('nilaiSertifikat');
+    Route::get('/sertifikat/file/{sertifikat}', [AdminSertifikatController::class, 'file'])->name('sertifikat.file');
 
     // pengumuman
     Route::get('/pengumuman', [AdminPengumumanController::class, 'index'])->name('pengumuman');

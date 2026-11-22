@@ -399,6 +399,7 @@ all('#tabelSiswa').forEach(tbl => {
                             <button type="button" class="o-action" data-edit-course>Edit</button>
                         </div>
                         <div class="o-course-row"><span>Status</span><strong>${c.status ? (c.status.charAt(0).toUpperCase() + c.status.slice(1)) : 'Aktif'}</strong></div>
+                        <div class="o-course-row"><span>Tentor</span><strong>${c.nama_tentor || 'Belum ditentukan'}</strong></div>
                     `;
                     courseList.appendChild(item);
                 });

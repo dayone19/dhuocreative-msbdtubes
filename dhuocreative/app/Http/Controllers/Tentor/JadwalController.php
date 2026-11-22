@@ -5,83 +5,116 @@ namespace App\Http\Controllers\Tentor;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\QueryException;
 use Carbon\Carbon;
 
 class JadwalController extends Controller
 {
-    private const PER_PAGE = 5;
-
-    /** Halaman Jadwal Saya — pagination + filter di controller (server-side) */
     public function index(Request $request)
     {
         $idTentor = auth()->id();
 
-        $q       = trim((string) $request->get('q', ''));
-        $tanggal = $request->get('tanggal');
-        $status  = $request->get('status', 'terjadwal'); // default sama seperti sebelumnya
+        $namaTentor = DB::table('users')
+            ->where('id_user', $idTentor)
+            ->value('nama');
 
-        // Query dasar untuk tabel (paginated)
-        $base = DB::table('jadwal')
-            ->join('kelas', 'jadwal.id_kelas', '=', 'kelas.id_kelas')
-            ->join('kursus', 'kelas.id_kursus', '=', 'kursus.id_kursus')
-            ->join('users as siswa', 'kelas.id_siswa', '=', 'siswa.id_user')
-            ->where('jadwal.id_tentor', $idTentor)
-            ->when($q !== '', function ($query) use ($q) {
-                $query->where(function ($w) use ($q) {
-                    $w->where('kursus.nama_kursus', 'ilike', "%{$q}%")
-                      ->orWhere('siswa.nama', 'ilike', "%{$q}%")
-                      ->orWhereRaw('kelas.kelas::text ilike ?', ["%{$q}%"]);
-                });
-            })
-            ->when($tanggal, fn ($query) => $query->whereDate('jadwal.tanggal', $tanggal))
-            ->when($status !== '' && $status !== null, fn ($query) => $query->where('jadwal.status', $status));
-
-        $jadwal = (clone $base)
-            ->orderByDesc('jadwal.tanggal')
-            ->orderByDesc('jadwal.jam_mulai')
+        // SQL: Mengambil seluruh jadwal yang ditugaskan kepada tentor login
+        $jadwal = DB::table('vw_jadwal_tentor')
+            ->where('id_tentor', $idTentor)
+            ->orderByDesc('tanggal')
+            ->orderByDesc('jam_mulai')
             ->select(
-                'jadwal.id_jadwal',
-                'kelas.id_kelas',
-                'kursus.nama_kursus as kursus',
-                DB::raw('kelas.kelas::text as kelas'),
-                'siswa.nama as siswa',
-                DB::raw("to_char(jadwal.tanggal, 'YYYY-MM-DD') as tanggal"),
-                DB::raw("to_char(jadwal.jam_mulai, 'HH24:MI') as mulai"),
-                DB::raw("to_char(jadwal.jam_selesai, 'HH24:MI') as selesai"),
-                DB::raw('jadwal.status::text as status')
+                'id_jadwal',
+                'id_kelas',
+                'kelas as kursus',
+                'jenis_kelas as kelas',
+                'siswa',
+                DB::raw("to_char(tanggal, 'YYYY-MM-DD') as tanggal"),
+                DB::raw("to_char(jam_mulai, 'HH24:MI') as mulai"),
+                DB::raw("to_char(jam_selesai, 'HH24:MI') as selesai"),
+                DB::raw('status::text as status')
             )
-            ->paginate(self::PER_PAGE)
-            ->withQueryString();
+            ->get()
+            ->map(function ($j) use ($namaTentor) {
+                $j->tentor = $namaTentor;
+                return $j;
+            });
 
-        // Data penuh (atau rentang minggu ini) khusus kalender mingguan — tanpa pagination
-        $awalMinggu = Carbon::now('Asia/Jakarta')
-            ->startOfWeek(Carbon::MONDAY);
+        // Navigasi kalender mingguan
+        $minggu = $request->validate([
+            'minggu' => ['nullable', 'date_format:Y-m-d'],
+        ])['minggu'] ?? null;
+
+        $awalMinggu = $minggu
+            ? Carbon::parse($minggu, 'Asia/Jakarta')->startOfWeek(Carbon::MONDAY)
+            : Carbon::now('Asia/Jakarta')->startOfWeek(Carbon::MONDAY);
 
         $akhirMinggu = $awalMinggu->copy()->addDays(5);
 
-        $jadwalKalender = DB::table('jadwal')
-    ->join('kelas', 'jadwal.id_kelas', '=', 'kelas.id_kelas')
-    ->join('kursus', 'kelas.id_kursus', '=', 'kursus.id_kursus')
-    ->where('jadwal.id_tentor', $idTentor)
-    ->where('jadwal.status', 'terjadwal')
-    ->whereBetween('jadwal.tanggal', [
-        $awalMinggu->toDateString(),
-        $akhirMinggu->toDateString(),
-    ])
-    ->orderBy('jadwal.tanggal')
-    ->orderBy('jadwal.jam_mulai')
-    ->select(
-        'jadwal.id_jadwal',
-        'kursus.nama_kursus as kursus',
-        DB::raw('kelas.kelas::text as kelas'),
-        DB::raw("to_char(jadwal.tanggal, 'YYYY-MM-DD') as tanggal"),
-        DB::raw("to_char(jadwal.jam_mulai, 'HH24:MI') as mulai"),
-        DB::raw("to_char(jadwal.jam_selesai, 'HH24:MI') as selesai"),
-        DB::raw('jadwal.status::text as status')
-    )
-    ->get();
+        $prevWeek = $awalMinggu->copy()->subWeek()->format('Y-m-d');
+        $nextWeek = $awalMinggu->copy()->addWeek()->format('Y-m-d');
 
-        // riwayat pengajuan
+        $labelMinggu = $awalMinggu->translatedFormat('d M Y')
+            . ' – ' . $akhirMinggu->translatedFormat('d M Y');
+
+        // SQL: Mengambil jadwal mingguan milik tentor login
+        $jadwalKalender = DB::table('vw_jadwal_tentor')
+            ->where('id_tentor', $idTentor)
+            ->whereBetween('tanggal', [
+                $awalMinggu->toDateString(),
+                $akhirMinggu->toDateString(),
+            ])
+            ->orderBy('tanggal')
+            ->orderBy('jam_mulai')
+            ->select(
+                'id_jadwal',
+                'id_kelas',
+                'siswa',
+                'kelas as kursus',
+                'jenis_kelas as kelas',
+                DB::raw("to_char(tanggal, 'YYYY-MM-DD') as tanggal"),
+                DB::raw("to_char(jam_mulai, 'HH24:MI') as mulai"),
+                DB::raw("to_char(jam_selesai, 'HH24:MI') as selesai"),
+                DB::raw('status::text as status')
+            )
+            ->get()
+            ->map(function ($j) use ($namaTentor) {
+                $j->tentor = $namaTentor;
+                return $j;
+            });
+
+        $hariList = [
+            1 => 'Senin',
+            2 => 'Selasa',
+            3 => 'Rabu',
+            4 => 'Kamis',
+            5 => 'Jumat',
+            6 => 'Sabtu',
+        ];
+
+        $jadwalMingguan = [];
+
+        foreach ($hariList as $isoDay => $namaHari) {
+            $tanggalHari = $awalMinggu->copy()
+                ->addDays($isoDay - 1)
+                ->format('Y-m-d');
+
+            $jadwalHari = $jadwalKalender
+                ->filter(function ($j) use ($tanggalHari) {
+                    return $j->tanggal === $tanggalHari
+                        && $j->status === 'terjadwal';
+                })
+                ->values();
+
+            $jadwalMingguan[$namaHari] = [
+                'tanggal' => $awalMinggu->copy()
+                    ->addDays($isoDay - 1)
+                    ->format('d M'),
+                'jadwals' => $jadwalHari,
+            ];
+        }
+
+        // Riwayat pengajuan jadwal milik tentor login
         $pengajuan = DB::table('pengajuan_jadwal as p')
             ->join('kelas', 'p.id_kelas', '=', 'kelas.id_kelas')
             ->join('kursus', 'kelas.id_kursus', '=', 'kursus.id_kursus')
@@ -92,6 +125,7 @@ class JadwalController extends Controller
             ->select(
                 'p.id_pengajuan',
                 'kursus.nama_kursus as kursus',
+                'kelas.kelas as kelas',
                 'siswa.nama as siswa',
                 DB::raw("to_char(lama.tanggal, 'YYYY-MM-DD') as \"lamaTanggal\""),
                 DB::raw("to_char(lama.jam_mulai, 'HH24:MI') as \"lamaMulai\""),
@@ -104,16 +138,20 @@ class JadwalController extends Controller
             )
             ->get();
 
-        // pilihan kelas untuk dropdown
+        // Pilihan kelas untuk dropdown pengajuan
         $kelasOptions = DB::table('kelas')
             ->join('kursus', 'kelas.id_kursus', '=', 'kursus.id_kursus')
             ->join('users as siswa', 'kelas.id_siswa', '=', 'siswa.id_user')
             ->where('kelas.status', 'aktif')
             ->where(function ($q) use ($idTentor) {
                 $q->whereIn('kelas.id_kursus', function ($s) use ($idTentor) {
-                    $s->select('id_kursus')->from('tentor_kursus')->where('id_tentor', $idTentor);
+                    $s->select('id_kursus')
+                        ->from('tentor_kursus')
+                        ->where('id_tentor', $idTentor);
                 })->orWhereIn('kelas.id_kelas', function ($s) use ($idTentor) {
-                    $s->select('id_kelas')->from('jadwal')->where('id_tentor', $idTentor);
+                    $s->select('id_kelas')
+                        ->from('jadwal')
+                        ->where('id_tentor', $idTentor);
                 });
             })
             ->orderBy('kursus.nama_kursus')
@@ -128,15 +166,19 @@ class JadwalController extends Controller
         return view('tentor.jadwal', compact(
             'jadwal',
             'jadwalKalender',
+            'jadwalMingguan',
             'pengajuan',
             'kelasOptions',
-            'q',
-            'tanggal',
-            'status'
+            'namaTentor',
+            'prevWeek',
+            'nextWeek',
+            'labelMinggu'
         ));
     }
 
-    /** POST: ajukan jadwal baru / perubahan jadwal */
+    /**
+     * POST: Ajukan jadwal baru / perubahan jadwal
+     */
     public function ajukan(Request $request)
     {
         $idTentor = auth()->id();
@@ -146,58 +188,100 @@ class JadwalController extends Controller
             'id_jadwal_lama' => ['nullable', 'integer', 'exists:jadwal,id_jadwal'],
             'tanggal'        => ['required', 'date', 'after_or_equal:today'],
             'jam_mulai'      => ['required', 'date_format:H:i'],
-            'jam_selesai'    => ['required', 'date_format:H:i', 'after:jam_mulai'],
             'catatan'        => ['nullable', 'string', 'max:500'],
         ]);
 
+        // Memastikan kelas merupakan tanggung jawab tentor
+        $kelasValid = DB::table('kelas')
+            ->where('id_kelas', $data['id_kelas'])
+            ->where(function ($q) use ($idTentor) {
+                $q->whereIn('id_kursus', function ($s) use ($idTentor) {
+                    $s->select('id_kursus')
+                        ->from('tentor_kursus')
+                        ->where('id_tentor', $idTentor);
+                })->orWhereIn('id_kelas', function ($s) use ($idTentor) {
+                    $s->select('id_kelas')
+                        ->from('jadwal')
+                        ->where('id_tentor', $idTentor);
+                });
+            })
+            ->exists();
+
+        if (!$kelasValid) {
+            return response()->json([
+                'message' => 'Kamu tidak terdaftar sebagai tentor pada kelas ini.'
+            ], 422);
+        }
+
+        // Menghitung jam selesai otomatis, yaitu 2 jam setelah jam mulai
+        $jamMulai = Carbon::createFromFormat('H:i', $data['jam_mulai']);
+
+        if ($jamMulai->format('H:i') > '21:59') {
+            return response()->json([
+                'message' => 'Jam mulai maksimal pukul 21:59 agar durasi 2 jam tidak melewati hari berikutnya.'
+            ], 422);
+        }
+
+        $jamSelesai = $jamMulai->copy()->addHours(2);
+
+        // Memastikan jadwal lama milik tentor yang sedang login
         if (!empty($data['id_jadwal_lama'])) {
             $lama = DB::table('jadwal')
                 ->where('id_jadwal', $data['id_jadwal_lama'])
                 ->where('id_tentor', $idTentor)
                 ->where('status', 'terjadwal')
                 ->first();
-            abort_unless($lama, 403, 'Jadwal ini bukan milikmu atau sudah tidak bisa diubah.');
+
+            abort_unless(
+                $lama,
+                403,
+                'Jadwal ini bukan milikmu atau sudah tidak bisa diubah.'
+            );
 
             if ((int) $lama->id_kelas !== (int) $data['id_kelas']) {
-                return response()->json(['message' => 'Kelas tidak sesuai dengan jadwal yang diubah.'], 422);
+                return response()->json([
+                    'message' => 'Kelas tidak sesuai dengan jadwal yang diubah.'
+                ], 422);
             }
-        }
 
-        $bentrok = DB::table('jadwal')
-            ->where('id_tentor', $idTentor)
-            ->where('status', '!=', 'dibatalkan')
-            ->whereDate('tanggal', $data['tanggal'])
-            ->when(!empty($data['id_jadwal_lama']), fn ($q) => $q->where('id_jadwal', '!=', $data['id_jadwal_lama']))
-            ->where('jam_mulai', '<', $data['jam_selesai'])
-            ->where('jam_selesai', '>', $data['jam_mulai'])
-            ->exists();
-
-        if ($bentrok) {
-            return response()->json(['message' => 'Jadwal bentrok dengan jadwal lain milikmu.'], 422);
-        }
-
-        if (!empty($data['id_jadwal_lama'])) {
+            // Mencegah pengajuan ganda untuk jadwal yang sama
             $dobel = DB::table('pengajuan_jadwal')
                 ->where('id_jadwal_lama', $data['id_jadwal_lama'])
                 ->where('status', 'menunggu')
                 ->exists();
+
             if ($dobel) {
-                return response()->json(['message' => 'Perubahan untuk jadwal ini masih menunggu verifikasi.'], 422);
+                return response()->json([
+                    'message' => 'Perubahan untuk jadwal ini masih menunggu verifikasi.'
+                ], 422);
             }
         }
 
-        DB::table('pengajuan_jadwal')->insert([
-            'id_tentor'      => $idTentor,
-            'id_kelas'       => $data['id_kelas'],
-            'id_jadwal_lama' => $data['id_jadwal_lama'] ?? null,
-            'tanggal_baru'   => $data['tanggal'],
-            'jam_mulai'      => $data['jam_mulai'],
-            'jam_selesai'    => $data['jam_selesai'],
-            'alasan'         => $data['catatan'] ?? null,
-            'status'         => 'menunggu',
-            'created_at'     => now(),
-            'updated_at'     => now(),
-        ]);
+        // Menyimpan pengajuan jadwal
+        try {
+            DB::table('pengajuan_jadwal')->insert([
+                'id_tentor'      => $idTentor,
+                'id_kelas'       => $data['id_kelas'],
+                'id_jadwal_lama' => $data['id_jadwal_lama'] ?? null,
+                'tanggal_baru'   => $data['tanggal'],
+                'jam_mulai'      => $data['jam_mulai'],
+                'jam_selesai'    => $jamSelesai->format('H:i:s'),
+                'alasan'         => $data['catatan'] ?? null,
+                'status'         => 'menunggu',
+                'created_at'     => now(),
+                'updated_at'     => now(),
+            ]);
+        } catch (QueryException $e) {
+            if (str_contains($e->getMessage(), 'Jadwal bentrok')) {
+                return response()->json([
+                    'message' => 'Jadwal bentrok dengan jadwal tentor lain atau pengajuan yang masih menunggu.'
+                ], 422);
+            }
+
+            return response()->json([
+                'message' => 'Gagal mengirim pengajuan jadwal.'
+            ], 500);
+        }
 
         return response()->json([
             'message' => empty($data['id_jadwal_lama'])

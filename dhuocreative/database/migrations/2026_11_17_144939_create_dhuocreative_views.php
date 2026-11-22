@@ -25,18 +25,24 @@ return new class extends Migration
         LEFT JOIN jadwal j ON kl.id_kelas = j.id_kelas
         LEFT JOIN users nt ON j.id_tentor = nt.id_user;
 
-        CREATE VIEW vw_jadwal_tentor AS
+        CREATE OR REPLACE VIEW public.vw_jadwal_tentor AS
         SELECT
             u.nama AS nama_tentor,
             k.nama_kursus AS kelas,
             j.tanggal,
             j.jam_mulai,
             j.jam_selesai,
-            j.status
+            j.status,
+            j.id_jadwal,
+            j.id_tentor,
+            ks.id_kelas,
+            ks.kelas::text AS jenis_kelas,
+            s.nama AS siswa
         FROM jadwal j
         JOIN users u ON j.id_tentor = u.id_user
         JOIN kelas ks ON j.id_kelas = ks.id_kelas
-        JOIN kursus k ON ks.id_kursus = k.id_kursus;
+        JOIN kursus k ON ks.id_kursus = k.id_kursus
+        JOIN users s ON ks.id_siswa = s.id_user;
 
         CREATE VIEW vw_nilai_siswa AS
         SELECT
@@ -230,7 +236,63 @@ return new class extends Migration
         JOIN kursus k ON sk.id_kursus = k.id_kursus
         JOIN users u ON sk.id_siswa = u.id_user;
 
+        CREATE VIEW public.vw_rekap_absensi_bulanan AS
+            SELECT
+                k.id_siswa,
+                k.id_kursus,
+                j.id_tentor,
+                DATE_TRUNC('month', j.tanggal)::date AS periode,
+                u.nama AS nama_siswa,
+                ku.nama_kursus AS kursus,
+                k.kelas AS jenis_kelas,
+                t.nama AS nama_tentor,
+                COUNT(j.id_jadwal) AS total_pertemuan,
+                COUNT(j.id_jadwal) FILTER (
+                    WHERE a.status = 'hadir'
+                ) AS hadir,
+                COUNT(j.id_jadwal) FILTER (
+                    WHERE a.status = 'izin'
+                ) AS izin,
+                COUNT(j.id_jadwal) FILTER (
+                    WHERE a.status = 'sakit'
+                ) AS sakit,
+                COUNT(j.id_jadwal) FILTER (
+                    WHERE a.status = 'alpha'
+                ) AS alpha,
+                COALESCE(
+                    ROUND(
+                        COUNT(j.id_jadwal) FILTER (
+                            WHERE a.status = 'hadir'
+                        )::numeric
+                        / NULLIF(COUNT(j.id_jadwal), 0) * 100,
+                        2
+                    ),
+                    0
+                ) AS persentase_kehadiran
+            FROM kelas k
+            JOIN users u
+                ON k.id_siswa = u.id_user
+            JOIN kursus ku
+                ON k.id_kursus = ku.id_kursus
+            JOIN jadwal j
+                ON k.id_kelas = j.id_kelas
+            JOIN users t
+                ON j.id_tentor = t.id_user
+            LEFT JOIN absensi_siswa a
+                ON j.id_jadwal = a.id_jadwal
+                AND k.id_siswa = a.id_siswa
+            WHERE j.status = 'selesai'
+            GROUP BY
+                k.id_siswa,
+                k.id_kursus,
+                j.id_tentor,
+                DATE_TRUNC('month', j.tanggal),
+                u.nama,
+                ku.nama_kursus,
+                k.kelas,
+                t.nama;
         SQL);
+        
     }
 
     public function down(): void

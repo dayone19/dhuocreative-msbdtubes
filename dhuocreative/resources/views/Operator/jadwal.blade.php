@@ -37,13 +37,30 @@
             <span style="font-weight: 800; color: #df6833; font-size: 16px;">Periode: {{ $labelMinggu }}</span>
             <a href="{{ route('operator.jadwal', ['minggu' => $nextWeek]) }}" style="text-decoration: none; padding: 7px 16px; font-size: 13px; font-weight: 700; color: #286c65; background: #ffffff; border: 1.5px solid #286c65; border-radius: 20px;">Minggu Depan ›</a>
         </div>
-        <div class="o-week-grid" id="ringkasanMingguan">
+    <div class="o-week-grid" id="ringkasanMingguan">
             @foreach($jadwalMingguan as $hari => $data)
                 <div class="o-week-day">
-                    <h3>{{ $hari }} <span style="font-size: 12px; font-weight: normal; opacity: 0.9;">({{ $data['tanggal'] }})</span></h3>
-                    @if($data['jadwal'])
-                        <p>{{ $data['jadwal']->kelas->kursus->nama_kursus ?? '-' }} - {{ $data['jadwal']->kelas->kelas ?? '-' }}</p>
-                        <span>{{ substr($data['jadwal']->jam_mulai, 0, 5) }}–{{ substr($data['jadwal']->jam_selesai, 0, 5) }} · {{ $data['jadwal']->kelas->siswa->nama ?? 'Siswa' }}</span>
+                    <h3>
+                        {{ $hari }}
+                        <span style="font-size: 12px; font-weight: normal; opacity: 0.9;">
+                            ({{ $data['tanggal'] }})
+                        </span>
+                    </h3>
+
+                    @if($data['jadwals']->isNotEmpty())
+                        <div class="o-week-day-schedules">
+                            @foreach($data['jadwals'] as $jadwal)
+                                <div class="o-week-schedule-item">
+                                    <p>{{ $jadwal->kelas->kursus->nama_kursus ?? '-' }}</p>
+                                    <span>{{ $jadwal->kelas->kelas ?? '-' }}</span>
+                                    <span>
+                                        {{ substr($jadwal->jam_mulai, 0, 5) }}–{{ substr($jadwal->jam_selesai, 0, 5) }}
+                                    </span>
+                                    <span>Siswa: {{ $jadwal->kelas->siswa->nama ?? 'Siswa' }}</span>
+                                    <span>Tentor: {{ $jadwal->tentor->nama ?? '-' }}</span>
+                                </div>
+                            @endforeach
+                        </div>
                     @else
                         <p>Belum ada jadwal</p>
                         <span>—</span>

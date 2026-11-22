@@ -4,242 +4,234 @@
 
 @section('content')
 <div class="t-page tj-page">
- <div class="t-page-header">
-    <h1 class="t-page-title">Jadwal Saya</h1>
- </div>
- <div class="jadwal-mingguan" id="jadwalMingguan"></div>
- <div class="tj-section-head">
-    <h2 class="tj-section-title">Daftar Jadwal</h2>
 
-    <form method="GET" action="{{ route('tentor.jadwal') }}" class="tj-toolbar" id="formFilterJadwal">
-        <input type="text" name="q" value="{{ $q }}" class="tj-input" placeholder="Cari kursus, kelas, atau siswa" aria-label="Cari jadwal" style="width: 400px;">
-        <button type="submit" class="tj-btn-detail" style="margin-left:4px">Cari</button>
-        <input type="date" name="tanggal" value="{{ $tanggal }}" class="tj-input" aria-label="Filter tanggal">
-        <select name="status" class="tj-input tj-select" aria-label="Filter status" onchange="this.form.submit()">
-            <option value="" @selected($status === '')>Semua status</option>
-            <option value="terjadwal" @selected($status === 'terjadwal')>Terjadwal</option>
-            <option value="selesai" @selected($status === 'selesai')>Selesai</option>
-            <option value="dibatalkan" @selected($status === 'dibatalkan')>Dibatalkan</option>
-        </select>
-    </form>
- </div>
+    <div class="t-page-header">
+        <h1 class="t-page-title">Jadwal Saya</h1>
+    </div>
 
- <div class="tj-table-wrap">
-    <table class="tj-table" id="tabelJadwal">
-        <thead>
-            <tr>
-                <th>Nama Kursus</th>
-                <th>Kelas</th>
-                <th>Siswa</th>
-                <th>Tanggal</th>
-                <th>Jam Mulai</th>
-                <th>Jam Selesai</th>
-                <th>Status</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
-        <tbody id="jadwalBody">
-            @forelse ($jadwal as $j)
-            <tr>
-                <td>{{ $j->kursus }}</td>
-                <td>{{ $j->kelas }}</td>
-                <td>{{ $j->siswa }}</td>
-                <td>{{ \Carbon\Carbon::parse($j->tanggal)->translatedFormat('d M Y') }}</td>
-                <td>{{ $j->mulai }}</td>
-                <td>{{ $j->selesai }}</td>
-                <td>
-                    <span class="tj-pill tj-{{ $j->status }}">{{ ucfirst($j->status) }}</span>
-                </td>
-                <td>
-                    @if ($j->status === 'terjadwal')
-                        <button type="button"
-                                class="tj-btn-detail tj-btn-ajukan-perubahan"
-                                data-id-jadwal="{{ $j->id_jadwal }}"
-                                data-id-kelas="{{ $j->id_kelas }}"
-                                data-kursus="{{ $j->kursus }}"
-                                data-kelas="{{ $j->kelas }}"
-                                data-siswa="{{ $j->siswa }}"
-                                data-tanggal="{{ $j->tanggal }}"
-                                data-mulai="{{ $j->mulai }}"
-                                data-selesai="{{ $j->selesai }}">
-                            Ubah Jadwal
-                        </button>
-                    @else
-                        <span class="tj-ket">—</span>
-                    @endif
-                </td>
-            </tr>
-            @empty
-            <tr>
-                <td colspan="8" class="tj-empty">Tidak ada jadwal yang cocok.</td>
-            </tr>
-            @endforelse
-        </tbody>
-    </table>
-
-    {{-- Pagination server-side (style project) --}}
-    @if ($jadwal->hasPages())
-    <nav class="tj-pagination" aria-label="Navigasi halaman">
-        {{-- Previous --}}
-        @if ($jadwal->onFirstPage())
-            <button type="button" disabled aria-label="Sebelumnya">&lt;</button>
-        @else
-            <a href="{{ $jadwal->previousPageUrl() }}" style="text-decoration:none">
-                <button type="button" aria-label="Sebelumnya">&lt;</button>
+    {{-- Kalender Mingguan --}}
+    <div class="o-schedule-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+            <a href="{{ route('tentor.jadwal', ['minggu' => $prevWeek]) }}"
+               style="text-decoration:none; padding:7px 16px; font-size:13px; font-weight:700; color:#286c65; background:#fff; border:1.5px solid #286c65; border-radius:20px;">
+                ‹ Minggu Lalu
             </a>
-        @endif
 
-        @php
-            $current = $jadwal->currentPage();
-            $last    = $jadwal->lastPage();
-            $pages   = collect([1, $last, $current]);
-            for ($i = $current - 1; $i <= $current + 1; $i++) {
-                if ($i >= 1 && $i <= $last) $pages->push($i);
-            }
-            if ($current <= 4) {
-                foreach ([2, 3, 4] as $n) if ($n < $last) $pages->push($n);
-            }
-            if ($current >= $last - 3) {
-                foreach ([$last - 1, $last - 2, $last - 3] as $n) if ($n > 1) $pages->push($n);
-            }
-            $pages = $pages->unique()->sort()->values();
-            $prev = 0;
-        @endphp
+            <span style="font-weight:800; color:#df6833; font-size:16px;">
+                Periode: {{ $labelMinggu }}
+            </span>
 
-        @foreach ($pages as $n)
-            @if ($prev && $n - $prev > 1)
-                <span class="tj-page-ellipsis">…</span>
-            @endif
-            @if ($n == $current)
-                <button type="button" class="is-active" aria-current="page">{{ $n }}</button>
-            @else
-                <a href="{{ $jadwal->url($n) }}" style="text-decoration:none">
-                    <button type="button">{{ $n }}</button>
-                </a>
-            @endif
-            @php $prev = $n; @endphp
-        @endforeach
-
-        {{-- Next --}}
-        @if ($jadwal->hasMorePages())
-            <a href="{{ $jadwal->nextPageUrl() }}" style="text-decoration:none">
-                <button type="button" aria-label="Berikutnya">&gt;</button>
+            <a href="{{ route('tentor.jadwal', ['minggu' => $nextWeek]) }}"
+               style="text-decoration:none; padding:7px 16px; font-size:13px; font-weight:700; color:#286c65; background:#fff; border:1.5px solid #286c65; border-radius:20px;">
+                Minggu Depan ›
             </a>
-        @else
-            <button type="button" disabled aria-label="Berikutnya">&gt;</button>
-        @endif
-    </nav>
-    @endif
- </div>
+        </div>
 
- <style>
- .tj-pagination {
-     display: flex;
-     justify-content: center;
-     align-items: center;
-     gap: 8px;
-     margin-top: 20px;
-     flex-wrap: wrap;
-     padding: 4px 0;
- }
- .tj-pagination button {
-     min-width: 40px;
-     height: 40px;
-     padding: 0 12px;
-     border: 1.5px solid #cfe0dd;
-     border-radius: 12px;
-     background: #fffaf0;
-     color: #14524b;
-     font: inherit;
-     font-size: 14px;
-     font-weight: 600;
-     cursor: pointer;
-     transition: background .15s, color .15s, border-color .15s, transform .1s;
-     box-shadow: 0 1px 2px rgba(0,0,0,.04);
- }
- .tj-pagination a button:hover:not(:disabled):not(.is-active) {
-     background: #e3efed;
-     border-color: #286c65;
-     color: #0f3d39;
- }
- .tj-pagination button.is-active {
-     background: #f27640;
-     border-color: #f27640;
-     color: #fff;
-     box-shadow: 0 2px 8px rgba(242,118,64,.35);
- }
- .tj-pagination button:disabled {
-     opacity: .45;
-     cursor: not-allowed;
- }
- .tj-pagination .tj-page-ellipsis {
-     min-width: 28px;
-     height: 40px;
-     display: inline-flex;
-     align-items: center;
-     justify-content: center;
-     color: #5f7f7b;
-     font-weight: 700;
-     font-size: 15px;
-     user-select: none;
- }
- </style>
+        <div class="jadwal-mingguan" id="jadwalMingguan">
+            @foreach($jadwalMingguan as $hari => $data)
+                <div class="jadwal-hari">
+                    <h3>{{ $hari }} · {{ $data['tanggal'] }}</h3>
 
- <div class="tj-section-head tj-section-gap">
-    <h2 class="tj-section-title">Pengajuan Jadwal</h2>
+                    <div class="jadwal-list-scroll">
+                        @if($data['jadwals']->isNotEmpty())
+                            @foreach($data['jadwals'] as $j)
+                                <div class="jadwal-item">
+                                    <p>{{ $j->kursus }} · {{ $j->kelas }}</p>
+                                    <p>{{ $j->mulai }}–{{ $j->selesai }}</p>
+                                    <p>{{ $j->siswa }}</p>
+                                </div>
+                            @endforeach
+                        @else
+                            <p class="jadwal-kosong">—</p>
+                        @endif
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+
+    {{-- Daftar Jadwal --}}
+    <div class="tj-section-head">
+        <h2 class="tj-section-title">Daftar Jadwal</h2>
+
+        <div class="tj-toolbar" id="formFilterJadwal">
+            <input
+                type="search"
+                id="cariJadwal"
+                class="tj-input"
+                placeholder="Cari kursus, kelas, atau siswa..."
+                aria-label="Cari jadwal"
+                style="width:300px;"
+            >
+
+            <input
+                type="month"
+                id="filterTanggal"
+                class="tj-input"
+                aria-label="Filter bulan"
+            >
+
+            <select id="filterStatus" class="tj-input tj-select" aria-label="Filter status">
+                <option value="">Semua Status</option>
+                <option value="terjadwal">Terjadwal</option>
+                <option value="selesai">Selesai</option>
+                <option value="dibatalkan">Dibatalkan</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="tj-table-wrap">
+        <table class="tj-table" id="tabelJadwal">
+            <thead>
+                <tr>
+                    <th>Nama Kursus</th>
+                    <th>Kelas</th>
+                    <th>Siswa</th>
+                    <th>Tanggal</th>
+                    <th>Jam Mulai</th>
+                    <th>Jam Selesai</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+
+            <tbody id="jadwalBody">
+                @forelse($jadwal as $j)
+                    <tr
+                        data-id="{{ $j->id_jadwal }}"
+                        data-id-kelas="{{ $j->id_kelas }}"
+                        data-tanggal="{{ $j->tanggal }}"
+                        data-status="{{ $j->status }}"
+                    >
+                        <td>{{ $j->kursus }}</td>
+                        <td>{{ $j->kelas }}</td>
+                        <td>{{ $j->siswa }}</td>
+                        <td>{{ \Carbon\Carbon::parse($j->tanggal)->translatedFormat('d M Y') }}</td>
+                        <td>{{ $j->mulai }}</td>
+                        <td>{{ $j->selesai }}</td>
+                        <td>
+                            <span class="tj-pill tj-{{ $j->status }}">
+                                {{ ucfirst($j->status) }}
+                            </span>
+                        </td>
+                        <td>
+                            @if($j->status === 'terjadwal')
+                                <button
+                                    type="button"
+                                    class="tj-btn-detail tj-btn-ajukan-perubahan"
+                                    data-id-jadwal="{{ $j->id_jadwal }}"
+                                    data-id-kelas="{{ $j->id_kelas }}"
+                                    data-kursus="{{ $j->kursus }}"
+                                    data-kelas="{{ $j->kelas }}"
+                                    data-siswa="{{ $j->siswa }}"
+                                    data-tanggal="{{ $j->tanggal }}"
+                                    data-mulai="{{ $j->mulai }}"
+                                    data-selesai="{{ $j->selesai }}"
+                                >
+                                    Ubah Jadwal
+                                </button>
+                            @else
+                                <span class="tj-ket">—</span>
+                            @endif
+                        </td>
+                    </tr>
+                @empty
+                    <tr id="jadwalAwalKosong">
+                        <td colspan="8" class="tj-empty">
+                            Belum ada jadwal tersimpan.
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+
+        <p class="tj-empty" id="jadwalKosong" hidden>
+            Jadwal tidak ditemukan.
+        </p>
+
+        <nav
+            class="tj-pagination"
+            id="paginasiJadwal"
+            aria-label="Navigasi halaman"
+            hidden
+        ></nav>
+    </div>
+
+    {{-- Riwayat Pengajuan --}}
+    <div class="tj-section-head tj-section-gap">
+        <h2 class="tj-section-title">Pengajuan Jadwal</h2>
+    </div>
+
+    <div class="tj-table-wrap">
+        <table class="tj-table">
+            <thead>
+                <tr>
+                    <th>Nama Kursus</th>
+                    <th>Siswa</th>
+                    <th>Jadwal Lama</th>
+                    <th>Jadwal Diajukan</th>
+                    <th>Status</th>
+                    <th>Keterangan</th>
+                </tr>
+            </thead>
+
+            <tbody id="pengajuanBody">
+                @forelse($pengajuan as $p)
+                    <tr>
+                        <td>{{ $p->kursus }}</td>
+                        <td>{{ $p->siswa }}</td>
+                        <td>
+                            @if($p->lamaTanggal)
+                                {{ \Carbon\Carbon::parse($p->lamaTanggal)->translatedFormat('d M Y') }}
+                                · {{ $p->lamaMulai }}–{{ $p->lamaSelesai }}
+                            @else
+                                Jadwal baru
+                            @endif
+                        </td>
+                        <td>
+                            {{ \Carbon\Carbon::parse($p->tanggal)->translatedFormat('d M Y') }}
+                            · {{ $p->mulai }}–{{ $p->selesai }}
+                        </td>
+                        <td>
+                            <span class="tj-pill tj-{{ $p->status }}">
+                                {{ ucfirst($p->status) }}
+                            </span>
+                        </td>
+                        <td class="tj-ket">{{ $p->ket }}</td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="6" class="tj-empty">
+                            Belum ada pengajuan.
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
 </div>
 
- <div class="tj-table-wrap">
-    <table class="tj-table">
-        <thead>
-            <tr>
-                <th>Nama Kursus</th>
-                <th>Siswa</th>
-                <th>Jadwal Lama</th>
-                <th>Jadwal Diajukan</th>
-                <th>Status</th>
-                <th>Keterangan</th>
-            </tr>
-        </thead>
-        <tbody id="pengajuanBody">
-            @forelse ($pengajuan as $p)
-            <tr>
-                <td>{{ $p->kursus }}</td>
-                <td>{{ $p->siswa }}</td>
-                <td>
-                    @if ($p->lamaTanggal)
-                        {{ \Carbon\Carbon::parse($p->lamaTanggal)->translatedFormat('d M Y') }} · {{ $p->lamaMulai }}–{{ $p->lamaSelesai }}
-                    @else
-                        Jadwal baru
-                    @endif
-                </td>
-                <td>{{ \Carbon\Carbon::parse($p->tanggal)->translatedFormat('d M Y') }} · {{ $p->mulai }}–{{ $p->selesai }}</td>
-                <td><span class="tj-pill tj-{{ $p->status }}">{{ ucfirst($p->status) }}</span></td>
-                <td class="tj-ket">{{ $p->ket }}</td>
-            </tr>
-            @empty
-            <tr><td colspan="6" class="tj-empty">Belum ada pengajuan.</td></tr>
-            @endforelse
-        </tbody>
-    </table>
- </div>
-</div>
-
-<!-- Modal Ubah Jadwal -->
+{{-- Modal Ubah Jadwal --}}
 <div class="t-modal" id="modalAjukan" hidden>
     <div class="t-modal-box">
         <div class="t-modal-heading">
-            <button type="button"
-                    class="tmt-back-btn"
-                    data-tutup aria-label="Kembali">
+            <button
+                type="button"
+                class="tmt-back-btn"
+                data-tutup
+                aria-label="Kembali"
+            >
                 <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
-                <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+                    <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
                 </svg>
             </button>
             <h2>Ubah Jadwal</h2>
         </div>
+
         <form id="formAjukan">
             @csrf
+
             <div class="t-form-group">
                 <label for="id_kelas">Kursus</label>
                 <select id="id_kelas" disabled></select>
@@ -249,157 +241,357 @@
                 <label for="tanggal">Tanggal</label>
                 <input type="date" id="tanggal" required>
             </div>
+
             <div class="t-form-grid">
                 <div class="t-form-group">
                     <label for="jam_mulai">Jam Mulai</label>
                     <input type="time" id="jam_mulai" value="09:00" required>
                 </div>
+
                 <div class="t-form-group">
                     <label for="jam_selesai">Jam Selesai</label>
-                    <input type="time" id="jam_selesai" value="10:30" required>
+                    <input type="time" id="jam_selesai" value="11:00" readonly>
                 </div>
             </div>
+
             <div class="t-form-group">
                 <label for="catatan">Catatan (opsional)</label>
                 <textarea id="catatan" rows="3" placeholder="Contoh: sudah disepakati dengan siswa"></textarea>
             </div>
-            <button type="submit" class="t-btn t-btn-orange t-btn-full">Kirim Permintaan Perubahan</button>
+
+            <button type="submit" class="t-btn t-btn-orange t-btn-full">
+                Kirim Permintaan Perubahan
+            </button>
         </form>
     </div>
 </div>
 
-<div id="pesanDemo" role="status" hidden style="position:fixed;right:20px;bottom:20px;z-index:11000;padding:14px 20px;border-radius:18px;background:var(--teal);color:white;box-shadow:0 8px 24px #0002"></div>
+<div
+    id="pesanDemo"
+    role="status"
+    hidden
+    style="position:fixed;right:20px;bottom:20px;z-index:11000;padding:14px 20px;border-radius:18px;background:var(--teal);color:white;box-shadow:0 8px 24px #0002"
+></div>
 
 <script>
-const offsetDate = n => { const d = new Date(); d.setHours(12,0,0,0); d.setDate(d.getDate()+n); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
-
-// Data kalender mingguan (hanya minggu ini, dari controller)
-const jadwalKalender = @json($jadwalKalender);
+const PER_HALAMAN = 6;
+let halJadwal = 1;
 let jadwalDipilihUntukDiubah = null;
 
 const el = id => document.getElementById(id);
-const safe = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const formatTanggal = s => new Date(s+'T12:00:00').toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
-const badge = s => `<span class="tj-pill tj-${safe(s)}">${safe(s.charAt(0).toUpperCase()+s.slice(1))}</span>`;
 
-function renderMingguan() {
-    const names = [
-        'Senin',
-        'Selasa',
-        'Rabu',
-        'Kamis',
-        'Jumat',
-        'Sabtu'
-    ];
+const offsetDate = n => {
+    const d = new Date();
+    d.setHours(12, 0, 0, 0);
+    d.setDate(d.getDate() + n);
 
-    const today = new Date();
-    today.setHours(12, 0, 0, 0);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
 
-    const monday = new Date(today);
-    monday.setDate(
-        today.getDate() - ((today.getDay() + 6) % 7)
+const formatTanggal = s =>
+    new Date(s + 'T12:00:00').toLocaleDateString('id-ID', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric'
+    });
+
+// Pagination mengikuti pola Admin
+function renderPaginasi(kontainerId, total, halaman, pindah) {
+    const nav = el(kontainerId);
+    if (!nav) return;
+
+    nav.innerHTML = '';
+
+    const jumlah = Math.ceil(total / PER_HALAMAN);
+
+    if (jumlah <= 1) {
+        nav.hidden = true;
+        return;
+    }
+
+    nav.hidden = false;
+
+    const awal = (halaman - 1) * PER_HALAMAN + 1;
+    const akhir = Math.min(halaman * PER_HALAMAN, total);
+
+    const info = document.createElement('span');
+    info.className = 'tj-pg-info';
+    info.textContent = `Menampilkan ${awal}–${akhir} dari ${total}`;
+    nav.appendChild(info);
+
+    const buatTombol = (label, tujuan, { aktif = false, mati = false, aria } = {}) => {
+        const b = document.createElement('button');
+
+        b.type = 'button';
+        b.className = aktif ? 'is-active' : '';
+        b.textContent = label;
+        b.disabled = mati;
+
+        if (aria) b.setAttribute('aria-label', aria);
+        if (aktif) b.setAttribute('aria-current', 'page');
+
+        b.addEventListener('click', () => pindah(tujuan));
+
+        return b;
+    };
+
+    nav.appendChild(
+        buatTombol('<', halaman - 1, {
+            mati: halaman === 1,
+            aria: 'Halaman sebelumnya'
+        })
     );
 
-    const formatKey = date => {
-        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-    };
+    let terakhir = 0;
 
-    el('jadwalMingguan').innerHTML = names.map((name, i) => {
-        const d = new Date(monday);
-        d.setDate(monday.getDate() + i);
+    for (let i = 1; i <= jumlah; i++) {
+        if (i === 1 || i === jumlah || Math.abs(i - halaman) <= 1) {
+            if (i - terakhir > 1) {
+                const titik = document.createElement('span');
+                titik.className = 'tj-page-ellipsis';
+                titik.textContent = '…';
+                nav.appendChild(titik);
+            }
 
-        const key = formatKey(d);
+            nav.appendChild(
+                buatTombol(String(i), i, {
+                    aktif: i === halaman,
+                    aria: `Halaman ${i}`
+                })
+            );
 
-        const items = jadwalKalender
-            .filter(j => j.tanggal === key && j.status === 'terjadwal')
-            .sort((a, b) => a.mulai.localeCompare(b.mulai));
+            terakhir = i;
+        }
+    }
 
-        return `
-            <div class="jadwal-hari">
-                <h3>${name} · ${d.getDate()}/${d.getMonth() + 1}</h3>
-
-                <div class="jadwal-list-scroll">
-                    ${
-                        items.length
-                        ? items.map(j => `
-                            <div class="jadwal-item">
-                                <p>${safe(j.kursus)} · ${safe(j.kelas)}</p>
-                                <p>${safe(j.mulai)}–${safe(j.selesai)}</p>
-                            </div>
-                        `).join('')
-                        : '<p class="jadwal-kosong">—</p>'
-                    }
-                </div>
-            </div>
-        `;
-    }).join('');
+    nav.appendChild(
+        buatTombol('>', halaman + 1, {
+            mati: halaman === jumlah,
+            aria: 'Halaman berikutnya'
+        })
+    );
 }
 
-function toast(msg){
-    const p=el('pesanDemo');
-    p.textContent=msg;
-    p.hidden=false;
+// Filter dan pencarian jadwal
+function filterJadwal() {
+    const q = el('cariJadwal').value.toLowerCase().trim();
+    const bulan = el('filterTanggal').value;
+    const status = el('filterStatus').value;
+
+    const body = el('jadwalBody');
+    if (!body) return;
+
+    const semuaBaris = [...body.querySelectorAll('tr[data-id]')];
+
+    const barisFilter = semuaBaris.filter(r => {
+        const cocokTeks = r.textContent.toLowerCase().includes(q);
+
+        const cocokBulan =
+            !bulan ||
+            (r.dataset.tanggal && r.dataset.tanggal.startsWith(bulan));
+
+        const cocokStatus =
+            !status || r.dataset.status === status;
+
+        return cocokTeks && cocokBulan && cocokStatus;
+    });
+
+    semuaBaris.forEach(r => r.style.display = 'none');
+
+    const total = barisFilter.length;
+
+    el('jadwalKosong').hidden = total > 0;
+
+    const barisAwalKosong = el('jadwalAwalKosong');
+
+    if (barisAwalKosong) {
+        barisAwalKosong.style.display = total === 0 ? '' : 'none';
+    }
+
+    if (total === 0) {
+        renderPaginasi('paginasiJadwal', 0, halJadwal, pindahHalaman);
+        return;
+    }
+
+    const halamanMaksimal = Math.ceil(total / PER_HALAMAN);
+
+    if (halJadwal > halamanMaksimal) {
+        halJadwal = halamanMaksimal;
+    }
+
+    const awal = (halJadwal - 1) * PER_HALAMAN;
+    const akhir = awal + PER_HALAMAN;
+
+    barisFilter.slice(awal, akhir).forEach(r => {
+        r.style.display = '';
+    });
+
+    renderPaginasi(
+        'paginasiJadwal',
+        total,
+        halJadwal,
+        pindahHalaman
+    );
+}
+
+function pindahHalaman(tujuanBaru) {
+    halJadwal = tujuanBaru;
+    filterJadwal();
+
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+}
+
+['cariJadwal', 'filterTanggal', 'filterStatus'].forEach(id => {
+    el(id)?.addEventListener(
+        id === 'cariJadwal' ? 'input' : 'change',
+        () => {
+            halJadwal = 1;
+            filterJadwal();
+        }
+    );
+});
+
+// Toast pemberitahuan
+function toast(msg) {
+    const p = el('pesanDemo');
+
+    p.textContent = msg;
+    p.hidden = false;
+
     clearTimeout(p._t);
-    p._t=setTimeout(()=>p.hidden=true,3200);
+
+    p._t = setTimeout(() => {
+        p.hidden = true;
+    }, 3200);
 }
 
-function bukaModalUbah(btn){
+// Menghitung jam selesai otomatis 2 jam setelah jam mulai
+function hitungJamSelesai() {
+    const mulai = el('jam_mulai').value;
+
+    if (!mulai) return;
+
+    const [jam, menit] = mulai.split(':').map(Number);
+    const totalMenit = jam * 60 + menit + 120;
+
+    const jamSelesai = Math.floor(totalMenit / 60);
+    const menitSelesai = totalMenit % 60;
+
+    el('jam_selesai').value =
+        `${String(jamSelesai).padStart(2, '0')}:${String(menitSelesai).padStart(2, '0')}`;
+}
+
+el('jam_mulai').addEventListener('input', hitungJamSelesai);
+
+// Membuka modal perubahan jadwal
+function bukaModalUbah(btn) {
     const j = {
         id_jadwal: Number(btn.dataset.idJadwal),
-        id_kelas:  Number(btn.dataset.idKelas),
-        kursus:    btn.dataset.kursus,
-        kelas:     btn.dataset.kelas,
-        siswa:     btn.dataset.siswa,
-        tanggal:   btn.dataset.tanggal,
-        mulai:     btn.dataset.mulai,
-        selesai:   btn.dataset.selesai,
+        id_kelas: Number(btn.dataset.idKelas),
+        kursus: btn.dataset.kursus,
+        kelas: btn.dataset.kelas,
+        siswa: btn.dataset.siswa,
+        tanggal: btn.dataset.tanggal,
+        mulai: btn.dataset.mulai,
+        selesai: btn.dataset.selesai,
     };
+
     jadwalDipilihUntukDiubah = j;
 
     const sel = el('id_kelas');
     sel.innerHTML = '';
+
     const opt = document.createElement('option');
     opt.value = j.id_kelas;
     opt.textContent = `${j.kursus} · ${j.kelas} · ${j.siswa}`;
+
     sel.appendChild(opt);
     sel.value = j.id_kelas;
 
     el('tanggal').value = '';
     el('jam_mulai').value = j.mulai;
-    el('jam_selesai').value = j.selesai;
-    el('catatan').value = 'Permintaan perubahan dari jadwal ' + formatTanggal(j.tanggal) + '.';
+
+    hitungJamSelesai();
+
+    el('catatan').value =
+        'Permintaan perubahan dari jadwal ' + formatTanggal(j.tanggal) + '.';
 
     el('tanggal').min = offsetDate(0);
     el('modalAjukan').hidden = false;
 }
 
-// Event listener tombol Ubah Jadwal
+// Event tombol Ubah Jadwal
 el('jadwalBody').addEventListener('click', e => {
     const b = e.target.closest('[data-id-jadwal]');
-    if (b) bukaModalUbah(b);
+
+    if (b) {
+        bukaModalUbah(b);
+    }
 });
 
-document.querySelectorAll('[data-tutup]').forEach(b => b.addEventListener('click', () => b.closest('.t-modal').hidden = true));
-document.querySelectorAll('.t-modal').forEach(m => m.addEventListener('click', e => { if (e.target === m) m.hidden = true; }));
+// Menutup modal
+document.querySelectorAll('[data-tutup]').forEach(b => {
+    b.addEventListener('click', () => {
+        b.closest('.t-modal').hidden = true;
+    });
+});
+
+document.querySelectorAll('.t-modal').forEach(m => {
+    m.addEventListener('click', e => {
+        if (e.target === m) {
+            m.hidden = true;
+        }
+    });
+});
+
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+        el('modalAjukan').hidden = true;
+    }
+});
 
 el('tanggal').min = offsetDate(0);
+
+// Mengirim pengajuan perubahan jadwal
 el('formAjukan').addEventListener('submit', async e => {
     e.preventDefault();
+
     const lama = jadwalDipilihUntukDiubah;
-    if (!lama) { toast('Pilih jadwal yang ingin diubah dari tabel.'); return; }
+
+    if (!lama) {
+        toast('Pilih jadwal yang ingin diubah dari tabel.');
+        return;
+    }
+
     const payload = {
         id_kelas: Number(lama.id_kelas),
         id_jadwal_lama: lama.id_jadwal,
         tanggal: el('tanggal').value,
         jam_mulai: el('jam_mulai').value,
-        jam_selesai: el('jam_selesai').value,
         catatan: el('catatan').value.trim() || null
     };
-    if (payload.tanggal < offsetDate(0)) { toast('Pilih tanggal hari ini atau setelahnya.'); return; }
-    if (payload.jam_selesai <= payload.jam_mulai) { toast('Jam selesai harus setelah jam mulai.'); return; }
+
+    if (!payload.tanggal || !payload.jam_mulai) {
+        toast('Tanggal dan jam mulai wajib diisi.');
+        return;
+    }
+
+    if (payload.tanggal < offsetDate(0)) {
+        toast('Pilih tanggal hari ini atau setelahnya.');
+        return;
+    }
+
+    if (payload.jam_mulai > '21:59') {
+        toast('Jam mulai maksimal pukul 21:59.');
+        return;
+    }
 
     const tombol = el('formAjukan').querySelector('[type=submit]');
     tombol.disabled = true;
+
     try {
         const res = await fetch("{{ route('tentor.jadwal.ajukan') }}", {
             method: 'POST',
@@ -410,14 +602,21 @@ el('formAjukan').addEventListener('submit', async e => {
             },
             body: JSON.stringify(payload)
         });
+
         const body = await res.json().catch(() => ({}));
+
         if (!res.ok) {
-            const pesanPertama = body.errors ? Object.values(body.errors)[0][0] : null;
+            const pesanPertama = body.errors
+                ? Object.values(body.errors)[0][0]
+                : null;
+
             toast(pesanPertama || body.message || 'Gagal mengirim permintaan.');
             return;
         }
+
         toast(body.message);
         setTimeout(() => location.reload(), 900);
+
     } catch (err) {
         toast('Tidak bisa terhubung ke server.');
     } finally {
@@ -425,6 +624,7 @@ el('formAjukan').addEventListener('submit', async e => {
     }
 });
 
-renderMingguan();
+// Jalankan filter dan pagination saat halaman dibuka
+filterJadwal();
 </script>
 @endsection

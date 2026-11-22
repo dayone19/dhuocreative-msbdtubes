@@ -9,7 +9,7 @@
         </button>
 
         <div class="profile-name">
-            {{ Auth::user()->name ?? 'Operator A' }}
+            {{ Auth::user()->nama ?? 'Operator A' }}
         </div>
 
         <!-- Popup profil -->
@@ -54,6 +54,11 @@
 
         <a href="{{ route('operator.absensi') }}" class="sidebar-item {{ request()->routeIs('operator.absensi') ? 'active' : '' }}">
             <span>Absensi</span>
+        </a>
+
+        <a href="{{ route('operator.tugas') }}"
+        class="sidebar-item {{ request()->routeIs('operator.tugas*') ? 'active' : '' }}">
+            <span>Daftar Tugas</span>
         </a>
 
         <a href="{{ route('operator.sertifikat') }}" class="sidebar-item {{ request()->routeIs('operator.sertifikat') ? 'active' : '' }}">

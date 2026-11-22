@@ -81,15 +81,18 @@ class NilaiController extends Controller
                         'tanggal_nilai' => now(),
                     ]);
             } else {
-                DB::table('nilai')->insert([
-                    'id_nilai'   => (int) DB::table('nilai')->max('id_nilai') + 1,
-                    'id_pengumpulan' => $idPengumpulan,
-                    'id_tentor' => auth()->id(),
-                    'nilai' => $request->nilai,
-                    'tanggal_nilai' => now(),
-                ]);
-            }
-        });
+                // Menyimpan nilai menggunakan stored procedure
+                DB::statement(
+                    'CALL input_nilai(?, ?, ?, ?)',
+                    [
+                        $idPengumpulan,
+                        auth()->id(),
+                        $request->nilai,
+                        null,
+                    ]
+                );
+                        }
+                    });
 
         return redirect()
             ->route('tentor.nilai', ['tugas' => $pengumpulan->id_tugas])

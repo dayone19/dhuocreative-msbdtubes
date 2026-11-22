@@ -73,6 +73,21 @@ class ManajemenAkunController extends Controller
             ->with('success', 'Akun berhasil dinonaktifkan!');
     }
 
+    // aktifkan akun
+    public function aktifkan($id)
+    {
+        // UPDATE users SET status = 'aktif' WHERE id_user = ?
+        DB::table('users')
+            ->where('id_user', $id)
+            ->update([
+                'status' => 'aktif'
+            ]);
+
+        return redirect()
+            ->route('admin.manajemenAkun')
+            ->with('success', 'Akun berhasil diaktifkan!');
+    }
+
     // buat akun
     public function store(Request $request)
     {

@@ -81,12 +81,22 @@ return new class extends Migration
         FOR EACH ROW
         EXECUTE FUNCTION public.trg_validasi_tentor_penilai();
 
+        -- 9. TRIGGER VALIDASI PENGAJUAN JADWAL
+        
+        CREATE TRIGGER trg_validasi_pengajuan_jadwal
+        BEFORE INSERT OR UPDATE ON pengajuan_jadwal
+        FOR EACH ROW
+        EXECUTE FUNCTION trg_validasi_pengajuan_jadwal();
+
         SQL);
     }
 
     public function down(): void
     {
         DB::unprepared(<<<'SQL'
+        
+        DROP TRIGGER IF EXISTS trg_validasi_pengajuan_jadwal
+        ON public.pengajuan_jadwal;
 
         DROP TRIGGER IF EXISTS trg_validasi_tentor_penilai
         ON public.nilai;

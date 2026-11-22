@@ -26,7 +26,7 @@ class SiswaController extends Controller
                 ->join('kursus', 'siswa_kursus.id_kursus', '=', 'kursus.id_kursus')
                 ->leftJoin('kelas', function ($join) use ($s) {
                     $join->on('kelas.id_kursus', '=', 'kursus.id_kursus')
-                         ->where('kelas.id_siswa', '=', $s->id_user);
+                        ->where('kelas.id_siswa', '=', $s->id_user);
                 })
                 ->where('siswa_kursus.id_siswa', $s->id_user)
                 ->select(
@@ -34,7 +34,14 @@ class SiswaController extends Controller
                     'kursus.nama_kursus',
                     'kelas.kelas as jenis_kelas',
                     'siswa_kursus.status',
-                    'siswa_kursus.tanggal_daftar'
+                    'siswa_kursus.tanggal_daftar',
+                    DB::raw("(
+                        SELECT STRING_AGG(DISTINCT u.nama, ', ')
+                        FROM jadwal j
+                        JOIN users u ON j.id_tentor = u.id_user
+                        WHERE j.id_kelas = kelas.id_kelas
+                        AND j.status <> 'dibatalkan'
+                    ) as nama_tentor")
                 )
                 ->get();
 

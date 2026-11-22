@@ -42,13 +42,14 @@ class JadwalController extends Controller
             $tglHari = $startOfWeek->copy()->addDays($isoDay - 1)->format('Y-m-d');
             $tglLabel = $startOfWeek->copy()->addDays($isoDay - 1)->format('d M');
 
-            $jadwalHari = $jadwals->first(function ($j) use ($tglHari) {
-                return $j->tanggal == $tglHari && $j->status == 'terjadwal';
-            });
+           $jadwalHari = $jadwals->filter(function ($j) use ($tglHari) {
+                return \Carbon\Carbon::parse($j->tanggal)->format('Y-m-d') === $tglHari
+                    && $j->status === 'terjadwal';
+            })->sortBy('jam_mulai')->values();
 
             $jadwalMingguan[$namaHari] = [
                 'tanggal' => $tglLabel,
-                'jadwal'  => $jadwalHari,
+                'jadwals' => $jadwalHari,
             ];
         }
 
@@ -160,22 +161,34 @@ class JadwalController extends Controller
                 $namaKelas = 'Home Class';
             }
 
-            $bentrokTentor = Jadwal::where('id_tentor', $tentor->id_user)
-                ->where('tanggal', $request->tanggal)
-                ->where('status', '!=', 'dibatalkan')
-                ->when($request->filled('id_jadwal'), function ($q) use ($request) {
-                    $q->where('id_jadwal', '!=', $request->id_jadwal);
-                })
-                ->where('jam_mulai', '<', $request->jam_selesai)
-                ->where('jam_selesai', '>', $request->jam_mulai)
-                ->first();
+            // function cek_jadwal_tentor
+            if (!$request->filled('id_jadwal')) {
+                try {
+                    DB::select(
+                        'SELECT cek_jadwal_tentor(?, ?, ?, ?)',
+                        [
+                            $tentor->id_user,
+                            $request->tanggal,
+                            $request->jam_mulai,
+                            $request->jam_selesai,
+                        ]
+                    );
+                } catch (\Exception $e) {
+                    $msg = $e->getMessage();
 
-            if ($bentrokTentor) {
-                $mulai = substr($bentrokTentor->jam_mulai, 0, 5);
-                $selesai = substr($bentrokTentor->jam_selesai, 0, 5);
-                return redirect()->back()
-                    ->with('error', "Jadwal bentrok! Tentor {$tentor->nama} sudah memiliki jadwal lain pada tanggal tersebut pukul {$mulai}–{$selesai}.")
-                    ->withInput();
+                    if (str_contains($msg, 'Jadwal tentor bentrok')) {
+                        $bagian = explode('|', $msg);
+
+                        $mulai = substr($bagian[1], 0, 5);
+                        $selesai = substr($bagian[2], 0, 5);
+
+                        return redirect()->back()
+                            ->with('error', "Jadwal bentrok! Tentor {$tentor->nama} sudah memiliki jadwal lain pada tanggal tersebut pukul {$mulai}–{$selesai}.")
+                            ->withInput();
+                    }
+
+                    throw $e;
+                }
             }
 
             $bentrokSiswa = Jadwal::whereHas('kelas', function ($q) use ($siswa) {

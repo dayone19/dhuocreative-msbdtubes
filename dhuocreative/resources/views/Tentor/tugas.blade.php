@@ -1,4 +1,4 @@
-@extends('layouts.tentor')
+@extends('layouts.Tentor')
 
 @section('title', 'Daftar Tugas')
 

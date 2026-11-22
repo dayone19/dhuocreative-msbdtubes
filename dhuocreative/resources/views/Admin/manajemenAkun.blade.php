@@ -76,7 +76,8 @@
                                     data-telepon="{{ $item->no_telp }}"
                                     data-tahun="{{ $item->tahun_masuk }}"
                                     data-update-url="{{ route('admin.manajemenAkun.update', $item->id_user) }}"
-                                    data-nonaktif-url="{{ route('admin.manajemenAkun.nonaktifkan', $item->id_user) }}">
+                                    data-nonaktif-url="{{ route('admin.manajemenAkun.nonaktifkan', $item->id_user) }}"
+                                    data-aktifkan-url="{{ route('admin.manajemenAkun.aktifkan', $item->id_user) }}">
                                     Lihat Detail
                                 </a>
                             </div>
@@ -183,14 +184,14 @@
                         Edit Akun
                     </button>
 
-                    {{-- NONAKTIFKAN AKUN --}}
+                    {{-- AKTIFKAN / NONAKTIFKAN AKUN --}}
                     <form id="formNonaktifkanAkun" method="POST">
                         @csrf
                         @method('PATCH')
 
                         <button type="submit"
                             class="o-btn-edit"
-                            onclick="return confirm('Yakin ingin menonaktifkan akun ini?')">
+                            id="btnUbahStatusAkun">
                             Nonaktifkan Akun
                         </button>
                     </form>
@@ -316,6 +317,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const btnEdit = el('btnEditAkun');
     const formEdit = el('formEditAkun');
     const formNonaktifkan = el('formNonaktifkanAkun');
+    const btnUbahStatus = el('btnUbahStatusAkun');
 
     let tombolAktif = null;
 
@@ -337,8 +339,20 @@ document.addEventListener('DOMContentLoaded', function () {
         el('detailTelepon').textContent = tombol.dataset.telepon || '-';
         el('detailTahunMasuk').textContent = tombol.dataset.tahun || '-';
 
-        // MENENTUKAN URL NONAKTIFKAN
-        formNonaktifkan.action = tombol.dataset.nonaktifUrl;
+        // MENENTUKAN AKSI BERDASARKAN STATUS AKUN
+        if (tombol.dataset.status === 'nonaktif') {
+            formNonaktifkan.action = tombol.dataset.aktifkanUrl;
+            btnUbahStatus.textContent = 'Aktifkan Akun';
+            btnUbahStatus.onclick = function () {
+                return confirm('Yakin ingin mengaktifkan akun ini?');
+            };
+        } else {
+            formNonaktifkan.action = tombol.dataset.nonaktifUrl;
+            btnUbahStatus.textContent = 'Nonaktifkan Akun';
+            btnUbahStatus.onclick = function () {
+                return confirm('Yakin ingin menonaktifkan akun ini?');
+            };
+        }
 
         modal.hidden = false;
 

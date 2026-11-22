@@ -58,41 +58,35 @@ class DashboardController extends Controller
         $periodeAwal = Carbon::createFromDate($tahun, $bulan, 1)->startOfMonth();
         $periodeAkhir = Carbon::createFromDate($tahun, $bulan, 1)->endOfMonth();
 
-        $laporanAbsensi = DB::table('absensi_siswa as a')
-            ->join('jadwal as j', 'a.id_jadwal', '=', 'j.id_jadwal')
-            ->join('kelas as k', 'j.id_kelas', '=', 'k.id_kelas')
-            ->join('kursus as ku', 'k.id_kursus', '=', 'ku.id_kursus')
-            ->join('users as s', 'a.id_siswa', '=', 's.id_user')
-            ->join('users as t', 'j.id_tentor', '=', 't.id_user')
-            ->whereBetween('j.tanggal', [$periodeAwal, $periodeAkhir])
-            ->where('j.status', 'selesai')
+        // pakai view
+        $laporanAbsensi = DB::table('vw_rekap_absensi_bulanan')
+            ->where('periode', $periodeAwal->toDateString())
             ->select(
-                's.id_user',
-                's.nama as nama_siswa',
-                'ku.nama_kursus',
-                DB::raw("INITCAP(k.kelas::text) as jenis_kelas"),
-                DB::raw("STRING_AGG(DISTINCT t.nama, ', ') as nama_tentor"),
-                DB::raw('COUNT(DISTINCT j.id_jadwal) as total_pertemuan'),
-                DB::raw("COUNT(a.id_absensi) FILTER (WHERE a.status = 'hadir') as hadir"),
-                DB::raw("COUNT(a.id_absensi) FILTER (WHERE a.status = 'izin') as izin"),
-                DB::raw("COUNT(a.id_absensi) FILTER (WHERE a.status = 'sakit') as sakit"),
-                DB::raw("COUNT(a.id_absensi) FILTER (WHERE a.status = 'alpha') as alpa"),
+                'id_siswa',
+                'nama_siswa',
+                DB::raw('kursus as nama_kursus'),
+                'jenis_kelas',
+                DB::raw("STRING_AGG(DISTINCT nama_tentor, ', ') as nama_tentor"),
+                DB::raw('SUM(total_pertemuan) as total_pertemuan'),
+                DB::raw('SUM(hadir) as hadir'),
+                DB::raw('SUM(izin) as izin'),
+                DB::raw('SUM(sakit) as sakit'),
+                DB::raw('SUM(alpha) as alpa'),
                 DB::raw("
                     ROUND(
-                        COUNT(a.id_absensi) FILTER (WHERE a.status = 'hadir') * 100.0
-                        / NULLIF(COUNT(DISTINCT j.id_jadwal), 0),
+                        SUM(hadir) * 100.0 / NULLIF(SUM(total_pertemuan), 0),
                         1
                     ) as persentase_kehadiran
                 ")
             )
             ->groupBy(
-                's.id_user',
-                's.nama',
-                'ku.nama_kursus',
-                'k.kelas'
+                'id_siswa',
+                'nama_siswa',
+                'kursus',
+                'jenis_kelas'
             )
-            ->orderBy('s.nama')
-            ->orderBy('ku.nama_kursus')
+            ->orderBy('nama_siswa')
+            ->orderBy('kursus')
             ->get();
 
         $laporanSiswa = DB::table('kursus as k')
