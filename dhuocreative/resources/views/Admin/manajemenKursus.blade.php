@@ -58,7 +58,7 @@
                         >
                             <td>{{ $kursus->nama_kursus }}</td>
                             <td>{{ $kursus->deskripsi ?: '-' }}</td>
-                            <td>{{ $kursus->durasi }} pertemuan</td>
+                            <td>{{ $kursus->durasi }} jam</td>
                             <td>Rp {{ number_format($kursus->harga, 0, ',', '.') }}</td>
                             <td>
                                 <span class="ak-status {{ $kursus->status }}">
@@ -556,7 +556,7 @@
 
         el('dNamaKursus').textContent = selectedCourse.dataset.nama;
         el('dDeskripsiKursus').textContent = selectedCourse.dataset.deskripsi || '-';
-        el('dDurasiKursus').textContent = selectedCourse.dataset.durasi + ' pertemuan';
+        el('dDurasiKursus').textContent = selectedCourse.dataset.durasi + ' jam';
 
         el('dHargaKursus').textContent =
             'Rp ' + Number(selectedCourse.dataset.harga).toLocaleString('id-ID');

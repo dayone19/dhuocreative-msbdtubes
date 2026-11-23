@@ -36,7 +36,7 @@
                     <tr data-status="{{ strtolower($k->status) }}" data-id="{{ $k->id_kursus }}">
                         <td>{{ $k->nama_kursus }}</td>
                         <td>{{ $k->deskripsi ?? '-' }}</td>
-                        <td>{{ $k->durasi }} pertemuan</td>
+                        <td>{{ $k->durasi }} jam</td>
                         <td><span class="o-status {{ strtolower($k->status) }}">{{ ucfirst($k->status) }}</span></td>
                         <td><button type="button" class="o-action" data-detail-kursus>Detail</button></td>
                     </tr>
