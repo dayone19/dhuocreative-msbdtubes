@@ -25,10 +25,10 @@
     @endif
     <div class="o-page-header">
         <h1 class="o-page-title">Manajemen Jadwal</h1>
-        <button type="button" class="o-btn o-btn-orange" id="btnTambahJadwal">
+        <!-- <button type="button" class="o-btn o-btn-orange" id="btnTambahJadwal">
             <span class="o-plus">+</span> 
             Tambah Jadwal
-        </button>
+        </button> -->
     </div>
 
         <div class="o-schedule-panel">
@@ -123,73 +123,133 @@
 
     <p class="o-empty" id="jadwalKosong" hidden>Jadwal tidak ditemukan.</p>
 
-        <nav class="tj-pagination" id="paginasiJadwal" style="margin-top: 20px;" hidden></nav>
-
-    <div class="o-toolbar o-approval-heading" style="margin-top:42px">
-        <h2>Persetujuan Pergantian Jadwal dari Tentor</h2>
+{{-- Riwayat Perubahan Jadwal --}}
+    <div class="tj-section-head tj-section-gap">
+        <h2 class="tj-section-title">Riwayat Perubahan Jadwal</h2>
     </div>
-    <div class="j-table-wrap">
-        <table class="j-table" id="tabelPersetujuan">
-            <thead><tr>
-                <th>Nama Kursus</th>
-                <th>Kelas</th>
-                <th>Tentor</th>
-                <th>Siswa</th>
-                <th>Jadwal Lama</th>
-                <th>Jadwal Diajukan</th>
-                <th>Alasan</th>
-                <th>Status</th>
-                <th>Aksi</th>
-            </tr></thead>
-            <tbody id="persetujuanBody">
-                @forelse($pengajuanList as $p)
-                <tr data-status="{{ $p->status }}" data-id="{{ $p->id_pengajuan }}">
-                    <td>{{ $p->kelas->kursus->nama_kursus ?? '-' }}</td>
-                    <td>{{ ucfirst($p->kelas->kelas ?? '-') }}</td>
-                    <td>{{ $p->tentor->nama ?? '-' }}</td>
-                    <td>{{ $p->kelas->siswa->nama ?? '-' }}</td>
-                    <td>
-                        @if($p->jadwalLama)
-                            {{ \Carbon\Carbon::parse($p->jadwalLama->tanggal)->format('d M Y') }} · {{ substr($p->jadwalLama->jam_mulai, 0, 5) }}–{{ substr($p->jadwalLama->jam_selesai, 0, 5) }}
-                        @else
-                            -
-                        @endif
-                    </td>
-                    <td>
-                        {{ \Carbon\Carbon::parse($p->tanggal_baru)->format('d M Y') }} · {{ substr($p->jam_mulai, 0, 5) }}–{{ substr($p->jam_selesai, 0, 5) }}
-                    </td>
-                    <td>{{ $p->alasan ?? '-' }}</td>
-                    <td><span class="o-status {{ $p->status }}">{{ ucfirst($p->status) }}</span></td>
-                    <td>
-                        @if($p->status === 'menunggu')
-                        <div class="o-approval-actions">
-                            <form method="POST" action="{{ route('operator.jadwal.approve') }}" style="display:inline;">
-                                @csrf
-                                <input type="hidden" name="id_pengajuan" value="{{ $p->id_pengajuan }}">
-                                <input type="hidden" name="aksi" value="setuju">
-                                <button type="submit" class="o-action o-approve">Setujui</button>
-                            </form>
-                            <form method="POST" action="{{ route('operator.jadwal.approve') }}" style="display:inline;">
-                                @csrf
-                                <input type="hidden" name="id_pengajuan" value="{{ $p->id_pengajuan }}">
-                                <input type="hidden" name="aksi" value="tolak">
-                                <button type="submit" class="o-action o-reject">Tolak</button>
-                            </form>
-                        </div>
-                        @else
-                        <span style="color: #666; font-size: 13px;">{{ ucfirst($p->status) }}</span>
-                        @endif
-                    </td>
-                </tr>
-                @empty
+
+    <div class="tj-table-wrap">
+        <table class="tj-table">
+            <thead>
                 <tr>
-                    <td colspan="9" style="text-align:center; padding: 20px;">Tidak ada pengajuan pergantian jadwal.</td>
+                    <th>Nama Kursus</th>
+                    <th>Siswa</th>
+                    <th>Jadwal Lama</th>
+                    <th>Jadwal Baru</th>
+                    <th>Waktu Diubah</th>
                 </tr>
+            </thead>
+
+            <tbody>
+                @forelse($riwayatPerubahan as $r)
+                    <tr>
+                        <td>{{ $r->kursus }}</td>
+                        <td>{{ $r->siswa }}</td>
+
+                        <td>
+                            @if($r->tanggal_lama)
+                                {{ \Carbon\Carbon::parse($r->tanggal_lama)->translatedFormat('d M Y') }}
+                                · {{ $r->mulai_lama }}–{{ $r->selesai_lama }}
+                            @else
+                                —
+                            @endif
+                        </td>
+
+                        <td>
+                            {{ \Carbon\Carbon::parse($r->tanggal_baru)->translatedFormat('d M Y') }}
+                            · {{ substr($r->jam_mulai, 0, 5) }}–{{ substr($r->jam_selesai, 0, 5) }}
+                        </td>
+
+                        <td>
+                            {{ \Carbon\Carbon::parse($r->created_at)->translatedFormat('d M Y H:i') }}
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="5" class="tj-empty">
+                            Belum ada riwayat perubahan jadwal.
+                        </td>
+                    </tr>
                 @endforelse
             </tbody>
         </table>
     </div>
-    <p class="o-empty" id="persetujuanKosong" hidden>Tidak ada pengajuan pergantian jadwal.</p>
+
+</div>
+
+{{-- Modal Ubah Jadwal --}}
+<div class="t-modal" id="modalAjukan" hidden>
+    <div class="t-modal-box">
+
+        <div class="t-modal-heading">
+            <button
+                type="button"
+                class="tmt-back-btn"
+                data-tutup
+                aria-label="Kembali"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     width="35"
+                     height="35"
+                     fill="currentColor"
+                     viewBox="0 0 16 16">
+                    <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+                </svg>
+            </button>
+
+            <h2>Ubah Jadwal</h2>
+        </div>
+
+        <form id="formAjukan">
+            @csrf
+
+            <div class="t-form-group">
+                <label for="id_kelas">Kursus</label>
+                <select id="id_kelas" disabled></select>
+            </div>
+
+            <div class="t-form-group">
+                <label for="tanggal">Tanggal Baru</label>
+                <input type="date" id="tanggal" required>
+            </div>
+
+            <div class="t-form-grid">
+                <div class="t-form-group">
+                    <label for="jam_mulai">Jam Mulai</label>
+                    <input
+                        type="time"
+                        id="jam_mulai"
+                        value="09:00"
+                        min="00:00"
+                        max="21:59"
+                        required
+                    >
+                </div>
+
+                <div class="t-form-group">
+                    <label for="jam_selesai">Jam Selesai</label>
+                    <input type="time" id="jam_selesai" readonly>
+                </div>
+            </div>
+
+            <div class="t-form-group">
+                <label for="catatan">Catatan (opsional)</label>
+                <textarea
+                    id="catatan"
+                    rows="3"
+                    placeholder="Contoh: sudah disepakati dengan siswa"
+                ></textarea>
+            </div>
+
+            <button
+                type="submit"
+                class="t-btn t-btn-orange t-btn-full"
+                id="btnSimpanPerubahan"
+            >
+                Simpan Perubahan Jadwal
+            </button>
+        </form>
+    </div>
 </div>
 
 <div class="o-modal" id="modalJadwal" hidden>

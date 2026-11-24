@@ -59,246 +59,299 @@ class SiswaController extends Controller
 
         $kursusList = Kursus::orderBy('nama_kursus', 'asc')->get();
 
-        return view('operator.siswa', compact('siswaList', 'kursusList'));
+        $akunSiswaList = User::where('role', 'siswa')
+        ->where('status', 'aktif')
+        ->orderBy('nama', 'asc')
+        ->get(['id_user', 'nama', 'no_telp']);
+
+
+        return view('operator.siswa', compact(
+            'siswaList', 
+            'kursusList',
+           'akunSiswaList'
+        ));
+    }
+
+    private function buatTanggalPertemuan($tanggalDaftar, $hari)
+    {
+        $hariMapping = [
+            'Senin' => 1,
+            'Selasa' => 2,
+            'Rabu' => 3,
+            'Kamis' => 4,
+            'Jumat' => 5,
+            'Sabtu' => 6,
+        ];
+
+        $hariDipilih = collect($hari)
+            ->map(fn($h) => $hariMapping[$h])
+            ->unique()
+            ->values()
+            ->all();
+
+        $tanggal = Carbon::parse($tanggalDaftar)->startOfDay();
+        $hasil = [];
+
+        while (count($hasil) < 15) {
+            if (in_array($tanggal->dayOfWeekIso, $hariDipilih)) {
+                $hasil[] = $tanggal->toDateString();
+            }
+
+            $tanggal->addDay();
+        }
+
+        return $hasil;
+    }
+
+    private function cekKetersediaanTentor(
+        $idKursus,
+        $tanggalPertemuan,
+        $jamMulai,
+        $jamSelesai
+    ) {
+        $calonTentor = DB::table('tentor_kursus')
+            ->join('users', 'tentor_kursus.id_tentor', '=', 'users.id_user')
+            ->where('tentor_kursus.id_kursus', $idKursus)
+            ->where('users.role', 'tentor')
+            ->select('users.id_user', 'users.nama')
+            ->distinct()
+            ->get();
+
+        $hasil = [];
+
+        foreach ($calonTentor as $tentor) {
+            $bentrok = false;
+
+            foreach ($tanggalPertemuan as $tanggal) {
+                $adaBentrok = DB::table('jadwal')
+                    ->where('id_tentor', $tentor->id_user)
+                    ->where('tanggal', $tanggal)
+                    ->where('status', '<>', 'dibatalkan')
+                    ->where('jam_mulai', '<', $jamSelesai)
+                    ->where('jam_selesai', '>', $jamMulai)
+                    ->exists();
+
+                if ($adaBentrok) {
+                    $bentrok = true;
+                    break;
+                }
+            }
+
+            $jumlahJadwal = DB::table('jadwal')
+                ->where('id_tentor', $tentor->id_user)
+                ->where('status', 'terjadwal')
+                ->count();
+
+            $hasil[] = [
+                'id_tentor' => $tentor->id_user,
+                'nama' => $tentor->nama,
+                'bentrok' => $bentrok,
+                'tersedia' => !$bentrok,
+                'jumlah_jadwal' => $jumlahJadwal,
+            ];
+        }
+
+        usort($hasil, function ($a, $b) {
+            return ($a['bentrok'] <=> $b['bentrok'])
+                ?: ($a['jumlah_jadwal'] <=> $b['jumlah_jadwal'])
+                ?: ($a['id_tentor'] <=> $b['id_tentor']);
+        });
+
+        return $hasil;
+    }
+
+    public function cekTentor(Request $request)
+    {
+        $validated = $request->validate([
+            'id_kursus' => 'required|integer|exists:kursus,id_kursus',
+            'hari' => 'required|array|min:1|max:3',
+            'hari.*' => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu',
+            'jam_mulai' => 'required|date_format:H:i',
+            'tanggal_daftar' => 'required|date',
+        ]);
+
+        $jamMulai = Carbon::createFromFormat(
+            'H:i',
+            $validated['jam_mulai']
+        );
+
+        $jamSelesai = $jamMulai->copy()->addHours(2);
+
+        if (
+            $jamMulai->format('H:i') < '07:00' ||
+            $jamMulai->format('H:i') > '20:00' ||
+            $jamSelesai->format('H:i') > '22:00'
+        ) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Jam pembelajaran harus berada antara 07:00 sampai 22:00.'
+            ], 422);
+        }
+
+        $tanggalPertemuan = $this->buatTanggalPertemuan(
+            $validated['tanggal_daftar'],
+            $validated['hari']
+        );
+
+        $tentor = $this->cekKetersediaanTentor(
+            $validated['id_kursus'],
+            $tanggalPertemuan,
+            $jamMulai->format('H:i:s'),
+            $jamSelesai->format('H:i:s')
+        );
+
+        return response()->json([
+            'success' => true,
+            'tentor' => $tentor,
+            'jumlah_pertemuan' => count($tanggalPertemuan),
+        ]);
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'nama'    => 'required|string|max:100',
-            'no_telp' => 'required|string|max:20',
-        ], [
-            'nama.required'    => 'Nama siswa wajib diisi.',
-            'no_telp.required' => 'Nomor telepon wajib diisi.',
-        ]);
-
-        try {
-            DB::beginTransaction();
-
-            $cleanName = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $request->nama));
-            $email = $request->email ?: ($cleanName . rand(100, 999) . '@dhuocreative.com');
-            $tglDaftar = $request->tanggal_daftar ?: date('Y-m-d');
-            $status = in_array(strtolower($request->status ?? ''), ['aktif', 'nonaktif']) ? strtolower($request->status) : 'aktif';
-
-            $nextIdUser = (User::max('id_user') ?? 0) + 1;
-            $user = User::create([
-                'id_user'     => $nextIdUser,
-                'nama'        => $request->nama,
-                'email'       => $email,
-                'no_telp'     => $request->no_telp,
-                'pasword'     => Hash::make('Siswa123'),
-                'role'        => 'siswa',
-                'tahun_masuk' => (int) date('Y', strtotime($tglDaftar)),
-                'status'      => $status,
-                'created_at'  => now(),
-                'update_at'   => now(),
-            ]);
-
-            $idKursus = null;
-            if ($request->filled('id_kursus')) {
-                if (is_numeric($request->id_kursus)) {
-                    $idKursus = (int) $request->id_kursus;
-                } else {
-                    $k = Kursus::where('nama_kursus', 'ilike', '%' . $request->id_kursus . '%')->first();
-                    $idKursus = $k ? $k->id_kursus : null;
-                }
-            }
-
-            if ($idKursus) {
-                $nextIdSiswaKursus = (SiswaKursus::max('id_siswa_kursus') ?? 0) + 1;
-                try {
-                    SiswaKursus::create([
-                        'id_siswa_kursus' => $nextIdSiswaKursus,
-                        'id_siswa'        => $user->id_user,
-                        'id_kursus'       => $idKursus,
-                        'tanggal_daftar'  => $tglDaftar,
-                        'status'          => $status,
-                    ]);
-                } catch (\Throwable $e) {
-                    SiswaKursus::create([
-                        'id_siswa_kursus' => $nextIdSiswaKursus,
-                        'id_siswa'        => $user->id_user,
-                        'id_kursus'       => $idKursus,
-                        'tanggal_daftar'  => $tglDaftar,
-                        'status'          => ($status === 'nonaktif' ? 'keluar' : 'aktif'),
-                    ]);
-                }
-
-                $jenisKelas = $request->kelas ?: 'Online Class';
-                $nextIdKelas = (Kelas::max('id_kelas') ?? 0) + 1;
-                Kelas::create([
-                    'id_kelas'   => $nextIdKelas,
-                    'id_kursus'  => $idKursus,
-                    'id_siswa'   => $user->id_user,
-                    'kelas'      => $jenisKelas,
-                    'status'     => 'aktif',
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-            }
-
-            DB::commit();
-
-            if ($request->ajax() || $request->wantsJson()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => "Pendaftaran siswa {$request->nama} berhasil disimpan!",
-                    'siswa'   => $user
-                ]);
-            }
-
-            return redirect()->route('operator.siswa')->with('success', "Pendaftaran siswa {$request->nama} berhasil disimpan!");
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            if ($request->ajax() || $request->wantsJson()) {
-                return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
-            }
-            return redirect()->back()->with('error', 'Gagal mendaftarkan siswa: ' . $e->getMessage())->withInput();
-        }
-    }
-
-    public function update(Request $request, $id)
-    {
-        $numericId = (int) preg_replace('/[^0-9]/', '', (string)$id);
-        $user = User::where('id_user', $numericId)->where('role', 'siswa')->first();
-
-        if (!$user) {
-            $user = User::where('id_user', $id)->first();
-        }
-
-        abort_if(!$user, 404, 'Data siswa tidak ditemukan.');
-
         $validated = $request->validate([
-            'nama'    => 'required|string|max:100',
-            'no_telp' => 'required|string|max:20',
-        ], [
-            'nama.required'    => 'Nama siswa wajib diisi.',
-            'no_telp.required' => 'Nomor telepon wajib diisi.',
+            'id_siswa' => 'required|integer|exists:users,id_user',
+            'id_kursus' => 'required|integer|exists:kursus,id_kursus',
+            'id_tentor' => 'required|integer|exists:users,id_user',
+            'kelas' => 'required|in:Online Class,Private Class,Home Class',
+            'hari' => 'required|array|min:1|max:3',
+            'hari.*' => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu',
+            'jam_mulai' => 'required|date_format:H:i',
+            'tanggal_daftar' => 'required|date',
+            'status' => 'required|in:aktif,nonaktif',
         ]);
-
-        try {
-            $updateData = [
-                'nama'      => $validated['nama'],
-                'no_telp'   => $validated['no_telp'],
-                'update_at' => now(),
-            ];
-
-            if ($request->filled('status')) {
-                $updateData['status'] = strtolower($request->status);
-            }
-
-            $user->update($updateData);
-
-            if ($request->ajax() || $request->wantsJson()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => "Data siswa {$user->nama} berhasil diperbarui!",
-                    'siswa'   => $user
-                ]);
-            }
-
-            return redirect()->route('operator.siswa')->with('success', "Data siswa {$user->nama} berhasil diperbarui!");
-        } catch (\Throwable $e) {
-            if ($request->ajax() || $request->wantsJson()) {
-                return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
-            }
-            return redirect()->back()->with('error', 'Gagal memperbarui data siswa: ' . $e->getMessage())->withInput();
-        }
-    }
-
-    public function tambahKursus(Request $request, $id)
-    {
-        $numericId = (int) preg_replace('/[^0-9]/', '', (string)$id);
-        $user = User::where('id_user', $numericId)->where('role', 'siswa')->first();
-
-        if (!$user) {
-            $user = User::where('id_user', $id)->first();
-        }
-
-        abort_if(!$user, 404, 'Data siswa tidak ditemukan.');
-
-        $request->validate([
-            'id_kursus' => 'required',
-        ], [
-            'id_kursus.required' => 'Kursus wajib dipilih.',
-        ]);
-
-        $idKursus = null;
-        if (is_numeric($request->id_kursus)) {
-            $idKursus = (int) $request->id_kursus;
-        } else {
-            $k = Kursus::where('nama_kursus', 'ilike', '%' . $request->id_kursus . '%')->first();
-            $idKursus = $k ? $k->id_kursus : null;
-        }
-
-        abort_if(!$idKursus, 400, 'Kursus tidak valid.');
-
-        $kursus = Kursus::find($idKursus);
-        abort_if(!$kursus, 404, 'Kursus tidak ditemukan.');
-
-        $cek = SiswaKursus::where('id_siswa', $user->id_user)->where('id_kursus', $idKursus)->first();
-        if ($cek) {
-            return response()->json([
-                'success' => false,
-                'message' => "Siswa sudah terdaftar pada kursus {$kursus->nama_kursus}."
-            ], 422);
-        }
-
-        $status = in_array(strtolower($request->status ?? ''), ['aktif', 'nonaktif']) ? strtolower($request->status) : 'aktif';
-        $tglDaftar = $request->tanggal_daftar ?: date('Y-m-d');
-        $jenisKelas = $request->kelas ?: 'Online Class';
 
         try {
             DB::beginTransaction();
 
+            $user = User::where('id_user', $validated['id_siswa'])
+                ->where('role', 'siswa')
+                ->where('status', 'aktif')
+                ->first();
+
+            if (!$user) {
+                throw new \Exception('Akun siswa tidak ditemukan atau tidak aktif.');
+            }
+
+            $sudahTerdaftar = SiswaKursus::where('id_siswa', $user->id_user)
+                ->where('id_kursus', $validated['id_kursus'])
+                ->exists();
+
+            if ($sudahTerdaftar) {
+                throw new \Exception('Siswa sudah terdaftar pada kursus tersebut.');
+            }
+
+            $jamMulai = Carbon::createFromFormat(
+                'H:i',
+                $validated['jam_mulai']
+            );
+
+            $jamSelesai = $jamMulai->copy()->addHours(2);
+
+            if (
+                $jamMulai->format('H:i') < '07:00' ||
+                $jamMulai->format('H:i') > '20:00' ||
+                $jamSelesai->format('H:i') > '22:00'
+            ) {
+                throw new \Exception('Jam pembelajaran harus antara 07:00 sampai 22:00.');
+            }
+
+            $tglDaftar = Carbon::parse($validated['tanggal_daftar'])
+                ->startOfDay();
+
+            $tanggalPertemuan = $this->buatTanggalPertemuan(
+                $validated['tanggal_daftar'],
+                $validated['hari']
+            );
+
+            // Periksa ulang ketersediaan seluruh tentor.
+            $daftarTentor = $this->cekKetersediaanTentor(
+                $validated['id_kursus'],
+                $tanggalPertemuan,
+                $jamMulai->format('H:i:s'),
+                $jamSelesai->format('H:i:s')
+            );
+
+            $tentorDipilih = collect($daftarTentor)
+                ->firstWhere('id_tentor', (int) $validated['id_tentor']);
+
+            if (!$tentorDipilih) {
+                throw new \Exception(
+                    'Tentor tidak terdaftar pada kursus yang dipilih.'
+                );
+            }
+
+            if (!$tentorDipilih['tersedia']) {
+                throw new \Exception(
+                    'Tentor yang dipilih memiliki jadwal bentrok. Silakan pilih tentor lain.'
+                );
+            }
+
+            // Simpan pendaftaran kursus siswa yang sudah memiliki akun.
             $nextIdSiswaKursus = (SiswaKursus::max('id_siswa_kursus') ?? 0) + 1;
+
             try {
                 SiswaKursus::create([
                     'id_siswa_kursus' => $nextIdSiswaKursus,
-                    'id_siswa'        => $user->id_user,
-                    'id_kursus'       => $idKursus,
-                    'tanggal_daftar'  => $tglDaftar,
-                    'status'          => $status,
+                    'id_siswa' => $user->id_user,
+                    'id_kursus' => $validated['id_kursus'],
+                    'tanggal_daftar' => $tglDaftar->toDateString(),
+                    'status' => $validated['status'],
                 ]);
             } catch (\Throwable $e) {
                 SiswaKursus::create([
                     'id_siswa_kursus' => $nextIdSiswaKursus,
-                    'id_siswa'        => $user->id_user,
-                    'id_kursus'       => $idKursus,
-                    'tanggal_daftar'  => $tglDaftar,
-                    'status'          => ($status === 'nonaktif' ? 'keluar' : 'aktif'),
+                    'id_siswa' => $user->id_user,
+                    'id_kursus' => $validated['id_kursus'],
+                    'tanggal_daftar' => $tglDaftar->toDateString(),
+                    'status' => $validated['status'] === 'nonaktif'
+                        ? 'keluar'
+                        : 'aktif',
                 ]);
             }
 
+            // Buat kelas siswa.
             $nextIdKelas = (Kelas::max('id_kelas') ?? 0) + 1;
-            Kelas::create([
-                'id_kelas'   => $nextIdKelas,
-                'id_kursus'  => $idKursus,
-                'id_siswa'   => $user->id_user,
-                'kelas'      => $jenisKelas,
-                'status'     => 'aktif',
+
+            $kelas = Kelas::create([
+                'id_kelas' => $nextIdKelas,
+                'id_kursus' => $validated['id_kursus'],
+                'id_siswa' => $user->id_user,
+                'kelas' => $validated['kelas'],
+                'status' => 'aktif',
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
+
+            // Buat 15 jadwal dengan tentor yang sama.
+            foreach ($tanggalPertemuan as $index => $tanggal) {
+                DB::table('jadwal')->insert([
+                    'id_kelas' => $kelas->id_kelas,
+                    'id_tentor' => $tentorDipilih['id_tentor'],
+                    'tanggal' => $tanggal,
+                    'jam_mulai' => $jamMulai->format('H:i:s'),
+                    'jam_selesai' => $jamSelesai->format('H:i:s'),
+                    'status' => 'terjadwal',
+                    'pertemuan_ke' => $index + 1,
+                ]);
+            }
 
             DB::commit();
 
             return response()->json([
                 'success' => true,
-                'message' => "Kursus {$kursus->nama_kursus} berhasil ditambahkan ke siswa {$user->nama}!",
-                'data'    => [
-                    'id_kursus'      => $idKursus,
-                    'nama_kursus'    => $kursus->nama_kursus,
-                    'jenis_kelas'    => $jenisKelas,
-                    'status'         => $status,
-                    'tanggal_daftar' => $tglDaftar,
-                ]
+                'message' => "Pendaftaran siswa {$user->nama} berhasil disimpan!",
+                'siswa' => $user,
+                'tentor' => $tentorDipilih['nama'],
+                'jumlah_pertemuan' => 15,
             ]);
+
         } catch (\Throwable $e) {
             DB::rollBack();
+
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal menambahkan kursus ke siswa: ' . $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }

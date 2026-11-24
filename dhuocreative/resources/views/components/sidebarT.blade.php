@@ -50,9 +50,9 @@
         <a href="{{ route('tentor.sertifikat') }}" class="sidebar-item {{ request()->routeIs('tentor.sertifikat') ? 'active' : '' }}">
             <span>Sertifikat</span>
         </a>
-        <a href="{{ route('tentor.pengumuman') }}" class="sidebar-item {{ request()->routeIs('tentor.pengumuman') ? 'active' : '' }}">
+        <!-- <a href="{{ route('tentor.pengumuman') }}" class="sidebar-item {{ request()->routeIs('tentor.pengumuman') ? 'active' : '' }}">
             <span>Pengumuman</span>
-        </a>
+        </a> -->
     </nav>
 
 </aside>

@@ -99,6 +99,39 @@ class JadwalController extends Controller
                 'jam_selesai' => substr($j->jam_selesai, 0, 5),
             ];
         })->values();
+        
+        // Riwayat perubahan jadwal semua tentor
+        $riwayatPerubahan = DB::table('pengajuan_jadwal as p')
+            ->join('kelas', 'p.id_kelas', '=', 'kelas.id_kelas')
+            ->join('kursus', 'kelas.id_kursus', '=', 'kursus.id_kursus')
+            ->join('users as siswa', 'kelas.id_siswa', '=', 'siswa.id_user')
+            ->join('users as tentor', 'p.id_tentor', '=', 'tentor.id_user')
+            ->whereNotNull('p.id_jadwal_lama')
+            ->where('p.status', 'diubah')
+            ->orderByDesc('p.created_at')
+            ->select(
+                'p.id_pengajuan',
+                'kursus.nama_kursus as kursus',
+                'kelas.kelas as kelas',
+                'tentor.nama as tentor',
+                'siswa.nama as siswa',
+                'p.tanggal_baru',
+                'p.jam_mulai',
+                'p.jam_selesai',
+                'p.alasan',
+                'p.created_at'
+            )
+            ->get()
+            ->map(function ($r) {
+                $dataLama = json_decode($r->alasan, true);
+
+                $r->tanggal_lama = $dataLama['tanggal_lama'] ?? null;
+                $r->mulai_lama = $dataLama['mulai_lama'] ?? null;
+                $r->selesai_lama = $dataLama['selesai_lama'] ?? null;
+                $r->catatan = $dataLama['catatan'] ?? null;
+
+                return $r;
+            });
 
         return view('operator.jadwal', compact(
             'jadwals',
@@ -112,7 +145,8 @@ class JadwalController extends Controller
             'siswaList',
             'pengajuanList',
             'siswaMapping',
-            'jadwalExisting'
+            'jadwalExisting',
+            'riwayatPerubahan'
         ));
     }
 
@@ -324,4 +358,5 @@ class JadwalController extends Controller
 
         return redirect()->back()->with('success', $pesan);
     }
+
 }

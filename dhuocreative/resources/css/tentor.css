@@ -1764,3 +1764,126 @@ a.tj-pg-btn{line-height:1}
     border-radius: 10px;
 }
 
+
+/* PAGINATION JADWAL */
+.tj-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 7px;
+    padding: 16px 20px;
+    border-top: 1px solid #edf0ef;
+}
+
+.tj-pagination[hidden] {
+    display: none !important;
+}
+
+.tj-pg-info {
+    margin-right: auto;
+    color: #71817e;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.tj-pagination button {
+    min-width: 34px;
+    height: 34px;
+    padding: 0 10px;
+    border: 1px solid #dce6e3;
+    border-radius: 9px;
+    background: #fff;
+    color: #286c65;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .2s ease;
+}
+
+.tj-pagination button:hover:not(:disabled) {
+    border-color: #286c65;
+    background: #eef7f5;
+}
+
+.tj-pagination button.is-active {
+    border-color: #286c65;
+    background: #286c65;
+    color: #fff;
+}
+
+.tj-pagination button:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+}
+
+.tj-page-ellipsis {
+    padding: 0 3px;
+    color: #8b9996;
+    font-size: 13px;
+}
+
+@media (max-width: 600px) {
+    .tj-pagination {
+        justify-content: center;
+        gap: 5px;
+        padding: 14px 10px;
+    }
+
+    .tj-pg-info {
+        flex-basis: 100%;
+        margin: 0 0 7px;
+        text-align: center;
+    }
+
+    .tj-pagination button {
+        min-width: 32px;
+        height: 32px;
+    }
+}
+
+/* Navigasi kalender */
+.tj-week-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.tj-week-navigation a {
+    text-decoration: none;
+    padding: 7px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #286c65;
+    background: #fff;
+    border: 1.5px solid #286c65;
+    border-radius: 20px;
+    transition: all .2s ease;
+}
+
+.tj-week-navigation a:hover {
+    background: #286c65;
+    color: #fff;
+}
+
+.tj-week-navigation span {
+    font-weight: 800;
+    color: #df6833;
+    font-size: 16px;
+}
+
+@media (max-width: 600px) {
+    .tj-week-navigation {
+        justify-content: center;
+    }
+
+    .tj-week-navigation span {
+        order: -1;
+        flex-basis: 100%;
+        text-align: center;
+    }
+}

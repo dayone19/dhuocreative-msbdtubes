@@ -75,7 +75,8 @@ Route::middleware(['auth', 'db.role', 'prevent.back'])->prefix('tentor')->name('
     Route::get('/dashboard', [TentorDashboardController::class, 'index'])->name('dashboard'); 
     
     Route::get('/jadwal', [TentorJadwalController::class, 'index'])->name('jadwal');
-    Route::post('/jadwal/ajukan', [TentorJadwalController::class, 'ajukan'])->name('jadwal.ajukan');
+    // Route::post('/jadwal/ajukan', [TentorJadwalController::class, 'ajukan'])->name('jadwal.ajukan');
+    Route::put('/jadwal/ubah', [TentorJadwalController::class, 'ubah'])->name('jadwal.update');
 
     Route::get('/kursus', [TentorKursusController::class, 'index'])->name('kursus');
     Route::get('/kursus/absensi/{kursus}', [TentorAbsensiController::class, 'show'])->whereNumber('kursus')->name('absensi');
@@ -88,8 +89,6 @@ Route::middleware(['auth', 'db.role', 'prevent.back'])->prefix('tentor')->name('
     Route::get('/tugas/pengumpulan/{pengumpulan}/file', [TentorTugasController::class, 'fileJawaban'])->whereNumber('pengumpulan')->name('tugas.file');
 
     Route::get('/sertifikat', [TentorSertifikatController::class, 'index'])->name('sertifikat');
-    Route::post('/sertifikat', [TentorSertifikatController::class, 'simpan'])->name('sertifikat.simpan');
-    Route::put('/sertifikat/{sertifikat}', [TentorSertifikatController::class, 'update'])->whereNumber('sertifikat')->name('sertifikat.update');
     Route::get('/sertifikat/file/{sertifikat}', [TentorSertifikatController::class, 'file'])->whereNumber('sertifikat')->name('sertifikat.file');
 
     Route::get('/pengumuman', [TentorPengumumanController::class, 'index'])->name('pengumuman');
@@ -106,6 +105,9 @@ Route::middleware(['auth', 'db.role', 'prevent.back'])->prefix('operator')->name
     Route::put('/siswa/{id}', [SiswaController::class, 'update'])->name('siswa.update'); 
     Route::post('/siswa/{id}/kursus', [SiswaController::class, 'tambahKursus'])->name('siswa.kursus.store'); 
     Route::put('/siswa/{id}/kursus/{id_kursus}', [SiswaController::class, 'updateKursus'])->name('siswa.kursus.update'); 
+    Route::get('/siswa', [SiswaController::class, 'index'])->name('siswa');
+    Route::post('/siswa/cek-tentor', [SiswaController::class, 'cekTentor'])->name('siswa.cek-tentor');
+    Route::post('/siswa', [SiswaController::class, 'store'])->name('siswa.store');
 
     Route::get('/tugas', [TugasController::class, 'index'])->name('tugas');
     Route::get('/tugas/download', [TugasController::class, 'downloadFile'])->name('tugas.download');
@@ -127,7 +129,9 @@ Route::middleware(['auth', 'db.role', 'prevent.back'])->prefix('operator')->name
     Route::get('/absensiSiswa/{id?}', [OperatorAbsensiController::class, 'detail'])->name('absensiSiswa'); 
 
     Route::get('/sertifikat', [OperatorSertifikatController::class, 'index'])->name('sertifikat');
-    Route::get('/sertifikat/file/{sertifikat}', [OperatorSertifikatController::class, 'file'])->name('sertifikat.file');
+    Route::post('/sertifikat', [OperatorSertifikatController::class, 'simpan'])->name('sertifikat.simpan');
+    Route::put('/sertifikat/{sertifikat}', [OperatorSertifikatController::class, 'update'])->whereNumber('sertifikat')->name('sertifikat.update');
+    Route::get('/sertifikat/file/{sertifikat}', [OperatorSertifikatController::class, 'file'])->whereNumber('sertifikat')->name('sertifikat.file');
 
     Route::get('/pengumuman', [OperatorPengumumanController::class, 'index'])->name('pengumuman');
     Route::post('/pengumuman', [OperatorPengumumanController::class, 'store'])->name('pengumuman.store');
@@ -142,7 +146,6 @@ Route::middleware(['auth', 'db.role', 'prevent.back'])->prefix('siswa')->name('s
     Route::get('/absensi', [App\Http\Controllers\Siswa\AbsensiController::class, 'index'])->name('absensi');
 
     Route::post('/absensi', [App\Http\Controllers\Siswa\AbsensiController::class, 'absen'])->name('absensi.absen');
-
 
     Route::get('/pengumpulanTugas', [App\Http\Controllers\Siswa\PengumpulanTugasController::class, 'index'])->name('pengumpulanTugas');
     Route::post('/pengumpulanTugas', [App\Http\Controllers\Siswa\PengumpulanTugasController::class, 'kumpulkan'])->name('pengumpulanTugas.kumpulkan');

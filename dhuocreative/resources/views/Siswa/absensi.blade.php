@@ -41,15 +41,15 @@
             @if ($j->sudah_absen)
                 <span class="pk-btn pk-done">Sudah: {{ ucfirst($j->status_absen) }}</span>
             @elseif ($j->bisa_absen)
-                <form method="POST" action="{{ route('siswa.absensi.absen') }}" style="display:flex;flex-wrap:wrap;align-items:center;justify-content: space-evenly;">
+                <!-- <form method="POST" action="{{ route('siswa.absensi.absen') }}" style="display:flex;flex-wrap:wrap;align-items:center;justify-content: space-evenly;">
                     @csrf
                     <input type="hidden" name="id_jadwal" value="{{ $j->id_jadwal }}">
                     <button type="submit" name="status" value="hadir" class="pk-btn pk-go">Hadir</button>
                     <button type="submit" name="status" value="izin" class="pk-btn pk-izin">Izin</button>
-                    <button type="submit" name="status" value="sakit" class="pk-btn pk-sakit">Sakit</button>
+                    <button type="submit" name="status" value="sakit" class="pk-btn pk-sakit">Sakit</button> -->
                 </form>
             @elseif ($j->berlangsung === false)
-                <span class="pk-btn pk-done" style="opacity:.7;">Di luar jam kelas</span>
+                <!-- <span class="pk-btn pk-done" style="opacity:.7;">Di luar jam kelas</span> -->
             @endif
         </div>
         @empty

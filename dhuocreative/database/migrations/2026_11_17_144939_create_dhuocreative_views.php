@@ -236,61 +236,60 @@ return new class extends Migration
         JOIN kursus k ON sk.id_kursus = k.id_kursus
         JOIN users u ON sk.id_siswa = u.id_user;
 
-        CREATE VIEW public.vw_rekap_absensi_bulanan AS
-            SELECT
-                k.id_siswa,
-                k.id_kursus,
-                j.id_tentor,
-                DATE_TRUNC('month', j.tanggal)::date AS periode,
-                u.nama AS nama_siswa,
-                ku.nama_kursus AS kursus,
-                k.kelas AS jenis_kelas,
-                t.nama AS nama_tentor,
-                COUNT(j.id_jadwal) AS total_pertemuan,
-                COUNT(j.id_jadwal) FILTER (
-                    WHERE a.status = 'hadir'
-                ) AS hadir,
-                COUNT(j.id_jadwal) FILTER (
-                    WHERE a.status = 'izin'
-                ) AS izin,
-                COUNT(j.id_jadwal) FILTER (
-                    WHERE a.status = 'sakit'
-                ) AS sakit,
-                COUNT(j.id_jadwal) FILTER (
-                    WHERE a.status = 'alpha'
-                ) AS alpha,
-                COALESCE(
-                    ROUND(
-                        COUNT(j.id_jadwal) FILTER (
-                            WHERE a.status = 'hadir'
-                        )::numeric
-                        / NULLIF(COUNT(j.id_jadwal), 0) * 100,
-                        2
-                    ),
-                    0
-                ) AS persentase_kehadiran
-            FROM kelas k
-            JOIN users u
-                ON k.id_siswa = u.id_user
-            JOIN kursus ku
-                ON k.id_kursus = ku.id_kursus
-            JOIN jadwal j
-                ON k.id_kelas = j.id_kelas
-            JOIN users t
-                ON j.id_tentor = t.id_user
-            LEFT JOIN absensi_siswa a
-                ON j.id_jadwal = a.id_jadwal
-                AND k.id_siswa = a.id_siswa
-            WHERE j.status = 'selesai'
-            GROUP BY
-                k.id_siswa,
-                k.id_kursus,
-                j.id_tentor,
-                DATE_TRUNC('month', j.tanggal),
-                u.nama,
-                ku.nama_kursus,
-                k.kelas,
-                t.nama;
+        CREATE OR REPLACE VIEW vw_rekap_absensi_bulanan AS
+        SELECT
+            k.id_siswa,
+            k.id_kursus,
+            j.id_tentor,
+            DATE_TRUNC('month', j.tanggal)::date AS periode,
+            u.nama AS nama_siswa,
+            ku.nama_kursus AS kursus,
+            k.kelas AS jenis_kelas,
+            t.nama AS nama_tentor,
+            COUNT(a.id_jadwal) AS total_pertemuan,
+            COUNT(a.id_jadwal) FILTER (
+                WHERE a.status = 'hadir'
+            ) AS hadir,
+            COUNT(a.id_jadwal) FILTER (
+                WHERE a.status = 'izin'
+            ) AS izin,
+            COUNT(a.id_jadwal) FILTER (
+                WHERE a.status = 'sakit'
+            ) AS sakit,
+            COUNT(a.id_jadwal) FILTER (
+                WHERE a.status = 'alpha'
+            ) AS alpha,
+            COALESCE(
+                ROUND(
+                    COUNT(a.id_jadwal) FILTER (
+                        WHERE a.status = 'hadir'
+                    )::numeric
+                    / NULLIF(COUNT(a.id_jadwal), 0) * 100,
+                    2
+                ),
+                0
+            ) AS persentase_kehadiran
+        FROM kelas k
+        JOIN users u
+            ON k.id_siswa = u.id_user
+        JOIN kursus ku
+            ON k.id_kursus = ku.id_kursus
+        JOIN jadwal j
+            ON k.id_kelas = j.id_kelas
+        JOIN users t
+            ON j.id_tentor = t.id_user
+        JOIN absensi_siswa a
+            ON j.id_jadwal = a.id_jadwal
+            AND k.id_siswa = a.id_siswa
+        GROUP BY
+            k.id_siswa,
+            k.id_kursus,
+            j.id_tentor,
+            DATE_TRUNC('month', j.tanggal),
+            u.nama,
+            ku.nama_kursus,
+            k.kelas,
+            t.nama;
         SQL);
         
     }

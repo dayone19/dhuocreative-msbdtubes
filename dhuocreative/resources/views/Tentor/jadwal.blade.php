@@ -1,3 +1,4 @@
+
 @extends('layouts.Tentor')
 
 @section('title', 'Jadwal')
@@ -11,18 +12,14 @@
 
     {{-- Kalender Mingguan --}}
     <div class="o-schedule-panel">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
-            <a href="{{ route('tentor.jadwal', ['minggu' => $prevWeek]) }}"
-               style="text-decoration:none; padding:7px 16px; font-size:13px; font-weight:700; color:#286c65; background:#fff; border:1.5px solid #286c65; border-radius:20px;">
+        <div class="tj-week-navigation">
+            <a href="{{ route('tentor.jadwal', ['minggu' => $prevWeek]) }}">
                 ‹ Minggu Lalu
             </a>
 
-            <span style="font-weight:800; color:#df6833; font-size:16px;">
-                Periode: {{ $labelMinggu }}
-            </span>
+            <span>Periode: {{ $labelMinggu }}</span>
 
-            <a href="{{ route('tentor.jadwal', ['minggu' => $nextWeek]) }}"
-               style="text-decoration:none; padding:7px 16px; font-size:13px; font-weight:700; color:#286c65; background:#fff; border:1.5px solid #286c65; border-radius:20px;">
+            <a href="{{ route('tentor.jadwal', ['minggu' => $nextWeek]) }}">
                 Minggu Depan ›
             </a>
         </div>
@@ -99,7 +96,6 @@
                 @forelse($jadwal as $j)
                     <tr
                         data-id="{{ $j->id_jadwal }}"
-                        data-id-kelas="{{ $j->id_kelas }}"
                         data-tanggal="{{ $j->tanggal }}"
                         data-status="{{ $j->status }}"
                     >
@@ -157,9 +153,9 @@
         ></nav>
     </div>
 
-    {{-- Riwayat Pengajuan --}}
+    {{-- Riwayat Perubahan Jadwal --}}
     <div class="tj-section-head tj-section-gap">
-        <h2 class="tj-section-title">Pengajuan Jadwal</h2>
+        <h2 class="tj-section-title">Riwayat Perubahan Jadwal</h2>
     </div>
 
     <div class="tj-table-wrap">
@@ -169,40 +165,39 @@
                     <th>Nama Kursus</th>
                     <th>Siswa</th>
                     <th>Jadwal Lama</th>
-                    <th>Jadwal Diajukan</th>
-                    <th>Status</th>
-                    <th>Keterangan</th>
+                    <th>Jadwal Baru</th>
+                    <th>Waktu Diubah</th>
                 </tr>
             </thead>
 
-            <tbody id="pengajuanBody">
-                @forelse($pengajuan as $p)
+            <tbody>
+                @forelse($riwayatPerubahan as $r)
                     <tr>
-                        <td>{{ $p->kursus }}</td>
-                        <td>{{ $p->siswa }}</td>
+                        <td>{{ $r->kursus }}</td>
+                        <td>{{ $r->siswa }}</td>
+
                         <td>
-                            @if($p->lamaTanggal)
-                                {{ \Carbon\Carbon::parse($p->lamaTanggal)->translatedFormat('d M Y') }}
-                                · {{ $p->lamaMulai }}–{{ $p->lamaSelesai }}
+                            @if($r->tanggal_lama)
+                                {{ \Carbon\Carbon::parse($r->tanggal_lama)->translatedFormat('d M Y') }}
+                                · {{ $r->mulai_lama }}–{{ $r->selesai_lama }}
                             @else
-                                Jadwal baru
+                                —
                             @endif
                         </td>
+
                         <td>
-                            {{ \Carbon\Carbon::parse($p->tanggal)->translatedFormat('d M Y') }}
-                            · {{ $p->mulai }}–{{ $p->selesai }}
+                            {{ \Carbon\Carbon::parse($r->tanggal_baru)->translatedFormat('d M Y') }}
+                            · {{ substr($r->jam_mulai, 0, 5) }}–{{ substr($r->jam_selesai, 0, 5) }}
                         </td>
+
                         <td>
-                            <span class="tj-pill tj-{{ $p->status }}">
-                                {{ ucfirst($p->status) }}
-                            </span>
+                            {{ \Carbon\Carbon::parse($r->created_at)->translatedFormat('d M Y H:i') }}
                         </td>
-                        <td class="tj-ket">{{ $p->ket }}</td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="tj-empty">
-                            Belum ada pengajuan.
+                        <td colspan="5" class="tj-empty">
+                            Belum ada riwayat perubahan jadwal.
                         </td>
                     </tr>
                 @endforelse
@@ -215,6 +210,7 @@
 {{-- Modal Ubah Jadwal --}}
 <div class="t-modal" id="modalAjukan" hidden>
     <div class="t-modal-box">
+
         <div class="t-modal-heading">
             <button
                 type="button"
@@ -222,10 +218,15 @@
                 data-tutup
                 aria-label="Kembali"
             >
-                <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     width="35"
+                     height="35"
+                     fill="currentColor"
+                     viewBox="0 0 16 16">
                     <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
                 </svg>
             </button>
+
             <h2>Ubah Jadwal</h2>
         </div>
 
@@ -238,29 +239,44 @@
             </div>
 
             <div class="t-form-group">
-                <label for="tanggal">Tanggal</label>
+                <label for="tanggal">Tanggal Baru</label>
                 <input type="date" id="tanggal" required>
             </div>
 
             <div class="t-form-grid">
                 <div class="t-form-group">
                     <label for="jam_mulai">Jam Mulai</label>
-                    <input type="time" id="jam_mulai" value="09:00" required>
+                    <input
+                        type="time"
+                        id="jam_mulai"
+                        value="09:00"
+                        min="00:00"
+                        max="21:59"
+                        required
+                    >
                 </div>
 
                 <div class="t-form-group">
                     <label for="jam_selesai">Jam Selesai</label>
-                    <input type="time" id="jam_selesai" value="11:00" readonly>
+                    <input type="time" id="jam_selesai" readonly>
                 </div>
             </div>
 
             <div class="t-form-group">
                 <label for="catatan">Catatan (opsional)</label>
-                <textarea id="catatan" rows="3" placeholder="Contoh: sudah disepakati dengan siswa"></textarea>
+                <textarea
+                    id="catatan"
+                    rows="3"
+                    placeholder="Contoh: sudah disepakati dengan siswa"
+                ></textarea>
             </div>
 
-            <button type="submit" class="t-btn t-btn-orange t-btn-full">
-                Kirim Permintaan Perubahan
+            <button
+                type="submit"
+                class="t-btn t-btn-orange t-btn-full"
+                id="btnSimpanPerubahan"
+            >
+                Simpan Perubahan Jadwal
             </button>
         </form>
     </div>
@@ -295,7 +311,7 @@ const formatTanggal = s =>
         year: 'numeric'
     });
 
-// Pagination mengikuti pola Admin
+// Pagination
 function renderPaginasi(kontainerId, total, halaman, pindah) {
     const nav = el(kontainerId);
     if (!nav) return;
@@ -336,7 +352,7 @@ function renderPaginasi(kontainerId, total, halaman, pindah) {
     };
 
     nav.appendChild(
-        buatTombol('<', halaman - 1, {
+        buatTombol('‹', halaman - 1, {
             mati: halaman === 1,
             aria: 'Halaman sebelumnya'
         })
@@ -365,7 +381,7 @@ function renderPaginasi(kontainerId, total, halaman, pindah) {
     }
 
     nav.appendChild(
-        buatTombol('>', halaman + 1, {
+        buatTombol('›', halaman + 1, {
             mati: halaman === jumlah,
             aria: 'Halaman berikutnya'
         })
@@ -496,7 +512,7 @@ function bukaModalUbah(btn) {
         siswa: btn.dataset.siswa,
         tanggal: btn.dataset.tanggal,
         mulai: btn.dataset.mulai,
-        selesai: btn.dataset.selesai,
+        selesai: btn.dataset.selesai
     };
 
     jadwalDipilihUntukDiubah = j;
@@ -511,13 +527,12 @@ function bukaModalUbah(btn) {
     sel.appendChild(opt);
     sel.value = j.id_kelas;
 
-    el('tanggal').value = '';
+    el('tanggal').value = j.tanggal;
     el('jam_mulai').value = j.mulai;
 
     hitungJamSelesai();
 
-    el('catatan').value =
-        'Permintaan perubahan dari jadwal ' + formatTanggal(j.tanggal) + '.';
+    el('catatan').value = '';
 
     el('tanggal').min = offsetDate(0);
     el('modalAjukan').hidden = false;
@@ -555,7 +570,7 @@ document.addEventListener('keydown', e => {
 
 el('tanggal').min = offsetDate(0);
 
-// Mengirim pengajuan perubahan jadwal
+// Menyimpan perubahan jadwal secara langsung
 el('formAjukan').addEventListener('submit', async e => {
     e.preventDefault();
 
@@ -567,8 +582,7 @@ el('formAjukan').addEventListener('submit', async e => {
     }
 
     const payload = {
-        id_kelas: Number(lama.id_kelas),
-        id_jadwal_lama: lama.id_jadwal,
+        id_jadwal: lama.id_jadwal,
         tanggal: el('tanggal').value,
         jam_mulai: el('jam_mulai').value,
         catatan: el('catatan').value.trim() || null
@@ -589,12 +603,13 @@ el('formAjukan').addEventListener('submit', async e => {
         return;
     }
 
-    const tombol = el('formAjukan').querySelector('[type=submit]');
+    const tombol = el('btnSimpanPerubahan');
     tombol.disabled = true;
+    tombol.textContent = 'Menyimpan...';
 
     try {
-        const res = await fetch("{{ route('tentor.jadwal.ajukan') }}", {
-            method: 'POST',
+        const res = await fetch("{{ route('tentor.jadwal.update') }}", {
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
@@ -610,17 +625,21 @@ el('formAjukan').addEventListener('submit', async e => {
                 ? Object.values(body.errors)[0][0]
                 : null;
 
-            toast(pesanPertama || body.message || 'Gagal mengirim permintaan.');
+            toast(pesanPertama || body.message || 'Gagal mengubah jadwal.');
             return;
         }
 
-        toast(body.message);
+        toast(body.message || 'Jadwal berhasil diubah.');
+
+        el('modalAjukan').hidden = true;
+
         setTimeout(() => location.reload(), 900);
 
     } catch (err) {
         toast('Tidak bisa terhubung ke server.');
     } finally {
         tombol.disabled = false;
+        tombol.textContent = 'Simpan Perubahan Jadwal';
     }
 });
 

@@ -1,3 +1,4 @@
+
 {{-- Manajemen Siswa Operator - Dhuo Creative --}}
 @extends('layouts.Operator')
 @section('title', 'Daftar Siswa')
@@ -36,18 +37,23 @@
             </thead>
             <tbody id="bodySiswa">
                 @forelse($siswaList as $s)
-                    <tr data-status="{{ strtolower($s->status ?? 'aktif') }}"
+                    <tr
                         data-id="{{ $s->id_user }}"
                         data-id-str="{{ $s->id_str }}"
                         data-nama="{{ $s->nama }}"
                         data-telp="{{ $s->no_telp }}"
                         data-tanggal="{{ $s->tanggal_daftar_teks }}"
-                        data-status="{{ ucfirst($s->status ?? 'aktif') }}"
-                        data-kursus='@json($s->daftar_kursus)'>
+                        data-status="{{ strtolower($s->status ?? 'aktif') }}"
+                        data-kursus='@json($s->daftar_kursus)'
+                    >
                         <td>{{ $s->id_str }}</td>
                         <td>{{ $s->nama }}</td>
                         <td>{{ $s->tanggal_daftar_teks }}</td>
-                        <td><span class="o-status {{ strtolower($s->status ?? 'aktif') }}">{{ ucfirst($s->status ?? 'aktif') }}</span></td>
+                        <td>
+                            <span class="o-status {{ strtolower($s->status ?? 'aktif') }}">
+                                {{ ucfirst($s->status ?? 'aktif') }}
+                            </span>
+                        </td>
                         <td>
                             <div class="o-row-actions">
                                 <button type="button" class="o-action" data-detail>Detail</button>
@@ -57,23 +63,27 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" style="text-align:center; padding: 20px;">Belum ada data siswa tersimpan.</td>
+                        <td colspan="5" style="text-align:center; padding:20px;">
+                            Belum ada data siswa tersimpan.
+                        </td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
     </div>
+
     <p class="o-empty" id="kosongSiswa" hidden>Pendaftaran siswa tidak ditemukan.</p>
+
     <nav class="tj-pagination" id="paginasiSiswa" aria-label="Halaman daftar siswa" style="margin-top:20px;" hidden></nav>
 </div>
 
-<!-- Modal tambah / edit pendaftaran -->
+<!-- Modal Pendaftaran / Edit Siswa -->
 <div class="o-modal" id="modalSiswa" hidden>
     <div class="o-modal-box">
         <div class="o-modal-header">
             <button type="button" class="o-modal-close" data-close aria-label="Tutup">
-                <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
-                <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+                <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
                 </svg>
             </button>
             <h2>Pendaftaran Siswa</h2>
@@ -81,38 +91,57 @@
 
         <form id="formSiswa">
             @csrf
+
+            <!-- Edit Data Master Siswa -->
             <div id="fieldDataMaster">
                 <div class="o-form-group">
                     <label for="namaSiswa">Nama Siswa</label>
                     <input id="namaSiswa" maxlength="100" required placeholder="Masukkan nama siswa">
                 </div>
+
                 <div class="o-form-group">
                     <label for="telpSiswa">No. Telp</label>
                     <input id="telpSiswa" maxlength="20" required placeholder="Masukkan nomor telepon">
                 </div>
             </div>
 
+            <!-- Data Pendaftaran Kursus -->
             <div id="fieldDataKursus">
                 <div class="o-form-group">
+                    <label for="akunSiswa">Akun Siswa</label>
+                    <select id="akunSiswa" required>
+                        <option value="">Pilih akun siswa</option>
+                        @foreach($akunSiswaList as $akun)
+                            <option value="{{ $akun->id_user }}">
+                                {{ $akun->nama }} - {{ $akun->no_telp }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="o-form-group">
                     <label for="kursusSiswa">Nama Kursus</label>
-                    <select id="kursusSiswa">
+                    <select id="kursusSiswa" required>
                         <option value="">Pilih kursus</option>
                         @foreach($kursusList as $k)
                             <option value="{{ $k->id_kursus }}">{{ $k->nama_kursus }}</option>
                         @endforeach
                     </select>
                 </div>
+
                 <div class="o-form-group">
                     <label for="kelasSiswa">Jenis Kelas</label>
-                    <select id="kelasSiswa">
+                    <select id="kelasSiswa" required>
                         <option value="">Pilih kelas</option>
                         <option value="Online Class">Online</option>
                         <option value="Private Class">Offline</option>
                         <option value="Home Class">Offline Rumah</option>
                     </select>
                 </div>
+
                 <div class="o-form-group">
-                    <label id="hariLabel">Hari Pembelajaran (1 minggu, maks. 3 kali pertemuan)</label>
+                    <label id="hariLabel">Hari Pembelajaran (maksimal 3 hari per minggu)</label>
+
                     <div class="o-day-picker" id="hariPicker" role="group" aria-labelledby="hariLabel">
                         <label><input type="checkbox" value="Senin">Senin</label>
                         <label><input type="checkbox" value="Selasa">Selasa</label>
@@ -121,42 +150,67 @@
                         <label><input type="checkbox" value="Jumat">Jumat</label>
                         <label><input type="checkbox" value="Sabtu">Sabtu</label>
                     </div>
+
                     <span class="o-hari-hint" id="hariCount" aria-live="polite">0/3 hari dipilih</span>
                 </div>
+
                 <div class="o-form-group">
                     <label for="jamMulai">Jam Mulai Pembelajaran</label>
-                    <input type="time" id="jamMulai" min="07:00" max="20:00">
+                    <input type="time" id="jamMulai" min="07:00" max="20:00" required>
                 </div>
+
+                <div class="o-form-group">
+                    <label for="jamSelesai">Jam Selesai Pembelajaran</label>
+                    <input type="time" id="jamSelesai" readonly>
+                    <small>Jam selesai dihitung otomatis dengan durasi 2 jam.</small>
+                </div>
+
                 <div class="o-form-group">
                     <label for="tanggalDaftar">Tanggal Daftar</label>
-                    <input id="tanggalDaftar" type="date">
+                    <input id="tanggalDaftar" type="date" value="{{ date('Y-m-d') }}" required>
                 </div>
+
                 <div class="o-form-group">
                     <label for="statusSiswa">Status Pendaftaran</label>
-                    <select id="statusSiswa">
+                    <select id="statusSiswa" required>
                         <option value="aktif">Aktif</option>
                         <option value="nonaktif">Nonaktif</option>
                     </select>
                 </div>
+
+                <div class="o-form-group">
+                    <label for="tentorSiswa">Tentor Tersedia</label>
+                    <select id="tentorSiswa" required disabled>
+                        <option value="">Lengkapi data jadwal terlebih dahulu</option>
+                    </select>
+                    <small id="tentorHint" aria-live="polite">
+                        Pilih kursus, hari, tanggal, dan jam untuk mengecek tentor.
+                    </small>
+                </div>
             </div>
-            <button type="submit" class="o-btn o-btn-orange o-btn-full" id="submitSiswa">Simpan Pendaftaran</button>
+
+            <button type="submit" class="o-btn o-btn-orange o-btn-full" id="submitSiswa">
+                Simpan Pendaftaran
+            </button>
         </form>
     </div>
 </div>
 
-<!-- Modal detail siswa -->
+
+<!-- Modal Detail Siswa -->
 <div class="o-modal" id="modalDetailSiswa" hidden>
     <div class="o-modal-box">
         <div class="o-modal-header">
             <button type="button" class="o-modal-close" data-close aria-label="Tutup">
-                <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
-                <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+                <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
                 </svg>
             </button>
             <h2>Detail Pendaftaran</h2>
         </div>
 
         <p class="o-course-title">Data Siswa</p>
+
         <div class="o-detail-list" id="detailDataMaster">
             <div><span>ID Siswa</span><strong id="detailId">S-001</strong></div>
             <div><span>Nama Siswa</span><strong id="detailNama">Siswa A</strong></div>
@@ -164,22 +218,20 @@
             <div><span>Tanggal Daftar</span><strong id="detailTanggal">12 Jan 2026</strong></div>
             <div><span>Status</span><strong id="detailStatus">Aktif</strong></div>
         </div>
-        <button type="button" class="o-action" id="editDataMaster" style="margin: 10px 0 18px;">Edit Data Siswa</button>
+
+        <button type="button" class="o-action" id="editDataMaster" style="margin:10px 0 18px;">
+            Edit Data Siswa
+        </button>
 
         <p class="o-course-title">Daftar Kursus</p>
+
         <div class="o-course-list" id="detailCourseList">
             <div class="o-course-item">
                 <div class="o-course-head">
-                    <strong>Web Master - Online</strong>
-                    <button type="button" class="o-action" data-edit-course>Edit</button>
+                    <strong>Belum Mengikuti Kursus</strong>
                 </div>
-                <div class="o-course-row"><span>Hari</span><strong>Senin, Rabu, Jumat</strong></div>
-                <div class="o-course-row"><span>Jam Mulai</span><strong class="course-jam">08:00</strong></div>
-                <div class="o-course-row"><span>Tentor</span><strong>Tentor C</strong></div>
-                <div class="o-course-row"><span>Status</span><strong>Aktif</strong></div>
             </div>
         </div>
-        <button type="button" class="o-btn o-btn-orange o-btn-full" id="tambahKursusSiswa">Tambah Kursus</button>
     </div>
 </div>
 
@@ -190,14 +242,16 @@ let halSiswa = 1;
 function renderPaginasi(navId, total, halaman, pindah) {
     const nav = document.getElementById(navId);
     if (!nav) return;
-    
+
     nav.replaceChildren();
+
     if (!total || total <= 1) {
         nav.hidden = true;
         return;
     }
+
     nav.hidden = false;
-    
+
     const jumlah = Math.ceil(total / PER_HALAMAN_SISWA);
     const awal = (halaman - 1) * PER_HALAMAN_SISWA + 1;
     const akhir = Math.min(halaman * PER_HALAMAN_SISWA, total);
@@ -213,17 +267,24 @@ function renderPaginasi(navId, total, halaman, pindah) {
         b.className = 'tj-pg-btn' + (aktif ? ' active' : '');
         b.textContent = label;
         b.disabled = mati;
+
         if (aria) b.setAttribute('aria-label', aria);
         if (aktif) b.setAttribute('aria-current', 'page');
+
         b.addEventListener('click', () => pindah(tujuan));
         return b;
     };
 
     const grup = document.createElement('div');
     grup.className = 'tj-pg-list';
-    grup.appendChild(btn('‹', halaman - 1, { mati: halaman === 1, aria: 'Halaman sebelumnya' }));
+
+    grup.appendChild(btn('‹', halaman - 1, {
+        mati: halaman === 1,
+        aria: 'Halaman sebelumnya'
+    }));
 
     let terakhir = 0;
+
     for (let i = 1; i <= jumlah; i++) {
         if (i === 1 || i === jumlah || Math.abs(i - halaman) <= 1) {
             if (i - terakhir > 1) {
@@ -232,141 +293,273 @@ function renderPaginasi(navId, total, halaman, pindah) {
                 t.textContent = '…';
                 grup.appendChild(t);
             }
-            grup.appendChild(btn(String(i), i, { aktif: i === halaman, aria: `Halaman ${i}` }));
+
+            grup.appendChild(btn(String(i), i, {
+                aktif: i === halaman,
+                aria: `Halaman ${i}`
+            }));
+
             terakhir = i;
         }
     }
 
-    grup.appendChild(btn('›', halaman + 1, { mati: halaman === jumlah, aria: 'Halaman berikutnya' }));
+    grup.appendChild(btn('›', halaman + 1, {
+        mati: halaman === jumlah,
+        aria: 'Halaman berikutnya'
+    }));
+
     nav.appendChild(grup);
 }
 
-(()=>{
-const $ = s => document.querySelector(s), all = s => [...document.querySelectorAll(s)];
-const modal = $('#modalSiswa'), detail = $('#modalDetailSiswa'), form = $('#formSiswa');
-const masterFields = $('#fieldDataMaster'), courseFields = $('#fieldDataKursus');
-const bodySiswa = $('#bodySiswa');
-let formMode = 'new', returnToDetail = false;
-let activeCourse = null;
-let selectedStudentId = null;
-let selectedRow = null;
+(() => {
+    const $ = s => document.querySelector(s);
+    const all = s => [...document.querySelectorAll(s)];
 
-function setGroup(group, show){
-    group.hidden = !show;
-    group.querySelectorAll('input, select, textarea').forEach(el => {
-        el.disabled = !show;
-    });
-}
+    const modal = $('#modalSiswa');
+    const detail = $('#modalDetailSiswa');
+    const form = $('#formSiswa');
 
-function openForm(mode){
-    formMode = mode;
-    returnToDetail = mode === 'add-course' || mode === 'edit-master' || mode === 'edit-course';
-    setGroup(masterFields, mode === 'new' || mode === 'edit-master');
-    setGroup(courseFields, mode === 'new' || mode === 'add-course' || mode === 'edit-course');
-    $('#jamMulai').required = false;
-    $('#namaSiswa').required = mode === 'new' || mode === 'edit-master';
-    $('#telpSiswa').required = mode === 'new' || mode === 'edit-master';
-    $('#kursusSiswa').required = mode === 'new' || mode === 'add-course' || mode === 'edit-course';
-    $('#kelasSiswa').required = false;
-    $('#tanggalDaftar').required = false;
-    $('#statusSiswa').required = false;
+    const masterFields = $('#fieldDataMaster');
+    const courseFields = $('#fieldDataKursus');
+    const bodySiswa = $('#bodySiswa');
 
-    if (mode === 'edit-master') {
-        $('#namaSiswa').value = $('#detailNama').textContent.trim();
-        $('#telpSiswa').value = $('#detailTelp').textContent.trim();
-    } else if (mode === 'new' || mode === 'add-course') {
+    let formMode = 'new';
+    let returnToDetail = false;
+    let selectedStudentId = null;
+    let selectedRow = null;
+    let sedangCekTentor = false;
+    let nomorCekTentor = 0;
+
+    const days = all('#hariPicker input');
+
+    function setGroup(group, show) {
+        group.hidden = !show;
+
+        group.querySelectorAll('input, select, textarea').forEach(el => {
+            el.disabled = !show;
+        });
+    }
+
+    function resetHari() {
+        days.forEach(d => {
+            d.checked = false;
+            d.disabled = false;
+        });
+
+        $('#hariCount').textContent = '0/3 hari dipilih';
+    }
+
+    function updateHari() {
+        const jumlah = days.filter(d => d.checked).length;
+
+        days.forEach(d => {
+            d.disabled = !d.checked && jumlah >= 3;
+        });
+
+        $('#hariCount').textContent = jumlah + '/3 hari dipilih';
+
+        cekTentor();
+    }
+
+    function hitungJamSelesai() {
+        const mulai = $('#jamMulai').value;
+        const selesai = $('#jamSelesai');
+
+        if (!mulai) {
+            selesai.value = '';
+            return;
+        }
+
+        const [jam, menit] = mulai.split(':').map(Number);
+        const totalMenit = jam * 60 + menit + 120;
+
+        const jamAkhir = Math.floor(totalMenit / 60);
+        const menitAkhir = totalMenit % 60;
+
+        selesai.value =
+            String(jamAkhir).padStart(2, '0') + ':' +
+            String(menitAkhir).padStart(2, '0');
+    }
+
+    function resetHasilTentor(pesan = 'Pilih kursus, hari, tanggal, dan jam untuk mengecek tentor.') {
+        const select = $('#tentorSiswa');
+
+        select.replaceChildren();
+
+        const option = document.createElement('option');
+        option.value = '';
+        option.textContent = pesan;
+
+        select.appendChild(option);
+        select.value = '';
+        select.disabled = true;
+
+        $('#tentorHint').textContent = pesan;
+    }
+
+    function dataJadwalLengkap() {
+        const hari = days.filter(d => d.checked).map(d => d.value);
+
+        return Boolean(
+            $('#kursusSiswa').value &&
+            hari.length >= 1 &&
+            hari.length <= 3 &&
+            $('#jamMulai').value &&
+            $('#jamSelesai').value &&
+            $('#tanggalDaftar').value
+        );
+    }
+
+    async function cekTentor() {
+        resetHasilTentor('Sedang memeriksa ketersediaan tentor...');
+
+        const nomorSekarang = ++nomorCekTentor;
+
+        if (!dataJadwalLengkap()) return;
+
+        if ($('#jamMulai').value < '07:00' || $('#jamMulai').value > '20:00') {
+            resetHasilTentor();
+            return;
+        }
+        
+
+        sedangCekTentor = true;
+
+        const select = $('#tentorSiswa');
+        const token = form.querySelector('input[name="_token"]')?.value || '{{ csrf_token() }}';
+
+        try {
+            const res = await fetch("{{ route('operator.siswa.cek-tentor') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': token,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    id_kursus: $('#kursusSiswa').value,
+                    hari: days.filter(d => d.checked).map(d => d.value),
+                    jam_mulai: $('#jamMulai').value,
+                    tanggal_daftar: $('#tanggalDaftar').value
+                })
+            });
+
+            const data = await res.json();
+
+            if (nomorSekarang !== nomorCekTentor) return;
+
+            if (!res.ok || !data.success) {
+                resetHasilTentor(data.message || 'Gagal memeriksa ketersediaan tentor.');
+                return;
+            }
+
+            select.replaceChildren();
+
+            const tersedia = data.tentor.filter(t => t.tersedia);
+
+            data.tentor.forEach(t => {
+                const option = document.createElement('option');
+
+                option.value = t.id_tentor;
+                option.disabled = !t.tersedia;
+
+                option.textContent = t.nama + (
+                    t.bentrok
+                        ? ' - Bentrok'
+                        : ' - Tidak Bentrok'
+                );
+
+                select.appendChild(option);
+            });
+
+            select.disabled = tersedia.length === 0;
+
+            if (tersedia.length > 0) {
+                select.value = String(tersedia[0].id_tentor);
+
+                $('#tentorHint').textContent =
+                    tersedia.length + ' tentor tersedia. Tentor dengan jadwal aktif paling sedikit diprioritaskan.';
+            } else {
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = 'Tidak ada tentor tersedia';
+                select.insertBefore(option, select.firstChild);
+                select.value = '';
+
+                $('#tentorHint').textContent =
+                    'Tidak ada tentor yang tersedia pada jadwal tersebut.';
+            }
+
+        } catch (err) {
+            console.error(err);
+            resetHasilTentor('Terjadi kesalahan saat memeriksa tentor.');
+        } finally {
+            sedangCekTentor = false;
+        }
+    }
+
+    function openForm(mode) {
+        formMode = mode;
+        returnToDetail = mode === 'edit-master';
+
+        setGroup(masterFields, mode === 'edit-master');
+        setGroup(courseFields, mode === 'new');
+
+        $('#namaSiswa').required = mode === 'edit-master';
+        $('#telpSiswa').required = mode === 'edit-master';
+
+        $('#akunSiswa').required = mode === 'new';
+        $('#kursusSiswa').required = mode === 'new';
+        $('#kelasSiswa').required = mode === 'new';
+        $('#jamMulai').required = mode === 'new';
+        $('#tanggalDaftar').required = mode === 'new';
+        $('#statusSiswa').required = mode === 'new';
+        $('#tentorSiswa').required = mode === 'new';
+
+        days.forEach(d => {
+            d.required = false;
+        });
+
         if (mode === 'new') {
-            $('#namaSiswa').value = '';
-            $('#telpSiswa').value = '';
+            form.reset();
+
+            $('#akunSiswa').value = '';
+            $('#kursusSiswa').value = '';
+            $('#kelasSiswa').value = '';
+            $('#jamMulai').value = '';
+            $('#jamSelesai').value = '';
+            $('#tanggalDaftar').value = '{{ date("Y-m-d") }}';
+            $('#statusSiswa').value = 'aktif';
+
+            resetHari();
+            resetHasilTentor();
         }
-        $('#kursusSiswa').value = '';
-        $('#kelasSiswa').value = '';
-        days.forEach(d => { d.checked = false; d.disabled = false; });
-        $('#jamMulai').value = '';
-        $('#tanggalDaftar').value = '{{ date("Y-m-d") }}';
-        $('#statusSiswa').value = 'aktif';
-        $('#hariCount').textContent = '0/3 hari dipilih';
+
+        if (mode === 'edit-master') {
+            $('#namaSiswa').value = $('#detailNama').textContent.trim();
+            $('#telpSiswa').value = $('#detailTelp').textContent.trim();
+        }
+
+        $('#modalSiswa h2').textContent =
+            mode === 'edit-master' ? 'Edit Data Siswa' : 'Pendaftaran Siswa';
+
+        $('#submitSiswa').textContent =
+            mode === 'edit-master' ? 'Simpan Perubahan' : 'Simpan Pendaftaran';
+
+        detail.hidden = true;
+        modal.hidden = false;
     }
 
-    if (mode === 'edit-course' && activeCourse) {
-        const idKursus = activeCourse.dataset.idKursus;
-        const namaKursus = activeCourse.dataset.namaKursus;
-        const jenisKelas = activeCourse.dataset.kelas;
-        const status = activeCourse.dataset.status;
-        const tanggal = activeCourse.dataset.tanggal;
+    $('#btnTambahSiswa').onclick = () => openForm('new');
 
-        if (idKursus && $('#kursusSiswa').querySelector(`option[value="${idKursus}"]`)) {
-            $('#kursusSiswa').value = idKursus;
-        } else if (namaKursus) {
-            const opt = [...$('#kursusSiswa').options].find(o => o.text.trim().toLowerCase() === namaKursus.trim().toLowerCase());
-            if (opt) $('#kursusSiswa').value = opt.value;
-        } else {
-            const heading = activeCourse.querySelector('.o-course-head strong')?.textContent.trim().split(' - ') || [];
-            const opt = [...$('#kursusSiswa').options].find(o => o.text.trim().toLowerCase() === (heading[0] || '').trim().toLowerCase());
-            if (opt) $('#kursusSiswa').value = opt.value;
-        }
+    $('#editDataMaster').onclick = () => openForm('edit-master');
 
-        if (jenisKelas) {
-            const opt = [...$('#kelasSiswa').options].find(o => o.value.toLowerCase() === jenisKelas.toLowerCase() || o.text.trim().toLowerCase() === jenisKelas.trim().toLowerCase());
-            if (opt) $('#kelasSiswa').value = opt.value;
-            else $('#kelasSiswa').value = jenisKelas;
-        } else {
-            const heading = activeCourse.querySelector('.o-course-head strong')?.textContent.trim().split(' - ') || [];
-            const cls = (heading[1] || '').trim().toLowerCase();
-            const opt = [...$('#kelasSiswa').options].find(o => o.value.toLowerCase() === cls || o.text.trim().toLowerCase() === cls);
-            if (opt) $('#kelasSiswa').value = opt.value;
-        }
+    $('#tabelSiswa').addEventListener('click', e => {
+        const button = e.target.closest('[data-detail]');
+        if (!button) return;
 
-        if (status) {
-            $('#statusSiswa').value = status.toLowerCase() === 'nonaktif' ? 'nonaktif' : 'aktif';
-        } else {
-            const rows = [...activeCourse.querySelectorAll('.o-course-row')];
-            const statusRow = rows.find(r => r.querySelector('span')?.textContent.trim() === 'Status');
-            const stText = statusRow?.querySelector('strong')?.textContent.trim().toLowerCase();
-            $('#statusSiswa').value = stText === 'nonaktif' ? 'nonaktif' : 'aktif';
-        }
+        const row = button.closest('tr');
 
-        if (tanggal) {
-            $('#tanggalDaftar').value = tanggal.split('T')[0];
-        }
-
-        days.forEach(d => { d.checked = false; d.disabled = false; });
-        $('#jamMulai').value = '';
-        $('#hariCount').textContent = '0/3 hari dipilih';
-    }
-
-    const titles = {
-        'new': 'Pendaftaran Siswa',
-        'edit-master': 'Edit Data Siswa',
-        'add-course': 'Tambah Kursus Siswa',
-        'edit-course': 'Edit Kursus Siswa'
-    };
-    $('#modalSiswa h2').textContent = titles[mode];
-    $('#submitSiswa').textContent =
-        mode === 'edit-master' ? 'Simpan Perubahan' :
-        mode === 'add-course' ? 'Tambah Kursus' :
-        mode === 'edit-course' ? 'Simpan Perubahan' :
-        'Simpan Pendaftaran';
-    detail.hidden = true;
-    modal.hidden = false;
-}
-
-$('#btnTambahSiswa').onclick = () => openForm('new');
-$('#editDataMaster').onclick = () => openForm('edit-master');
-$('#tambahKursusSiswa').onclick = () => openForm('add-course');
-
-detail.addEventListener('click', e => {
-    const button = e.target.closest('[data-edit-course]');
-    if (!button) return;
-    activeCourse = button.closest('.o-course-item');
-    openForm('edit-course');
-});
-
-all('#tabelSiswa').forEach(tbl => {
-    tbl.addEventListener('click', e => {
-        const b = e.target.closest('[data-detail]');
-        if (!b) return;
-        const row = b.closest('tr');
         selectedRow = row;
         selectedStudentId = row.dataset.id;
 
@@ -374,125 +567,183 @@ all('#tabelSiswa').forEach(tbl => {
         $('#detailNama').textContent = row.dataset.nama || row.children[1].textContent.trim();
         $('#detailTelp').textContent = row.dataset.telp || '-';
         $('#detailTanggal').textContent = row.dataset.tanggal || row.children[2].textContent.trim();
-        $('#detailStatus').textContent = row.dataset.status || row.children[3].textContent.trim();
+
+        const status = row.dataset.status || 'aktif';
+
+        $('#detailStatus').textContent =
+            status.charAt(0).toUpperCase() + status.slice(1);
 
         const courseList = $('#detailCourseList');
-        if (courseList) {
-            courseList.replaceChildren();
-            let courses = [];
-            try {
-                courses = JSON.parse(row.dataset.kursus || '[]');
-            } catch (err) {}
+        courseList.replaceChildren();
 
-            if (courses && courses.length > 0) {
-                courses.forEach(c => {
-                    const item = document.createElement('div');
-                    item.className = 'o-course-item';
-                    item.dataset.idKursus = c.id_kursus || '';
-                    item.dataset.namaKursus = c.nama_kursus || '';
-                    item.dataset.kelas = c.jenis_kelas || '';
-                    item.dataset.status = c.status || 'aktif';
-                    item.dataset.tanggal = c.tanggal_daftar || '';
-                    item.innerHTML = `
-                        <div class="o-course-head">
-                            <strong>${c.nama_kursus || 'Kursus'} - ${c.jenis_kelas || 'Reguler'}</strong>
-                            <button type="button" class="o-action" data-edit-course>Edit</button>
-                        </div>
-                        <div class="o-course-row"><span>Status</span><strong>${c.status ? (c.status.charAt(0).toUpperCase() + c.status.slice(1)) : 'Aktif'}</strong></div>
-                        <div class="o-course-row"><span>Tentor</span><strong>${c.nama_tentor || 'Belum ditentukan'}</strong></div>
-                    `;
-                    courseList.appendChild(item);
-                });
-            } else {
+        let courses = [];
+
+        try {
+            courses = JSON.parse(row.dataset.kursus || '[]');
+        } catch (err) {
+            courses = [];
+        }
+
+        if (courses.length > 0) {
+            courses.forEach(c => {
                 const item = document.createElement('div');
                 item.className = 'o-course-item';
-                item.innerHTML = `
-                    <div class="o-course-head">
-                        <strong>Belum Mengikuti Kursus</strong>
-                    </div>
-                    <div class="o-course-row"><span>Status</span><strong>-</strong></div>
-                `;
+
+                const head = document.createElement('div');
+                head.className = 'o-course-head';
+
+                const title = document.createElement('strong');
+                title.textContent =
+                    `${c.nama_kursus || 'Kursus'} - ${c.jenis_kelas || 'Reguler'}`;
+
+                head.appendChild(title);
+                item.appendChild(head);
+
+                const tambahBaris = (label, value) => {
+                    const row = document.createElement('div');
+                    row.className = 'o-course-row';
+
+                    const span = document.createElement('span');
+                    span.textContent = label;
+
+                    const strong = document.createElement('strong');
+                    strong.textContent = value || '-';
+
+                    row.appendChild(span);
+                    row.appendChild(strong);
+
+                    item.appendChild(row);
+                };
+
+                tambahBaris('Status', c.status || 'Aktif');
+                tambahBaris('Tentor', c.nama_tentor || 'Belum ditentukan');
+
                 courseList.appendChild(item);
-            }
+            });
+        } else {
+            const item = document.createElement('div');
+            item.className = 'o-course-item';
+
+            const head = document.createElement('div');
+            head.className = 'o-course-head';
+
+            const title = document.createElement('strong');
+            title.textContent = 'Belum Mengikuti Kursus';
+
+            head.appendChild(title);
+            item.appendChild(head);
+
+            courseList.appendChild(item);
         }
 
         detail.hidden = false;
     });
-});
 
-all('[data-close]').forEach(b => b.onclick = () => {
-    const parent = b.closest('.o-modal');
-    parent.hidden = true;
-    if (parent === modal && returnToDetail) detail.hidden = false;
-});
+    all('[data-close]').forEach(button => {
+        button.onclick = () => {
+            const parent = button.closest('.o-modal');
+            parent.hidden = true;
 
-form.onsubmit = async e => {
-    e.preventDefault();
+            if (parent === modal && returnToDetail) {
+                detail.hidden = false;
+            }
+        };
+    });
 
-    const jamMulai = $('#jamMulai')?.value;
-    if (jamMulai && jamMulai > '20:00') {
-        alert('⚠️ Jam mulai pembelajaran paling lambat pukul 20:00 (durasi kursus 2 jam, selesai maks. pukul 22:00)!');
-        return;
-    }
+    form.onsubmit = async e => {
+        e.preventDefault();
 
-    const token = form.querySelector('input[name="_token"]')?.value || '{{ csrf_token() }}';
-
-    if (formMode === 'edit-master') {
-        const nama = $('#namaSiswa').value.trim();
-        const telp = $('#telpSiswa').value.trim();
-
-        if (!nama || !telp) return;
+        const token =
+            form.querySelector('input[name="_token"]')?.value ||
+            '{{ csrf_token() }}';
 
         const btn = $('#submitSiswa');
-        btn.disabled = true;
-        btn.textContent = 'Menyimpan...';
 
-        try {
-            const res = await fetch(`/operator/siswa/${selectedStudentId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': token,
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({ nama: nama, no_telp: telp })
-            });
+        if (formMode === 'edit-master') {
+            const nama = $('#namaSiswa').value.trim();
+            const telp = $('#telpSiswa').value.trim();
 
-            const data = await res.json();
-            if (res.ok && data.success) {
-                $('#detailNama').textContent = nama;
-                $('#detailTelp').textContent = telp;
+            if (!nama || !telp) return;
 
-                if (selectedRow) {
-                    selectedRow.dataset.nama = nama;
-                    selectedRow.dataset.telp = telp;
-                    selectedRow.children[1].textContent = nama;
+            btn.disabled = true;
+            btn.textContent = 'Menyimpan...';
+
+            try {
+                const res = await fetch(`/operator/siswa/${selectedStudentId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': token,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        nama: nama,
+                        no_telp: telp
+                    })
+                });
+
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    $('#detailNama').textContent = nama;
+                    $('#detailTelp').textContent = telp;
+
+                    if (selectedRow) {
+                        selectedRow.dataset.nama = nama;
+                        selectedRow.dataset.telp = telp;
+                        selectedRow.children[1].textContent = nama;
+                    }
+
+                    modal.hidden = true;
+                    detail.hidden = false;
+                } else {
+                    alert('Gagal menyimpan: ' + (data.message || 'Terjadi kesalahan'));
                 }
-
-                modal.hidden = true;
-                if (returnToDetail) detail.hidden = false;
-            } else {
-                alert('Gagal menyimpan: ' + (data.message || 'Terjadi kesalahan'));
+            } catch (err) {
+                alert('Terjadi kesalahan jaringan.');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Simpan Perubahan';
             }
-        } catch (err) {
-            alert('Terjadi kesalahan jaringan.');
-        } finally {
-            btn.disabled = false;
-            btn.textContent = 'Simpan Perubahan';
+
+            return;
         }
-    } else if (formMode === 'new') {
-        const nama = $('#namaSiswa').value.trim();
-        const telp = $('#telpSiswa').value.trim();
+
+        const idSiswa = $('#akunSiswa').value;
         const idKursus = $('#kursusSiswa').value;
         const kelas = $('#kelasSiswa').value;
+        const jamMulai = $('#jamMulai').value;
+        const jamSelesai = $('#jamSelesai').value;
         const tglDaftar = $('#tanggalDaftar').value;
         const status = $('#statusSiswa').value;
+        const idTentor = $('#tentorSiswa').value;
 
-        if (!nama || !telp) return;
+        const hari = days
+            .filter(d => d.checked)
+            .map(d => d.value);
 
-        const btn = $('#submitSiswa');
+        if (!idSiswa || !idKursus || !kelas || !jamMulai || !tglDaftar || !idTentor) {
+            alert('Mohon lengkapi seluruh data pendaftaran dan pilih tentor tersedia.');
+            return;
+        }
+
+        if (hari.length < 1 || hari.length > 3) {
+            alert('Pilih minimal satu dan maksimal tiga hari pembelajaran.');
+            return;
+        }
+
+        if (jamMulai < '07:00' || jamMulai > '20:00') {
+            alert('Jam mulai harus antara pukul 07:00 sampai 20:00.');
+            return;
+        }
+
+        if (!jamSelesai || jamSelesai > '22:00') {
+            alert('Jam selesai pembelajaran tidak boleh melewati pukul 22:00.');
+            return;
+        }
+
         btn.disabled = true;
-        btn.textContent = 'Menyimpan...';
+        btn.textContent = 'Menyimpan Pendaftaran...';
 
         try {
             const res = await fetch("{{ route('operator.siswa.store') }}", {
@@ -503,253 +754,114 @@ form.onsubmit = async e => {
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify({
-                    nama: nama,
-                    no_telp: telp,
+                    id_siswa: idSiswa,
                     id_kursus: idKursus,
                     kelas: kelas,
+                    hari: hari,
+                    jam_mulai: jamMulai,
                     tanggal_daftar: tglDaftar,
-                    status: status
+                    status: status,
+                    id_tentor: idTentor
                 })
             });
 
             const data = await res.json();
+
             if (res.ok && data.success) {
+                alert(
+                    'Pendaftaran berhasil!\n' +
+                    'Tentor: ' + data.tentor + '\n' +
+                    'Jumlah pertemuan: ' + data.jumlah_pertemuan
+                );
+
                 window.location.reload();
             } else {
                 alert('Gagal mendaftar: ' + (data.message || 'Terjadi kesalahan'));
-                btn.disabled = false;
-                btn.textContent = 'Simpan Pendaftaran';
             }
         } catch (err) {
             alert('Terjadi kesalahan jaringan.');
+        } finally {
             btn.disabled = false;
             btn.textContent = 'Simpan Pendaftaran';
         }
-    } else if (formMode === 'add-course') {
-        const idKursus = $('#kursusSiswa').value;
-        const kelas = $('#kelasSiswa').value;
-        const tglDaftar = $('#tanggalDaftar').value;
-        const status = $('#statusSiswa').value;
+    };
 
-        if (!idKursus) {
-            alert('Silakan pilih kursus.');
+    days.forEach(d => {
+        d.addEventListener('change', updateHari);
+    });
+
+    $('#kursusSiswa').addEventListener('change', cekTentor);
+    $('#tanggalDaftar').addEventListener('change', cekTentor);
+
+    $('#jamMulai').addEventListener('input', () => {
+        const val = $('#jamMulai').value;
+
+        if (val && (val < '07:00' || val > '20:00')) {
+            alert('Jam mulai harus antara pukul 07:00 sampai 20:00.');
+            $('#jamMulai').value = '';
+        }
+
+        hitungJamSelesai();
+        cekTentor();
+    });
+
+    function filterTabelSiswa() {
+        const q = $('#cariSiswa').value.toLowerCase().trim();
+        const st = $('#filterStatus').value;
+
+        const allRows = [...bodySiswa.querySelectorAll('tr[data-id]')];
+
+        const filteredRows = allRows.filter(r => {
+            return r.textContent.toLowerCase().includes(q) &&
+                (!st || r.dataset.status.toLowerCase() === st.toLowerCase());
+        });
+
+        allRows.forEach(r => r.style.display = 'none');
+
+        const totalFiltered = filteredRows.length;
+
+        $('#kosongSiswa').hidden = totalFiltered > 0;
+
+        if (totalFiltered === 0) {
+            renderPaginasi('paginasiSiswa', 0, halSiswa, pindahHalamanSiswa);
             return;
         }
 
-        const btn = $('#submitSiswa');
-        btn.disabled = true;
-        btn.textContent = 'Menambahkan...';
+        const maxPage = Math.ceil(totalFiltered / PER_HALAMAN_SISWA);
 
-        try {
-            const res = await fetch(`/operator/siswa/${selectedStudentId}/kursus`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': token,
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({
-                    id_kursus: idKursus,
-                    kelas: kelas,
-                    tanggal_daftar: tglDaftar,
-                    status: status
-                })
-            });
-
-            const data = await res.json();
-            if (res.ok && data.success) {
-                const courseList = $('#detailCourseList');
-                if (courseList) {
-                    if (courseList.querySelector('.o-course-head strong')?.textContent.includes('Belum Mengikuti Kursus')) {
-                        courseList.replaceChildren();
-                    }
-
-                    const item = document.createElement('div');
-                    item.className = 'o-course-item';
-                    item.dataset.idKursus = data.data.id_kursus;
-                    item.dataset.namaKursus = data.data.nama_kursus;
-                    item.dataset.kelas = data.data.jenis_kelas;
-                    item.dataset.status = data.data.status;
-                    item.dataset.tanggal = data.data.tanggal_daftar;
-                    item.innerHTML = `
-                        <div class="o-course-head">
-                            <strong>${data.data.nama_kursus} - ${data.data.jenis_kelas}</strong>
-                            <button type="button" class="o-action" data-edit-course>Edit</button>
-                        </div>
-                        <div class="o-course-row"><span>Status</span><strong>${data.data.status.charAt(0).toUpperCase() + data.data.status.slice(1)}</strong></div>
-                    `;
-                    courseList.appendChild(item);
-                }
-
-                if (selectedRow) {
-                    let currentCourses = [];
-                    try {
-                        currentCourses = JSON.parse(selectedRow.dataset.kursus || '[]');
-                    } catch (err) {}
-                    currentCourses.push(data.data);
-                    selectedRow.dataset.kursus = JSON.stringify(currentCourses);
-                }
-
-                modal.hidden = true;
-                if (returnToDetail) detail.hidden = false;
-            } else {
-                alert('Gagal menambahkan kursus: ' + (data.message || 'Terjadi kesalahan'));
-            }
-        } catch (err) {
-            alert('Terjadi kesalahan jaringan.');
-        } finally {
-            btn.disabled = false;
-            btn.textContent = 'Tambah Kursus';
-        }
-    } else if (formMode === 'edit-course') {
-        const idKursus = $('#kursusSiswa').value;
-        const kelas = $('#kelasSiswa').value;
-        const tglDaftar = $('#tanggalDaftar').value;
-        const status = $('#statusSiswa').value;
-        const oldIdKursus = activeCourse?.dataset?.idKursus || idKursus;
-
-        if (!idKursus) {
-            alert('Silakan pilih kursus.');
-            return;
+        if (halSiswa > maxPage) {
+            halSiswa = maxPage || 1;
         }
 
-        const btn = $('#submitSiswa');
-        btn.disabled = true;
-        btn.textContent = 'Menyimpan...';
+        const start = (halSiswa - 1) * PER_HALAMAN_SISWA;
+        const end = start + PER_HALAMAN_SISWA;
 
-        try {
-            const res = await fetch(`/operator/siswa/${selectedStudentId}/kursus/${oldIdKursus}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': token,
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({
-                    id_kursus: idKursus,
-                    kelas: kelas,
-                    tanggal_daftar: tglDaftar,
-                    status: status
-                })
-            });
+        filteredRows.slice(start, end).forEach(r => {
+            r.style.display = '';
+        });
 
-            const data = await res.json();
-            if (res.ok && data.success) {
-                if (activeCourse) {
-                    activeCourse.dataset.idKursus = data.data.id_kursus;
-                    activeCourse.dataset.namaKursus = data.data.nama_kursus;
-                    activeCourse.dataset.kelas = data.data.jenis_kelas;
-                    activeCourse.dataset.status = data.data.status;
-                    activeCourse.dataset.tanggal = data.data.tanggal_daftar;
-
-                    activeCourse.querySelector('.o-course-head strong').textContent =
-                        `${data.data.nama_kursus} - ${data.data.jenis_kelas}`;
-
-                    const rows = [...activeCourse.querySelectorAll('.o-course-row')];
-                    const statusRow = rows.find(r => r.querySelector('span')?.textContent.trim() === 'Status');
-                    if (statusRow) {
-                        statusRow.querySelector('strong').textContent =
-                            data.data.status.charAt(0).toUpperCase() + data.data.status.slice(1);
-                    }
-                }
-
-                if (selectedRow) {
-                    let currentCourses = [];
-                    try {
-                        currentCourses = JSON.parse(selectedRow.dataset.kursus || '[]');
-                    } catch (err) {}
-
-                    const idx = currentCourses.findIndex(c => String(c.id_kursus) === String(oldIdKursus));
-                    if (idx !== -1) {
-                        currentCourses[idx] = data.data;
-                    } else {
-                        currentCourses.push(data.data);
-                    }
-                    selectedRow.dataset.kursus = JSON.stringify(currentCourses);
-                }
-
-                modal.hidden = true;
-                if (returnToDetail) detail.hidden = false;
-            } else {
-                alert('Gagal memperbarui kursus: ' + (data.message || 'Terjadi kesalahan'));
-            }
-        } catch (err) {
-            alert('Terjadi kesalahan jaringan.');
-        } finally {
-            btn.disabled = false;
-            btn.textContent = 'Simpan Perubahan';
-        }
-    } else {
-        modal.hidden = true;
-        if (returnToDetail) detail.hidden = false;
+        renderPaginasi('paginasiSiswa', totalFiltered, halSiswa, pindahHalamanSiswa);
     }
-};
 
-const days = all('#hariPicker input');
-days.forEach(d => d.onchange = () => {
-    const n = days.filter(x => x.checked).length;
-    days.forEach(x => x.disabled = !x.checked && n >= 3);
-    $('#hariCount').textContent = n + '/3 hari dipilih';
-});
-
-$('#jamMulai')?.addEventListener('change', () => {
-    const val = $('#jamMulai').value;
-    if (val && val > '20:00') {
-        alert('⚠️ Jam mulai pembelajaran paling lambat pukul 20:00 (durasi kursus 2 jam, selesai maks. pukul 22:00)!');
-        $('#jamMulai').value = '20:00';
+    function pindahHalamanSiswa(tujuanBaru) {
+        halSiswa = tujuanBaru;
+        filterTabelSiswa();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-});
 
-function filterTabelSiswa(){
-    const q = $('#cariSiswa').value.toLowerCase().trim();
-    const st = $('#filterStatus').value;
-    const allRows = [...bodySiswa.querySelectorAll('tr[data-id]')];
-
-    const filteredRows = allRows.filter(r => {
-        const ok = r.textContent.toLowerCase().includes(q) && (!st || r.dataset.status.toLowerCase() === st.toLowerCase());
-        return ok;
+    $('#cariSiswa').addEventListener('input', () => {
+        halSiswa = 1;
+        filterTabelSiswa();
     });
 
-    allRows.forEach(r => r.style.display = 'none');
-
-    const totalFiltered = filteredRows.length;
-    $('#kosongSiswa').hidden = totalFiltered > 0;
-
-    if (totalFiltered === 0) {
-        renderPaginasi('paginasiSiswa', 0, halSiswa, pindahHalamanSiswa);
-        return;
-    }
-
-    const maxPage = Math.ceil(totalFiltered / PER_HALAMAN_SISWA);
-    if (halSiswa > maxPage) halSiswa = maxPage || 1;
-
-    const start = (halSiswa - 1) * PER_HALAMAN_SISWA;
-    const end = start + PER_HALAMAN_SISWA;
-
-    filteredRows.slice(start, end).forEach(r => {
-        r.style.display = '';
+    $('#filterStatus').addEventListener('change', () => {
+        halSiswa = 1;
+        filterTabelSiswa();
     });
 
-    renderPaginasi('paginasiSiswa', totalFiltered, halSiswa, pindahHalamanSiswa);
-}
-
-function pindahHalamanSiswa(tujuanBaru) {
-    halSiswa = tujuanBaru;
     filterTabelSiswa();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-$('#cariSiswa').addEventListener('input', () => {
-    halSiswa = 1;
-    filterTabelSiswa();
-});
-
-$('#filterStatus').addEventListener('change', () => {
-    halSiswa = 1;
-    filterTabelSiswa();
-});
-
-filterTabelSiswa();
 })();
 </script>
+
+
 @endsection

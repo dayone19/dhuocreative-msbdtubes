@@ -98,6 +98,39 @@ class JadwalController extends Controller
                 'jam_selesai' => substr($j->jam_selesai, 0, 5),
             ];
         })->values();
+        
+        // Riwayat perubahan jadwal semua tentor
+        $riwayatPerubahan = DB::table('pengajuan_jadwal as p')
+            ->join('kelas', 'p.id_kelas', '=', 'kelas.id_kelas')
+            ->join('kursus', 'kelas.id_kursus', '=', 'kursus.id_kursus')
+            ->join('users as siswa', 'kelas.id_siswa', '=', 'siswa.id_user')
+            ->join('users as tentor', 'p.id_tentor', '=', 'tentor.id_user')
+            ->whereNotNull('p.id_jadwal_lama')
+            ->where('p.status', 'diubah')
+            ->orderByDesc('p.created_at')
+            ->select(
+                'p.id_pengajuan',
+                'kursus.nama_kursus as kursus',
+                'kelas.kelas as kelas',
+                'tentor.nama as tentor',
+                'siswa.nama as siswa',
+                'p.tanggal_baru',
+                'p.jam_mulai',
+                'p.jam_selesai',
+                'p.alasan',
+                'p.created_at'
+            )
+            ->get()
+            ->map(function ($r) {
+                $dataLama = json_decode($r->alasan, true);
+
+                $r->tanggal_lama = $dataLama['tanggal_lama'] ?? null;
+                $r->mulai_lama = $dataLama['mulai_lama'] ?? null;
+                $r->selesai_lama = $dataLama['selesai_lama'] ?? null;
+                $r->catatan = $dataLama['catatan'] ?? null;
+
+                return $r;
+            });
 
         return view('admin.jadwalAbsensi', compact(
             'jadwals',
@@ -111,7 +144,8 @@ class JadwalController extends Controller
             'siswaList',
             'pengajuanList',
             'siswaMapping',
-            'jadwalExisting'
+            'jadwalExisting',
+            'riwayatPerubahan'
         ));
     }
 
@@ -160,22 +194,34 @@ class JadwalController extends Controller
                 $namaKelas = 'Home Class';
             }
 
-            $bentrokTentor = Jadwal::where('id_tentor', $tentor->id_user)
-                ->where('tanggal', $request->tanggal)
-                ->where('status', '!=', 'dibatalkan')
-                ->when($request->filled('id_jadwal'), function ($q) use ($request) {
-                    $q->where('id_jadwal', '!=', $request->id_jadwal);
-                })
-                ->where('jam_mulai', '<', $request->jam_selesai)
-                ->where('jam_selesai', '>', $request->jam_mulai)
-                ->first();
+            // function cek_jadwal_tentor
+            if (!$request->filled('id_jadwal')) {
+                try {
+                    DB::select(
+                        'SELECT cek_jadwal_tentor(?, ?, ?, ?)',
+                        [
+                            $tentor->id_user,
+                            $request->tanggal,
+                            $request->jam_mulai,
+                            $request->jam_selesai,
+                        ]
+                    );
+                } catch (\Exception $e) {
+                    $msg = $e->getMessage();
 
-            if ($bentrokTentor) {
-                $mulai = substr($bentrokTentor->jam_mulai, 0, 5);
-                $selesai = substr($bentrokTentor->jam_selesai, 0, 5);
-                return redirect()->back()
-                    ->with('error', "Jadwal bentrok! Tentor {$tentor->nama} sudah memiliki jadwal lain pada tanggal tersebut pukul {$mulai}–{$selesai}.")
-                    ->withInput();
+                    if (str_contains($msg, 'Jadwal tentor bentrok')) {
+                        $bagian = explode('|', $msg);
+
+                        $mulai = substr($bagian[1], 0, 5);
+                        $selesai = substr($bagian[2], 0, 5);
+
+                        return redirect()->back()
+                            ->with('error', "Jadwal bentrok! Tentor {$tentor->nama} sudah memiliki jadwal lain pada tanggal tersebut pukul {$mulai}–{$selesai}.")
+                            ->withInput();
+                    }
+
+                    throw $e;
+                }
             }
 
             $bentrokSiswa = Jadwal::whereHas('kelas', function ($q) use ($siswa) {
@@ -311,4 +357,5 @@ class JadwalController extends Controller
 
         return redirect()->back()->with('success', $pesan);
     }
+
 }
